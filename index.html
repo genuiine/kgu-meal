@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>경기대 밥먹자 - 수원캠퍼스 학식</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      --primary:#1D9E75; --primary-dark:#0F6E56; --primary-light:rgba(29,158,117,.10);
+      --c1:#F97316; --c1-light:rgba(249,115,22,.10);
+      --c2:#3B82F6; --c2-light:rgba(59,130,246,.10);
+      --c3:#EC4899; --c3-light:rgba(236,72,153,.10);
+      --surface:#FFFFFF; --bg:#F3F4F6;
+      --text1:#111827; --text2:#6B7280;
+      --border:rgba(0,0,0,.07);
+      --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+      --shadow-md:0 4px 14px rgba(0,0,0,.08);
+      --shadow-fab:0 4px 20px rgba(29,158,117,.45);
+      --r:16px; --r-sm:10px; --ease:cubic-bezier(.4,0,.2,1); --t:.18s;
+    }
+    @media(prefers-color-scheme:dark){
+      :root{
+        --surface:#1C1F26; --bg:#111318; --text1:#F0F2F5; --text2:#9CA3AF;
+        --border:rgba(255,255,255,.07);
+        --shadow-sm:0 1px 3px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.25);
+        --shadow-md:0 4px 14px rgba(0,0,0,.4);
+        --primary-light:rgba(29,158,117,.14);
+        --c1-light:rgba(249,115,22,.14); --c2-light:rgba(59,130,246,.14); --c3-light:rgba(236,72,153,.14);
+      }
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:400;line-height:1.6;background:var(--bg);color:var(--text1);min-height:100vh;-webkit-font-smoothing:antialiased;}
+    button{font-family:inherit;cursor:pointer;}
+
+    /* HEADER */
+    .app-header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+    .header-inner{max-width:760px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+    .logo-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:0 2px 8px rgba(29,158,117,.3);}
+    .logo-name{font-size:16px;font-weight:700;line-height:1.2;letter-spacing:-.3px;}
+    .logo-sub{font-size:11px;color:var(--text2);}
+    .date-badge{font-size:12px;font-weight:500;color:var(--text2);padding:5px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--border);white-space:nowrap;}
+
+    /* STATUS STRIP */
+    .status-strip{max-width:760px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+    .status-strip::-webkit-scrollbar{display:none;}
+    .status-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm);}
+    .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+    .sdot.open{background:#10B981;box-shadow:0 0 0 2px rgba(16,185,129,.25);}
+    .sdot.closed{background:#9CA3AF;}
+
+    /* TAB NAV */
+    .tab-nav{position:sticky;top:60px;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);}
+    .tab-scroll{max-width:760px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;}
+    .tab-scroll::-webkit-scrollbar{display:none;}
+    .tab-btn{position:relative;padding:14px 16px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;transition:color var(--t) var(--ease);}
+    .tab-btn::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:2.5px;border-radius:2px 2px 0 0;transform:scaleX(0);transform-origin:center;transition:transform var(--t) var(--ease);}
+    .tab-btn.active{font-weight:700;}
+    .tab-btn.active::after{transform:scaleX(1);}
+    .tab-btn.active{color:var(--tab-clr,var(--primary));}
+    .tab-btn.active::after{background:var(--tab-clr,var(--primary));}
+    .tab-btn:hover:not(.active){color:var(--text1);}
+
+    /* SUB FILTER */
+    .sub-filter{max-width:760px;margin:0 auto;padding:12px 20px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;background:var(--bg);}
+    .sub-filter::-webkit-scrollbar{display:none;}
+    .sub-chip{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;transition:all var(--t) var(--ease);}
+    .sub-chip.active{color:#fff;border-color:transparent;}
+    .sub-chip:hover:not(.active){border-color:var(--c1);color:var(--c1);}
+
+    /* MAIN */
+    .main{max-width:760px;margin:0 auto;padding:20px 20px 100px;}
+
+    /* CAFE SECTION */
+    .cafe-section{margin-bottom:36px;}
+    .cafe-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+    .cafe-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .cafe-name{font-size:18px;font-weight:700;}
+    .open-tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+
+    /* SUB SECTION (경슐랭 입점 식당) */
+    .sub-section{margin-bottom:28px;}
+    .sub-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:4px;}
+    .sub-name{font-size:15px;font-weight:700;color:var(--text1);}
+    .sub-count{font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px;font-weight:500;}
+
+    /* SINGLE VIEW */
+    .single-header{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+    .single-name{font-size:22px;font-weight:900;letter-spacing:-.5px;}
+    .single-meta{font-size:12px;color:var(--text2);padding-bottom:2px;}
+    .info-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--r-sm);margin-bottom:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+    .info-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);}
+    .info-sep{width:1px;height:12px;background:var(--border);flex-shrink:0;}
+
+    /* MENU GRID */
+    .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
+    @media(max-width:480px){.menu-grid{grid-template-columns:1fr 1fr;gap:9px;}}
+    @media(max-width:320px){.menu-grid{grid-template-columns:1fr;}}
+
+    /* MENU CARD */
+    .menu-card{background:var(--surface);border-radius:var(--r);padding:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);opacity:0;transform:translateY(12px);animation:cardIn .28s var(--ease) forwards;transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease);display:flex;flex-direction:column;gap:5px;}
+    .menu-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+    @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+    .card-cat{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;width:fit-content;}
+    .card-name{font-size:14px;font-weight:700;line-height:1.3;}
+    .card-price{font-size:13px;font-weight:700;margin-top:3px;}
+
+    /* FAB */
+    .fab{position:fixed;bottom:28px;right:50%;transform:translateX(calc(50% + 360px));width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;font-size:23px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-fab);z-index:200;transition:all var(--t) var(--ease);}
+    .fab:hover{transform:translateX(calc(50% + 360px)) scale(1.1);}
+    .fab:active{transform:translateX(calc(50% + 360px)) scale(.94);}
+    @media(max-width:760px){.fab{right:20px;transform:none;}.fab:hover{transform:scale(1.1);}.fab:active{transform:scale(.94);}}
+
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity var(--t) var(--ease),visibility var(--t) var(--ease);}
+    .modal-overlay.open{opacity:1;visibility:visible;}
+    .modal{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 24px 36px;width:100%;max-width:760px;max-height:92dvh;overflow-y:auto;transform:translateY(40px);transition:transform .28s var(--ease);position:relative;}
+    .modal-overlay.open .modal{transform:translateY(0);}
+    .modal-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 18px;}
+    .modal-title{font-size:20px;font-weight:700;margin-bottom:18px;}
+    .btn-close{position:absolute;top:20px;right:20px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease);}
+    .btn-close:hover{background:var(--surface);color:var(--text1);}
+
+    /* FILTER CHIPS IN MODAL */
+    .filter-sec{margin-bottom:14px;}
+    .filter-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
+    .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+    .fchip{padding:5px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);transition:all var(--t) var(--ease);white-space:nowrap;}
+    .fchip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+    .fchip[data-cafe="0"].active{background:var(--c1);border-color:var(--c1);}
+    .fchip[data-cafe="1"].active{background:var(--c2);border-color:var(--c2);}
+    .fchip[data-cafe="2"].active{background:var(--c3);border-color:var(--c3);}
+    .fchip:hover:not(.active){border-color:var(--primary);color:var(--primary);}
+
+    .pool-count{font-size:12px;color:var(--text2);text-align:center;margin:10px 0;padding:8px;background:var(--bg);border-radius:8px;}
+    .pool-count strong{color:var(--primary);font-weight:700;}
+
+    /* RESULT */
+    .result-area{min-height:170px;margin:14px 0;}
+    .result-placeholder{height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);border-radius:var(--r);color:var(--text2);font-size:14px;}
+    .rp-icon{font-size:42px;}
+    .result-spinning{background:var(--bg);border-radius:var(--r);padding:24px;text-align:center;animation:rpulse .35s ease infinite alternate;}
+    @keyframes rpulse{from{opacity:.6}to{opacity:1}}
+    .result-final{background:var(--bg);border-radius:var(--r);padding:24px;text-align:center;animation:resultPop .3s var(--ease);}
+    @keyframes resultPop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+    .rf-emoji{font-size:48px;display:block;margin-bottom:10px;}
+    .rf-cafe{font-size:11px;font-weight:600;margin-bottom:4px;}
+    .rf-sub{font-size:11px;color:var(--text2);margin-bottom:4px;}
+    .rf-name{font-size:22px;font-weight:900;margin-bottom:10px;letter-spacing:-.5px;}
+    .rf-price{display:inline-block;padding:6px 20px;border-radius:20px;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;}
+    .rf-location{font-size:12px;color:var(--text2);padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;text-align:left;display:flex;flex-direction:column;gap:4px;}
+    .rf-loc-row{display:flex;align-items:center;gap:6px;}
+    .rf-comment{font-size:12px;color:var(--text2);font-style:italic;padding-top:12px;border-top:1px solid var(--border);line-height:1.6;}
+    .rf-again{font-size:13px;font-weight:600;padding:10px 20px;border-radius:var(--r-sm);border:1.5px solid var(--primary);background:transparent;color:var(--primary);transition:all var(--t) var(--ease);}
+    .rf-again:hover{background:var(--primary);color:#fff;}
+
+    .btn-spin{width:100%;padding:14px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:var(--r-sm);font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(29,158,117,.35);transition:all var(--t) var(--ease);}
+    .btn-spin:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(29,158,117,.45);}
+    .btn-spin:disabled{opacity:.5;transform:none;cursor:not-allowed;}
+
+    /* HISTORY */
+    .history-sec{margin-top:14px;}
+    .history-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
+    .history-item{display:flex;align-items:center;gap:10px;padding:7px 12px;background:var(--bg);border-radius:10px;font-size:13px;margin-bottom:5px;}
+    .h-num{font-size:11px;color:var(--text2);font-weight:600;width:16px;text-align:center;flex-shrink:0;}
+    .h-name{font-weight:600;flex:1;}
+    .h-cafe{font-size:11px;color:var(--text2);}
+
+    /* FOOTER */
+    footer{max-width:760px;margin:0 auto;border-top:1px solid var(--border);padding:20px;text-align:center;}
+    footer p{font-size:11px;color:var(--text2);line-height:1.9;}
+    .foot-link{color:var(--primary);font-weight:600;text-decoration:none;}
+
+    /* EMPTY */
+    .empty{padding:48px 20px;text-align:center;color:var(--text2);font-size:14px;line-height:1.8;}
+  </style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">🍽️</div>
+      <div>
+        <div class="logo-name">경기대 밥먹자</div>
+        <div class="logo-sub">수원캠퍼스 학식</div>
+      </div>
+    </div>
+    <div class="date-badge" id="dateBadge"></div>
+  </div>
+</header>
+
+<div class="status-strip" id="statusStrip"></div>
+
+<nav class="tab-nav">
+  <div class="tab-scroll" id="tabNav"></div>
+</nav>
+
+<div class="sub-filter" id="subFilter" style="display:none"></div>
+
+<main class="main" id="mainContent"></main>
+
+<footer>
+  <p>메뉴 정보는 실제와 다를 수 있습니다. 잘못된 정보는 <a class="foot-link" href="menu-editor.html">편집기</a>에서 수정해주세요.</p>
+  <p>경슐랭 (만권화밥·숑숑돈까스·버거&amp;타코·위델가·신머이쌀국수) · 이스퀘어 · 샐리박스</p>
+</footer>
+
+<button class="fab" id="fabBtn" aria-label="랜덤 메뉴 추천">🎲</button>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="btn-close" id="btnClose" aria-label="닫기">
+      <i data-lucide="x" width="15" height="15"></i>
+    </button>
+    <div class="modal-handle"></div>
+    <div class="modal-title">오늘 뭐 먹지? 🎲</div>
+
+    <div class="filter-sec">
+      <div class="filter-label">식당</div>
+      <div class="chip-row" id="cafeFilter"></div>
+    </div>
+    <div class="filter-sec">
+      <div class="filter-label">카테고리</div>
+      <div class="chip-row" id="catFilter2">
+        <button class="fchip active" data-cat="all">전체</button>
+        <button class="fchip" data-cat="rice">덮밥·밥류</button>
+        <button class="fchip" data-cat="noodle">면류</button>
+        <button class="fchip" data-cat="cutlet">돈까스</button>
+        <button class="fchip" data-cat="soup">탕·찌개</button>
+        <button class="fchip" data-cat="chicken">치킨류</button>
+        <button class="fchip" data-cat="burger">버거·타코</button>
+        <button class="fchip" data-cat="snack">분식류</button>
+        <button class="fchip" data-cat="drink">음료</button>
+      </div>
+    </div>
+    <div class="filter-sec">
+      <div class="filter-label">가격대</div>
+      <div class="chip-row" id="priceFilter">
+        <button class="fchip active" data-price="all">전체</button>
+        <button class="fchip" data-price="low">5천원 이하</button>
+        <button class="fchip" data-price="mid">5-9천원</button>
+        <button class="fchip" data-price="high">9천원 이상</button>
+      </div>
+    </div>
+
+    <div class="pool-count"><strong id="poolNum">-</strong>개 메뉴 중 추천</div>
+
+    <div class="result-area" id="resultArea">
+      <div class="result-placeholder">
+        <span class="rp-icon">🎲</span>
+        <span>버튼을 눌러 오늘의 메뉴를 뽑아보세요!</span>
+      </div>
+    </div>
+
+    <div id="historySec" style="display:none" class="history-sec">
+      <div class="history-label">최근 추천</div>
+      <div id="historyList"></div>
+    </div>
+
+    <button class="btn-spin" id="btnSpin">추천!</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   DEFAULT DATA (기룡아 밥먹자 앱 기준 - 2026-05-29)
+   menu-editor.html 에서 수정하면 localStorage에 저장되어 자동 반영
+============================================================ */
+const DEFAULT_CAFES = [
+  {
+    name:'경슐랭', type:'foodcourt',
+    location:'제1복지관 지하 1층', hours:'10:30 - 19:00', lastOrder:'주문마감 18:30',
+    openH:10.5, closeH:19.0, closedWeekend:true, colorHex:'#F97316',
+    subs:[
+      { name:'만권화밥', menus:[
+        {name:'돼지불백덮밥',      cat:'rice',   price:5500},
+        {name:'소고기카레덮밥',    cat:'rice',   price:8000},
+        {name:'삼겹가지덮밥',      cat:'rice',   price:7500},
+        {name:'소고기가지덮밥',    cat:'rice',   price:7500},
+        {name:'연어장덮밥',        cat:'rice',   price:8000},
+        {name:'소고기열무비빔밥',  cat:'rice',   price:7500},
+        {name:'돼껍볶음덮밥',      cat:'rice',   price:6500},
+        {name:'마라소고기덮밥',    cat:'rice',   price:7500},
+        {name:'큐브스테이크 카레덮밥',cat:'rice',price:8500},
+        {name:'직화소고기덮밥',    cat:'rice',   price:7000},
+        {name:'직화삼겹덮밥',      cat:'rice',   price:8000},
+        {name:'직화제육덮밥',      cat:'rice',   price:6500},
+        {name:'참치마요덮밥',      cat:'rice',   price:6500},
+        {name:'매운닭갈비덮밥',    cat:'rice',   price:6000},
+        {name:'간장닭갈비덮밥',    cat:'rice',   price:6000},
+        {name:'소불고기덮밥',      cat:'rice',   price:7000},
+        {name:'명란마요스팸참치',  cat:'rice',   price:7000},
+        {name:'스팸마요덮밥',      cat:'rice',   price:6000},
+        {name:'항정살꽈리볶음덮밥',cat:'rice',   price:8500},
+        {name:'치즈매운불닭덮밥',  cat:'rice',   price:7500},
+        {name:'치킨마요덮밥',      cat:'rice',   price:8000},
+        {name:'오삼덮밥',          cat:'rice',   price:7500},
+        {name:'오징어덮밥',        cat:'rice',   price:7000},
+        {name:'낙지덮밥',          cat:'rice',   price:7000},
+        {name:'큐브스테이크화밥',  cat:'rice',   price:8000},
+        {name:'마라큐브스테이크',  cat:'rice',   price:8500},
+        {name:'불맛해물짬뽕',      cat:'noodle', price:8500},
+        {name:'직화해물짜장면',    cat:'noodle', price:7500},
+        {name:'소고기얼큰면',      cat:'noodle', price:6000},
+      ]},
+      { name:'숑숑돈까스', menus:[
+        {name:'돈카츠 라이스커리',     cat:'cutlet', price:10500},
+        {name:'통감자 라이스커리',     cat:'cutlet', price:8900},
+        {name:'에비덴 라이스커리',     cat:'cutlet', price:10900},
+        {name:'숑숑카츠',             cat:'cutlet', price:7900},
+        {name:'양파듬뿍카츠',         cat:'cutlet', price:9500},
+        {name:'두툼치즈카츠',         cat:'cutlet', price:10500},
+        {name:'모둠카츠',             cat:'cutlet', price:10900},
+        {name:'큐브치즈카츠1',        cat:'cutlet', price:9900},
+        {name:'큐브치즈카츠2',        cat:'cutlet', price:10900},
+        {name:'고구마큐브치즈카츠',   cat:'cutlet', price:10900},
+        {name:'프리미엄카츠',         cat:'cutlet', price:8900},
+        {name:'카츠동',               cat:'cutlet', price:7900},
+        {name:'김치치즈가츠나베',     cat:'cutlet', price:8900},
+        {name:'눈꽃치즈돈까스',       cat:'cutlet', price:9500},
+        {name:'슈프림돈까스',         cat:'cutlet', price:8900},
+        {name:'치폴레돈까스',         cat:'cutlet', price:8900},
+        {name:'경양식 왕 돈까스',     cat:'cutlet', price:9500},
+        {name:'김치우동',             cat:'noodle', price:6900},
+        {name:'유부우동',             cat:'noodle', price:5900},
+        {name:'수제어묵꼬지우동',     cat:'noodle', price:7500},
+        {name:'짬뽕우동',             cat:'noodle', price:7900},
+        {name:'마라우동',             cat:'noodle', price:6900},
+        {name:'마라냉모밀',           cat:'noodle', price:7500},
+        {name:'마제소바',             cat:'noodle', price:8500},
+        {name:'알리오올리오',         cat:'noodle', price:8500},
+        {name:'까르보나라',           cat:'noodle', price:8500},
+        {name:'토마토파스타',         cat:'noodle', price:8500},
+        {name:'로제파스타',           cat:'noodle', price:8500},
+        {name:'매콤 로제 리조또볼 파스타',cat:'noodle',price:9500},
+        {name:'로제떡볶이',           cat:'snack',  price:8500},
+        {name:'국물떡볶이',           cat:'snack',  price:7500},
+        {name:'새우튀김(2ea)',        cat:'side',   price:3000},
+      ]},
+      { name:'버거&타코', menus:[
+        {name:'고추간장 순살치킨',    cat:'chicken',price:8000},
+        {name:'달콤양념 순살치킨',    cat:'chicken',price:8000},
+        {name:'손바닥 치킨',          cat:'chicken',price:3800},
+        {name:'순살치킨 10ea',        cat:'chicken',price:7000},
+        {name:'양념치킨 순살치킨',    cat:'chicken',price:3500},
+        {name:'누들떡뽀끼',           cat:'snack',  price:5900},
+        {name:'짜장누들떡뽀끼',       cat:'snack',  price:6900},
+        {name:'마라로제누들떡뽀끼',   cat:'snack',  price:6900},
+        {name:'마라떡뽀끼',           cat:'snack',  price:7200},
+        {name:'마일드비치팩',         cat:'burger', price:10500},
+        {name:'핫비치팩',             cat:'burger', price:10500},
+        {name:'마일드슈비팩',         cat:'burger', price:10500},
+        {name:'카츠팩',               cat:'burger', price:8500},
+        {name:'포커샌드',             cat:'side',   price:3600},
+        {name:'리얼 치즈스틱 2ea',    cat:'side',   price:2000},
+        {name:'핫치킨슬로',           cat:'side',   price:5300},
+        {name:'바삭한 감자튀김',      cat:'side',   price:2200},
+        {name:'양념치킨감자튀김',     cat:'side',   price:2700},
+        {name:'어니언링 4ea',         cat:'side',   price:2200},
+        {name:'콘 샐러드',            cat:'side',   price:1800},
+        {name:'치킨너겟(6ea)',        cat:'side',   price:3000},
+        {name:'폴드포크타코',         cat:'burger', price:5600},
+        {name:'핫치킨타코',           cat:'burger', price:5600},
+        {name:'슈프림타코',           cat:'burger', price:5600},
+        {name:'비프타코',             cat:'burger', price:5300},
+        {name:'비프더블베이컨치즈',   cat:'burger', price:7500},
+        {name:'비프살사',             cat:'burger', price:7400},
+        {name:'치즈매니아 버거',      cat:'burger', price:7200},
+        {name:'마일드 슈프림버거',    cat:'burger', price:5500},
+        {name:'치킨버거 마일드',      cat:'burger', price:5500},
+        {name:'비프프레쉬',           cat:'burger', price:4500},
+        {name:'비프치즈 마일드',      cat:'burger', price:4300},
+        {name:'비프치즈 핫',          cat:'burger', price:4300},
+        {name:'비프 1975',            cat:'burger', price:4300},
+        {name:'비프 오리지널',        cat:'burger', price:4200},
+        {name:'포크클래식 버거',      cat:'burger', price:4200},
+      ]},
+      { name:'위델가', menus:[
+        {name:'갈비탕',             cat:'soup',   price:8000},
+        {name:'육개장',             cat:'soup',   price:7000},
+        {name:'떡만두국',           cat:'soup',   price:7000},
+        {name:'물냉면',             cat:'noodle', price:6000},
+        {name:'물냉면+바싹불고기', cat:'noodle', price:8000},
+        {name:'비빔냉면',           cat:'noodle', price:6000},
+        {name:'비빔냉면+바싹불고기',cat:'noodle',price:8000},
+        {name:'돈육고추장짜글이',   cat:'soup',   price:7000},
+        {name:'돈육김치찌개',       cat:'soup',   price:6500},
+        {name:'돈육김치찜',         cat:'soup',   price:7500},
+        {name:'뚝배기불고기',       cat:'soup',   price:7000},
+        {name:'스팸김치찌개',       cat:'soup',   price:6500},
+        {name:'스팸순두부찌개',     cat:'soup',   price:6500},
+        {name:'바지락순두부',       cat:'soup',   price:6500},
+        {name:'차돌순두부찌개',     cat:'soup',   price:6500},
+        {name:'차돌된장찌개',       cat:'soup',   price:6500},
+        {name:'햄부대찌개',         cat:'soup',   price:7500},
+        {name:'소고기뚝밥',         cat:'rice',   price:7000},
+        {name:'알밥',               cat:'rice',   price:7000},
+      ]},
+      { name:'신머이쌀국수', menus:[
+        {name:'베트남 전통 쌀국수',     cat:'noodle', price:5500},
+        {name:'닭반마리쌀국수',          cat:'noodle',price:7500},
+        {name:'닭반마리쌀국수(매운맛)',  cat:'noodle',price:8000},
+        {name:'소고기 쌀국수',          cat:'noodle', price:7500},
+        {name:'소고기 쌀국수(매운맛)',  cat:'noodle', price:8500},
+        {name:'북부 사파 쌀국수',        cat:'noodle', price:9000},
+        {name:'감자말이 새우',          cat:'side',   price:5500},
+        {name:'버터플라이 새우',        cat:'side',   price:5500},
+        {name:'계란 반미',              cat:'side',   price:5500},
+        {name:'해물 짜조',              cat:'side',   price:5500},
+        {name:'롱 춘권',                cat:'side',   price:3000},
+        {name:'단팥 춘권',              cat:'side',   price:3000},
+        {name:'꿔이',                   cat:'side',   price:3500},
+      ]},
+    ]
+  },
+  {
+    name:'이스퀘어', type:'normal',
+    location:'제2복지관 1층', hours:'07:30 - 20:30', lastOrder:'주문마감 19:30',
+    openH:7.5, closeH:20.5, closedWeekend:false, colorHex:'#3B82F6',
+    menus:[
+      // 분식·떡볶이류
+      {name:'까르보 말랑떡볶이',      cat:'snack',  price:5500},
+      {name:'맵달라볶이',              cat:'snack',  price:6000},
+      {name:'사천짜장라볶이',          cat:'snack',  price:6500},
+      {name:'로제라볶이',              cat:'snack',  price:6500},
+      {name:'맵달 말랑떡볶이',         cat:'snack',  price:5000},
+      {name:'사천짜장 말랑떡볶이',     cat:'snack',  price:5500},
+      {name:'로제 말랑떡볶이',         cat:'snack',  price:5500},
+      // 라면류
+      {name:'우삼겹 짬뽕라면',         cat:'noodle', price:6500},
+      {name:'냄비 신라면',             cat:'noodle', price:3500},
+      {name:'치즈라면',                cat:'noodle', price:4000},
+      {name:'떡만두라면',              cat:'noodle', price:4500},
+      {name:'매운해장라면',            cat:'noodle', price:4500},
+      {name:'얼큰순대라면',            cat:'noodle', price:5500},
+      // 김밥류
+      {name:'스퀘어김밥',              cat:'snack',  price:3500},
+      {name:'치즈김밥',                cat:'snack',  price:4000},
+      {name:'참치김밥',                cat:'snack',  price:4500},
+      // 돈까스류
+      {name:'치킨까스(140g)',          cat:'cutlet', price:4500},
+      {name:'등심돈까스(200g)',        cat:'cutlet', price:6800},
+      {name:'핵매운돈까스',            cat:'cutlet', price:7800},
+      {name:'고구마치즈돈까스',        cat:'cutlet', price:7800},
+      {name:'치즈돈까스',              cat:'cutlet', price:7800},
+      // 사이드
+      {name:'팝만두 15알',             cat:'side',   price:3000},
+      {name:'소떡소떡',                cat:'side',   price:3200},
+      {name:'공깃밥',                  cat:'side',   price:1000},
+      // 우동류
+      {name:'어묵우동',                cat:'noodle', price:5500},
+      {name:'얼큰어묵우동',            cat:'noodle', price:6000},
+      // 덮밥류
+      {name:'제육덮밥',                cat:'rice',   price:7500},
+      {name:'참치마요덮밥',            cat:'rice',   price:8000},
+      {name:'치킨마유덮밥',            cat:'rice',   price:8500},
+      {name:'스팸마요덮밥',            cat:'rice',   price:8000},
+      // 탕·찌개류
+      {name:'부대찌개',                cat:'soup',   price:8900},
+      {name:'사골 떡만두국',           cat:'soup',   price:8000},
+      // 냉면·막국수·소바류
+      {name:'물냉면',                  cat:'noodle', price:6500},
+      {name:'비빔냉면',                cat:'noodle', price:7000},
+      {name:'들기름막국수',            cat:'noodle', price:7500},
+      {name:'매밀소바',                cat:'noodle', price:8000},
+      // 냉면 추가
+      {name:'냉면 다대기',             cat:'side',   price:500},
+      {name:'냉면 육수 추가',          cat:'side',   price:500},
+    ]
+  },
+  {
+    name:'샐리박스', type:'normal',
+    location:'교수연구동 5층', hours:'09:00 - 18:00', lastOrder:'',
+    openH:9.0, closeH:18.0, closedWeekend:true, colorHex:'#EC4899',
+    menus:[
+      // 버거류
+      {name:'샐리버거단품',            cat:'burger', price:7000},
+      {name:'경기버거단품',            cat:'burger', price:9000},
+      {name:'통살치킨버거단품',        cat:'burger', price:6000},
+      // 샌드위치·핫도그류
+      {name:'햄에그샌드위치',          cat:'western',price:3500},
+      {name:'치킨샌드위치',            cat:'western',price:4000},
+      {name:'크래미샌드위치',          cat:'western',price:4000},
+      {name:'통새우샌드위치',          cat:'western',price:4000},
+      {name:'샐리핫도그',              cat:'western',price:4500},
+      // 파스타류
+      {name:'토마토미트스파게티',       cat:'noodle', price:6000},
+      {name:'로제스파게티',             cat:'noodle', price:7000},
+      {name:'김치스파게티',             cat:'noodle', price:7000},
+      {name:'크림소세지스파게티',       cat:'noodle', price:8000},
+      // 분식류
+      {name:'떡볶이',                  cat:'snack',  price:7000},
+      {name:'어묵우동',                cat:'noodle', price:7000},
+      // 볶음밥·덮밥류
+      {name:'베이컨김치볶음밥',        cat:'rice',   price:6500},
+      {name:'게살새우볶음밥',          cat:'rice',   price:7000},
+      {name:'소불고기볶음밥',          cat:'rice',   price:7000},
+      {name:'제육덮밥',                cat:'rice',   price:8000},
+      {name:'돈까스',                  cat:'cutlet', price:8000},
+      // 음료·카페
+      {name:'아메리카노(hot)',          cat:'drink',  price:2500},
+      {name:'아메리카노(ice)',          cat:'drink',  price:2500},
+      {name:'카페라떼(ice)',            cat:'drink',  price:3500},
+      {name:'바닐라라떼(hot)',          cat:'drink',  price:4000},
+      {name:'바닐라라떼(ice)',          cat:'drink',  price:4000},
+      {name:'딸기밀크스무디',           cat:'drink',  price:4000},
+      {name:'망고밀크스무디',           cat:'drink',  price:4000},
+      {name:'블루베리밀크스무디',       cat:'drink',  price:4000},
+      {name:'녹차라떼(hot)',            cat:'drink',  price:3500},
+      {name:'녹차라떼(ice)',            cat:'drink',  price:3500},
+      {name:'오곡라떼(hot)',            cat:'drink',  price:4000},
+      {name:'오곡라떼(ice)',            cat:'drink',  price:4000},
+      {name:'허니자몽블랙티(hot)',      cat:'drink',  price:3500},
+      {name:'허니자몽블랙티(ice)',      cat:'drink',  price:3500},
+      {name:'아이스티(복숭아)',         cat:'drink',  price:3000},
+      {name:'아샷추',                  cat:'drink',  price:3500},
+      {name:'레몬티(hot)',              cat:'drink',  price:3500},
+      {name:'레몬티(ice)',              cat:'drink',  price:3500},
+      {name:'레몬자몽티(hot)',          cat:'drink',  price:3500},
+      {name:'레몬자몽티(ice)',          cat:'drink',  price:3500},
+      {name:'청귤티(hot)',              cat:'drink',  price:3500},
+      {name:'청귤티(ice)',              cat:'drink',  price:3500},
+      {name:'자몽에이드',              cat:'drink',  price:4000},
+      {name:'레몬에이드',              cat:'drink',  price:4000},
+      {name:'허니자몽블랙에이드',       cat:'drink',  price:4000},
+      {name:'청귤에이드',              cat:'drink',  price:4000},
+    ]
+  },
+];
+
+/* ============================================================
+   CAT MAP
+============================================================ */
+const CAT_MAP = {
+  rice:    {label:'덮밥·밥류', color:'#D97706', bg:'rgba(217,119,6,.12)'},
+  noodle:  {label:'면류',      color:'#6366F1', bg:'rgba(99,102,241,.12)'},
+  cutlet:  {label:'돈까스',    color:'#EF4444', bg:'rgba(239,68,68,.12)'},
+  soup:    {label:'탕·찌개',   color:'#059669', bg:'rgba(5,150,105,.12)'},
+  chicken: {label:'치킨류',    color:'#F59E0B', bg:'rgba(245,158,11,.12)'},
+  burger:  {label:'버거·타코', color:'#7C3AED', bg:'rgba(124,58,237,.12)'},
+  snack:   {label:'분식류',    color:'#DB2777', bg:'rgba(219,39,119,.12)'},
+  side:    {label:'사이드',    color:'#0891B2', bg:'rgba(8,145,178,.12)'},
+  drink:   {label:'음료·카페', color:'#EC4899', bg:'rgba(236,72,153,.12)'},
+};
+
+const EMOJIS = ['🍜','🍛','🥘','🍲','🍱','🍚','🥗','🍝','🥩','🍖','🫕','🥪','🍔','☕','🌮','🍗'];
+const COMMENTS = [
+  '에너지 가득한 하루를 시작해봐요!',
+  '오늘 이 메뉴로 결정! 후회 없을 거예요.',
+  '이거 먹으면 오후 졸음도 날아갈 거예요.',
+  '교수님도 즐겨 드신다는 그 메뉴!',
+  '칼로리 걱정은 내일의 내가 할게요.',
+  '오늘 메뉴 중 단연 인기 1위 예상!',
+  '한 끼 든든하게 채우고 공부 시작해봐요.',
+  '의외로 자꾸 생각나는 숨은 명작이에요.',
+  '오늘 운명의 메뉴가 나타났습니다!',
+  '이 조합, 생각보다 훨씬 맛있어요.',
+];
+
+/* ============================================================
+   DATA LOAD (localStorage 우선)
+============================================================ */
+function loadCafes() {
+  try {
+    const saved = localStorage.getItem('kgu-meal-cafes');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return DEFAULT_CAFES;
+}
+let CAFES = loadCafes();
+
+/* ============================================================
+   STATE
+============================================================ */
+let curTab='all', curSub='all', filterCafe='all', filterCat='all', filterPrice='all';
+let spinHistory=[], spinTimer=null, isSpinning=false;
+
+/* ============================================================
+   UTILS
+============================================================ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmt(n){return n.toLocaleString('ko-KR')+'원';}
+function nowH(){const n=new Date();return n.getHours()+n.getMinutes()/60;}
+function isOpen(c){
+  const d=new Date().getDay();
+  if(c.closedWeekend&&(d===0||d===6))return false;
+  const h=nowH();return h>=c.openH&&h<c.closeH;
+}
+function formatDate(){
+  const D=['일','월','화','수','목','금','토'],n=new Date();
+  return `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} (${D[n.getDay()]})`;
+}
+function allMenus(cafe){
+  if(cafe.type==='foodcourt')return cafe.subs.flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
+  return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
+}
+
+/* ============================================================
+   STATUS STRIP
+============================================================ */
+function renderStatus(){
+  document.getElementById('statusStrip').innerHTML=CAFES.map(c=>{
+    const open=isOpen(c);
+    return`<div class="status-chip"><span class="sdot ${open?'open':'closed'}"></span><span>${esc(c.name)}</span><span style="color:var(--text2);font-size:11px">${open?'영업 중':'영업 종료'}</span></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   CARD
+============================================================ */
+function menuCard(m,hex,delay){
+  const cat=CAT_MAP[m.cat]||{label:m.cat||'',color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
+  return`<div class="menu-card" style="animation-delay:${delay}s">
+    <div class="card-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</div>
+    <div class="card-name">${esc(m.name)}</div>
+    <div class="card-price" style="color:${hex}">${fmt(m.price)}</div>
+  </div>`;
+}
+
+/* ============================================================
+   RENDER MAIN
+============================================================ */
+function renderMain(){
+  const root=document.getElementById('mainContent');
+  const subFilter=document.getElementById('subFilter');
+
+  if(curTab==='all'){
+    subFilter.style.display='none';
+    root.innerHTML=CAFES.map((c,ci)=>{
+      const open=isOpen(c);
+      let body='';
+      if(c.type==='foodcourt'){
+        body=c.subs.map(s=>{
+          if(!s.menus.length)return'';
+          return`<div class="sub-section">
+            <div class="sub-head">
+              <div class="sub-name">${esc(s.name)}</div>
+              <div class="sub-count">${s.menus.length}개</div>
+            </div>
+            <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
+          </div>`;
+        }).join('');
+      } else {
+        const ms=c.menus||[];
+        body=ms.length
+          ?`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>`
+          :`<div class="empty">메뉴 데이터 준비 중 - 편집기에서 추가해주세요</div>`;
+      }
+      return`<div class="cafe-section">
+        <div class="cafe-head">
+          <div class="cafe-dot" style="background:${c.colorHex}"></div>
+          <div class="cafe-name">${esc(c.name)}</div>
+          <div class="open-tag" style="background:${open?'rgba(16,185,129,.12)':'var(--bg)'};color:${open?'#059669':'var(--text2)'}">${open?'영업 중':'영업 종료'}</div>
+          <div style="font-size:12px;color:var(--text2)">${esc(c.location)} · ${esc(c.hours)}</div>
+        </div>
+        ${body}
+      </div>`;
+    }).join('');
+
+  } else {
+    const ci=parseInt(curTab);
+    const c=CAFES[ci];
+    const open=isOpen(c);
+
+    if(c.type==='foodcourt'){
+      // 서브 필터 렌더
+      subFilter.style.display='flex';
+      const subs=c.subs;
+      subFilter.innerHTML=`<button class="sub-chip ${curSub==='all'?'active':''}" data-sub="all" style="${curSub==='all'?`background:${c.colorHex};border-color:${c.colorHex}`:''}">전체</button>`
+        +subs.map((s,i)=>`<button class="sub-chip ${curSub===String(i)?'active':''}" data-sub="${i}"
+          style="${curSub===String(i)?`background:${c.colorHex};border-color:${c.colorHex}`:''}">
+          ${esc(s.name)}</button>`).join('');
+      subFilter.querySelectorAll('.sub-chip').forEach(ch=>ch.addEventListener('click',()=>{
+        curSub=ch.dataset.sub; renderMain();
+      }));
+
+      const activeSubs=curSub==='all'?subs:[subs[parseInt(curSub)]];
+      const body=activeSubs.map(s=>{
+        if(!s.menus.length)return`<div class="empty">메뉴 없음</div>`;
+        return`<div class="sub-section">
+          <div class="sub-head"><div class="sub-name">${esc(s.name)}</div><div class="sub-count">${s.menus.length}개</div></div>
+          <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
+        </div>`;
+      }).join('');
+
+      root.innerHTML=`<div>
+        <div class="single-header">
+          <div class="single-name" style="color:${c.colorHex}">${esc(c.name)}</div>
+          <div class="single-meta">푸드코트 · ${c.subs.reduce((a,s)=>a+s.menus.length,0)}개 메뉴</div>
+        </div>
+        <div class="info-bar">
+          <div class="info-item">📍 ${esc(c.location)}</div>
+          <div class="info-sep"></div>
+          <div class="info-item">🕐 ${esc(c.hours)}</div>
+          <div class="info-sep"></div>
+          <div class="info-item" style="color:${open?'#059669':'var(--text2)'}">
+            <span style="width:7px;height:7px;border-radius:50%;background:${open?'#10B981':'#9CA3AF'};display:inline-block"></span>
+            ${open?'지금 영업 중':'영업 종료'}
+          </div>
+          <div class="info-sep"></div>
+          <div class="info-item" style="color:var(--text2)">주말 휴무</div>
+        </div>
+        ${body}
+      </div>`;
+
+    } else {
+      subFilter.style.display='none';
+      const ms=c.menus||[];
+      const open=isOpen(c);
+      root.innerHTML=`<div>
+        <div class="single-header">
+          <div class="single-name" style="color:${c.colorHex}">${esc(c.name)}</div>
+          <div class="single-meta">${ms.length}개 메뉴</div>
+        </div>
+        <div class="info-bar">
+          <div class="info-item">📍 ${esc(c.location)}</div>
+          <div class="info-sep"></div>
+          <div class="info-item">🕐 ${esc(c.hours)}</div>
+          <div class="info-sep"></div>
+          <div class="info-item" style="color:${open?'#059669':'var(--text2)'}">
+            <span style="width:7px;height:7px;border-radius:50%;background:${open?'#10B981':'#9CA3AF'};display:inline-block"></span>
+            ${open?'지금 영업 중':'영업 종료'}
+          </div>
+        </div>
+        ${ms.length
+          ?`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>`
+          :`<div class="empty">메뉴 데이터 준비 중 - <a class="foot-link" href="menu-editor.html">편집기</a>에서 추가</div>`}
+      </div>`;
+    }
+  }
+  if(typeof lucide!=='undefined')lucide.createIcons();
+}
+
+/* ============================================================
+   POOL / RANDOM
+============================================================ */
+function getPool(){
+  const all=[];
+  CAFES.forEach((c,ci)=>{
+    if(filterCafe!=='all'&&parseInt(filterCafe)!==ci)return;
+    const ms=allMenus(c);
+    ms.forEach(m=>{
+      if(filterCat!=='all'&&m.cat!==filterCat)return;
+      if(filterPrice==='low'&&m.price>=5000)return;
+      if(filterPrice==='mid'&&(m.price<5000||m.price>=9000))return;
+      if(filterPrice==='high'&&m.price<9000)return;
+      all.push({...m,cafeIdx:ci});
+    });
+  });
+  return all;
+}
+
+function updatePoolCount(){
+  const n=getPool().length;
+  document.getElementById('poolNum').textContent=n;
+  const btn=document.getElementById('btnSpin');
+  btn.disabled=n===0;
+}
+
+function doSpin(){
+  if(isSpinning)return;
+  const pool=getPool();
+  if(!pool.length)return;
+  isSpinning=true;
+  document.getElementById('btnSpin').textContent='추천 중...';
+  let count=0,total=22;
+  const ra=document.getElementById('resultArea');
+  clearInterval(spinTimer);
+  spinTimer=setInterval(()=>{
+    const r=pool[Math.floor(Math.random()*pool.length)];
+    const e=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+    ra.innerHTML=`<div class="result-spinning">
+      <span style="font-size:44px;display:block;margin-bottom:8px">${e}</span>
+      <div style="font-size:18px;font-weight:700">${esc(r.name)}</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">${esc(r.cafeName)}${r.subName?' · '+esc(r.subName):''}</div>
+    </div>`;
+    count++;
+    if(count>=total){
+      clearInterval(spinTimer);
+      const chosen=pool[Math.floor(Math.random()*pool.length)];
+      const cafe=CAFES[chosen.cafeIdx];
+      const open=isOpen(cafe);
+      const emoji=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+      const comment=COMMENTS[Math.floor(Math.random()*COMMENTS.length)];
+      const cat=CAT_MAP[chosen.cat]||{label:chosen.cat,color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
+      spinHistory.unshift(chosen);
+      if(spinHistory.length>3)spinHistory.pop();
+      ra.innerHTML=`<div class="result-final">
+        <span class="rf-emoji">${emoji}</span>
+        <div class="rf-cafe" style="color:${cafe.colorHex}">${esc(cafe.name)}</div>
+        ${chosen.subName?`<div class="rf-sub">${esc(chosen.subName)}</div>`:''}
+        <div class="rf-name">${esc(chosen.name)}</div>
+        <div class="rf-price" style="background:${cafe.colorHex}">${fmt(chosen.price)}</div>
+        <div class="rf-location">
+          <div class="rf-loc-row">📍 <span style="font-weight:500">${esc(cafe.name)}</span> · <span>${esc(cafe.location)}</span></div>
+          <div class="rf-loc-row">🕐 <span>${esc(cafe.hours)}</span>
+            <span style="color:${open?'#059669':'#9CA3AF'};font-weight:600;margin-left:4px">${open?'지금 영업 중':'영업 종료'}</span>
+          </div>
+        </div>
+        <button class="rf-again" id="btnAgain">다시 추천</button>
+        <div class="rf-comment">"${comment}"</div>
+      </div>`;
+      document.getElementById('btnAgain').addEventListener('click',()=>{isSpinning=false;document.getElementById('btnSpin').textContent='추천!';doSpin();});
+      renderHistory();
+      isSpinning=false;
+      document.getElementById('btnSpin').textContent='추천!';
+    }
+  },72);
+}
+
+function renderHistory(){
+  const sec=document.getElementById('historySec');
+  const list=document.getElementById('historyList');
+  if(!spinHistory.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  list.innerHTML=spinHistory.slice(0,3).map((m,i)=>
+    `<div class="history-item">
+      <span class="h-num">${i+1}</span>
+      <span class="h-name">${esc(m.name)}</span>
+      <span class="h-cafe" style="color:${m.cafeColorHex}">${esc(m.cafeName)}${m.subName?' · '+esc(m.subName):''}</span>
+      <span class="h-cafe">${fmt(m.price)}</span>
+    </div>`
+  ).join('');
+}
+
+/* ============================================================
+   RENDER TAB NAV & CAFE FILTER (동적 - 식당 추가/삭제 반영)
+============================================================ */
+function renderTabNav(){
+  document.getElementById('tabNav').innerHTML=
+    `<button class="tab-btn ${curTab==='all'?'active':''}" data-tab="all" style="--tab-clr:var(--primary)">전체보기</button>`+
+    CAFES.map((c,i)=>`<button class="tab-btn ${curTab===String(i)?'active':''}" data-tab="${i}" style="--tab-clr:${c.colorHex}">${esc(c.name)}</button>`).join('');
+}
+
+function renderCafeFilterChips(){
+  document.getElementById('cafeFilter').innerHTML=
+    `<button class="fchip ${filterCafe==='all'?'active':''}" data-cafe="all">전체</button>`+
+    CAFES.map((c,i)=>{
+      const on=filterCafe===String(i);
+      return`<button class="fchip" data-cafe="${i}" data-color="${c.colorHex}"
+        style="${on?`background:${c.colorHex};border-color:${c.colorHex};color:#fff`:''}">${esc(c.name)}</button>`;
+    }).join('');
+}
+
+/* ============================================================
+   EVENTS
+============================================================ */
+document.getElementById('tabNav').addEventListener('click',e=>{
+  const b=e.target.closest('.tab-btn');if(!b)return;
+  curTab=b.dataset.tab; curSub='all';
+  if(curTab==='all')document.getElementById('subFilter').style.display='none';
+  renderTabNav();
+  renderMain();
+});
+
+document.getElementById('fabBtn').addEventListener('click',()=>{
+  renderCafeFilterChips();
+  document.getElementById('modalOverlay').classList.add('open');
+  updatePoolCount();
+});
+document.getElementById('btnClose').addEventListener('click',()=>document.getElementById('modalOverlay').classList.remove('open'));
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))document.getElementById('modalOverlay').classList.remove('open');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('modalOverlay').classList.remove('open');});
+
+document.getElementById('cafeFilter').addEventListener('click',e=>{
+  const ch=e.target.closest('.fchip');if(!ch)return;
+  filterCafe=ch.dataset.cafe;
+  renderCafeFilterChips();
+  updatePoolCount();
+});
+['catFilter2','priceFilter'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{
+    const ch=e.target.closest('.fchip');if(!ch)return;
+    document.querySelectorAll(`#${id} .fchip`).forEach(c=>c.classList.remove('active'));
+    ch.classList.add('active');
+    if(id==='catFilter2')filterCat=ch.dataset.cat;
+    else filterPrice=ch.dataset.price;
+    updatePoolCount();
+  });
+});
+
+document.getElementById('btnSpin').addEventListener('click',doSpin);
+
+/* ============================================================
+   INIT
+============================================================ */
+document.getElementById('dateBadge').textContent=formatDate();
+renderStatus();
+renderTabNav();
+renderMain();
+if(typeof lucide!=='undefined')lucide.createIcons();
+</script>
+</body>
+</html>

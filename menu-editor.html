@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>메뉴 편집기 - 경기대 밥먹자</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --primary:#1D9E75;--danger:#EF4444;--warn:#F59E0B;
+      --surface:#fff;--bg:#F3F4F6;--text1:#111827;--text2:#6B7280;
+      --border:#E5E7EB;--r:10px;--t:.15s;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{font-family:'Noto Sans KR',sans-serif;font-size:14px;background:var(--bg);color:var(--text1);min-height:100vh;}
+    button,input,select{font-family:inherit;}
+
+    /* HEADER */
+    .hd{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+    .hd-left{display:flex;align-items:center;gap:12px;}
+    .hd-title{font-size:16px;font-weight:700;}
+    .hd-sub{font-size:12px;color:var(--text2);}
+    .hd-right{display:flex;gap:8px;}
+
+    /* BUTTONS */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all var(--t);}
+    .btn-primary{background:var(--primary);color:#fff;}
+    .btn-primary:hover{background:#0F6E56;}
+    .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text1);}
+    .btn-outline:hover{border-color:var(--primary);color:var(--primary);}
+    .btn-danger{background:var(--danger);color:#fff;}
+    .btn-danger:hover{background:#dc2626;}
+    .btn-sm{padding:5px 12px;font-size:12px;}
+    .btn-icon{padding:6px;width:30px;height:30px;border-radius:6px;}
+
+    /* LAYOUT */
+    .wrap{max-width:1100px;margin:0 auto;padding:20px;}
+
+    /* ALERT */
+    .alert{display:none;padding:12px 16px;border-radius:var(--r);font-size:13px;margin-bottom:16px;font-weight:500;}
+    .alert.show{display:flex;align-items:center;gap:8px;}
+    .alert-success{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7;}
+    .alert-info{background:#DBEAFE;color:#1E40AF;border:1px solid #93C5FD;}
+
+    /* TABS */
+    .tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+    .t-btn{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;transition:all var(--t);white-space:nowrap;}
+    .t-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+    .t-btn:hover:not(.active){border-color:var(--primary);color:var(--primary);}
+
+    /* PANEL */
+    .panel{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;}
+    .panel-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+    .panel-title{font-size:15px;font-weight:700;}
+    .panel-count{font-size:12px;color:var(--text2);background:var(--bg);padding:3px 10px;border-radius:20px;}
+    .panel-actions{display:flex;gap:6px;align-items:center;}
+
+    /* SUB TABS (경슐랭용) */
+    .sub-tabs{display:flex;gap:4px;padding:12px 20px;background:var(--bg);border-bottom:1px solid var(--border);overflow-x:auto;}
+    .sub-tabs::-webkit-scrollbar{display:none;}
+    .s-btn{padding:5px 14px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all var(--t);}
+    .s-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;}
+    .s-btn:hover:not(.active){border-color:var(--primary);color:var(--primary);}
+
+    /* TABLE */
+    .tbl-wrap{overflow-x:auto;}
+    table{width:100%;border-collapse:collapse;}
+    thead tr{background:var(--bg);}
+    th{padding:10px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);white-space:nowrap;}
+    td{padding:8px 14px;border-bottom:1px solid var(--border);vertical-align:middle;}
+    tr:last-child td{border-bottom:none;}
+    tr:hover td{background:rgba(29,158,117,.03);}
+    .td-num{color:var(--text2);font-size:12px;width:36px;text-align:center;}
+
+    /* EDITABLE CELL */
+    .editable{cursor:pointer;border-radius:6px;padding:4px 6px;transition:background var(--t);}
+    .editable:hover{background:var(--bg);}
+    .editable.editing{background:transparent;padding:0;}
+    input.cell-input{width:100%;padding:5px 8px;border:1.5px solid var(--primary);border-radius:6px;font-size:14px;font-weight:500;outline:none;background:var(--surface);}
+    input.price-input{width:90px;}
+
+    /* SELECT in table */
+    select.cat-select{padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);cursor:pointer;outline:none;color:var(--text1);transition:border-color var(--t);}
+    select.cat-select:focus{border-color:var(--primary);}
+
+    /* CAT BADGE */
+    .cat-badge{display:inline-block;padding:2px 9px;border-radius:5px;font-size:11px;font-weight:600;}
+
+    /* ADD ROW */
+    .add-row td{background:rgba(29,158,117,.04);}
+    .add-row input{background:var(--surface);}
+
+    /* FOOTER */
+    .tbl-footer{padding:12px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+
+    /* MODAL */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:200;display:none;}
+    .overlay.open{display:flex;}
+    .modal{background:var(--surface);border-radius:16px;padding:28px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+    .modal-title{font-size:18px;font-weight:700;margin-bottom:6px;}
+    .modal-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+    .form-group{margin-bottom:14px;}
+    .form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block;}
+    .form-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;outline:none;transition:border-color var(--t);}
+    .form-input:focus{border-color:var(--primary);}
+    .modal-actions{display:flex;gap:8px;margin-top:20px;}
+    .modal-actions .btn{flex:1;justify-content:center;}
+
+    /* IMPORT/EXPORT */
+    .json-area{width:100%;height:140px;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-family:monospace;font-size:12px;resize:vertical;outline:none;}
+    .json-area:focus{border-color:var(--primary);}
+
+    /* STATUS BAR */
+    .status-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text2);z-index:49;}
+    .status-dot{width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;margin-right:6px;}
+
+    @media(max-width:600px){
+      .hd{padding:0 14px;}.wrap{padding:14px;}
+      .panel-head{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+
+<header class="hd">
+  <div class="hd-left">
+    <div class="hd-title">🍽️ 메뉴 편집기</div>
+    <div class="hd-sub">경기대 밥먹자 - 데이터 관리</div>
+  </div>
+  <div class="hd-right">
+    <button class="btn btn-outline" onclick="openImport()">가져오기</button>
+    <button class="btn btn-outline" onclick="exportJSON()">내보내기</button>
+    <button class="btn btn-primary" onclick="saveAll()">💾 저장 &amp; 반영</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="alert alert-success" id="alertSave">✅ 저장되었습니다! index.html을 새로고침하면 반영됩니다.</div>
+  <div class="alert alert-info" id="alertInfo"></div>
+
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+    <div class="tabs" id="mainTabs" style="margin-bottom:0;flex:1;"></div>
+    <button class="btn btn-primary btn-sm" onclick="openAddCafe()" style="flex-shrink:0;">+ 식당 추가</button>
+  </div>
+  <div id="panelArea"></div>
+</div>
+
+<div style="height:60px"></div>
+
+<div class="status-bar">
+  <div><span class="status-dot"></span>localStorage 자동 동기화 · <span id="totalCount">-</span>개 메뉴</div>
+  <div><a href="index.html" style="color:var(--primary);font-weight:600;text-decoration:none">← 메인으로 돌아가기</a></div>
+</div>
+
+<!-- ADD MENU MODAL -->
+<div class="overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-title">메뉴 추가</div>
+    <div class="modal-sub" id="addModalSub">메뉴 정보를 입력해주세요</div>
+    <div class="form-group">
+      <label class="form-label">메뉴명</label>
+      <input class="form-input" id="addName" placeholder="예: 돼지불백덮밥">
+    </div>
+    <div class="form-group">
+      <label class="form-label">가격 (원)</label>
+      <input class="form-input" id="addPrice" type="number" placeholder="예: 6500" min="0" step="100">
+    </div>
+    <div class="form-group">
+      <label class="form-label">카테고리</label>
+      <select class="form-input" id="addCat">
+        <option value="rice">덮밥·밥류</option>
+        <option value="noodle">면류</option>
+        <option value="cutlet">돈까스류</option>
+        <option value="soup">탕·찌개</option>
+        <option value="chicken">치킨류</option>
+        <option value="burger">버거·타코</option>
+        <option value="snack">분식류</option>
+        <option value="side">사이드·간식</option>
+        <option value="drink">음료·카페</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeAddModal()">취소</button>
+      <button class="btn btn-primary" onclick="confirmAdd()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CAFE MODAL -->
+<div class="overlay" id="addCafeModal">
+  <div class="modal">
+    <div class="modal-title" id="addCafeTitle">식당 추가</div>
+    <div class="modal-sub">새 식당/카페 정보를 입력하세요</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">식당 이름 *</label>
+        <input class="form-input" id="cName" placeholder="예: 경기대 카페">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label class="form-label">위치</label>
+        <input class="form-input" id="cLocation" placeholder="예: 학생회관 1층">
+      </div>
+      <div class="form-group">
+        <label class="form-label">운영시간</label>
+        <input class="form-input" id="cHours" placeholder="예: 09:00 - 18:00">
+      </div>
+      <div class="form-group">
+        <label class="form-label">주문마감 (선택)</label>
+        <input class="form-input" id="cLastOrder" placeholder="예: 주문마감 17:30">
+      </div>
+      <div class="form-group">
+        <label class="form-label">오픈 시각 (숫자, 예: 9.0)</label>
+        <input class="form-input" id="cOpenH" type="number" placeholder="9.0" step="0.5" min="0" max="24">
+      </div>
+      <div class="form-group">
+        <label class="form-label">마감 시각 (숫자, 예: 18.0)</label>
+        <input class="form-input" id="cCloseH" type="number" placeholder="18.0" step="0.5" min="0" max="24">
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 색상</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="color" id="cColor" value="#1D9E75" style="width:42px;height:36px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap" id="colorPresets">
+            <span onclick="document.getElementById('cColor').value='#F97316'" style="width:22px;height:22px;border-radius:50%;background:#F97316;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+            <span onclick="document.getElementById('cColor').value='#3B82F6'" style="width:22px;height:22px;border-radius:50%;background:#3B82F6;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+            <span onclick="document.getElementById('cColor').value='#EC4899'" style="width:22px;height:22px;border-radius:50%;background:#EC4899;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+            <span onclick="document.getElementById('cColor').value='#8B5CF6'" style="width:22px;height:22px;border-radius:50%;background:#8B5CF6;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+            <span onclick="document.getElementById('cColor').value='#06B6D4'" style="width:22px;height:22px;border-radius:50%;background:#06B6D4;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+            <span onclick="document.getElementById('cColor').value='#10B981'" style="width:22px;height:22px;border-radius:50%;background:#10B981;cursor:pointer;border:2px solid #fff;box-shadow:0 0 0 1px #ccc"></span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">주말 휴무 여부</label>
+        <select class="form-input" id="cWeekend">
+          <option value="true">주말 휴무</option>
+          <option value="false">주말 운영</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('addCafeModal').classList.remove('open')">취소</button>
+      <button class="btn btn-primary" id="confirmAddCafeBtn" onclick="confirmAddCafe()">추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-title">JSON 가져오기</div>
+    <div class="modal-sub">메뉴 편집기에서 내보낸 JSON을 붙여넣으세요</div>
+    <textarea class="json-area" id="importArea" placeholder='[{"name":"경슐랭","type":"foodcourt",...}]'></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="document.getElementById('importModal').classList.remove('open')">취소</button>
+      <button class="btn btn-primary" onclick="confirmImport()">가져오기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   SAME DATA AS index.html (localStorage 공유)
+============================================================ */
+const DEFAULT_CAFES = [
+  {
+    name:'경슐랭', type:'foodcourt',
+    location:'제1복지관 지하 1층', hours:'10:30 - 19:00', lastOrder:'주문마감 18:30',
+    openH:10.5, closeH:19.0, closedWeekend:true, colorHex:'#F97316',
+    subs:[
+      { name:'만권화밥', menus:[
+        {name:'돼지불백덮밥',cat:'rice',price:5500},{name:'소고기카레덮밥',cat:'rice',price:8000},
+        {name:'삼겹가지덮밥',cat:'rice',price:7500},{name:'소고기가지덮밥',cat:'rice',price:7500},
+        {name:'연어장덮밥',cat:'rice',price:8000},{name:'소고기열무비빔밥',cat:'rice',price:7500},
+        {name:'돼껍볶음덮밥',cat:'rice',price:6500},{name:'마라소고기덮밥',cat:'rice',price:7500},
+        {name:'큐브스테이크 카레덮밥',cat:'rice',price:8500},{name:'직화소고기덮밥',cat:'rice',price:7000},
+        {name:'직화삼겹덮밥',cat:'rice',price:8000},{name:'직화제육덮밥',cat:'rice',price:6500},
+        {name:'참치마요덮밥',cat:'rice',price:6500},{name:'매운닭갈비덮밥',cat:'rice',price:6000},
+        {name:'간장닭갈비덮밥',cat:'rice',price:6000},{name:'소불고기덮밥',cat:'rice',price:7000},
+        {name:'명란마요스팸참치',cat:'rice',price:7000},{name:'스팸마요덮밥',cat:'rice',price:6000},
+        {name:'항정살꽈리볶음덮밥',cat:'rice',price:8500},{name:'치즈매운불닭덮밥',cat:'rice',price:7500},
+        {name:'치킨마요덮밥',cat:'rice',price:8000},{name:'오삼덮밥',cat:'rice',price:7500},
+        {name:'오징어덮밥',cat:'rice',price:7000},{name:'낙지덮밥',cat:'rice',price:7000},
+        {name:'큐브스테이크화밥',cat:'rice',price:8000},{name:'마라큐브스테이크',cat:'rice',price:8500},
+        {name:'불맛해물짬뽕',cat:'noodle',price:8500},{name:'직화해물짜장면',cat:'noodle',price:7500},
+        {name:'소고기얼큰면',cat:'noodle',price:6000},
+      ]},
+      { name:'숑숑돈까스', menus:[
+        {name:'돈카츠 라이스커리',cat:'cutlet',price:10500},{name:'통감자 라이스커리',cat:'cutlet',price:8900},
+        {name:'에비덴 라이스커리',cat:'cutlet',price:10900},{name:'숑숑카츠',cat:'cutlet',price:7900},
+        {name:'양파듬뿍카츠',cat:'cutlet',price:9500},{name:'두툼치즈카츠',cat:'cutlet',price:10500},
+        {name:'모둠카츠',cat:'cutlet',price:10900},{name:'큐브치즈카츠1',cat:'cutlet',price:9900},
+        {name:'큐브치즈카츠2',cat:'cutlet',price:10900},{name:'고구마큐브치즈카츠',cat:'cutlet',price:10900},
+        {name:'프리미엄카츠',cat:'cutlet',price:8900},{name:'카츠동',cat:'cutlet',price:7900},
+        {name:'김치치즈가츠나베',cat:'cutlet',price:8900},{name:'눈꽃치즈돈까스',cat:'cutlet',price:9500},
+        {name:'슈프림돈까스',cat:'cutlet',price:8900},{name:'치폴레돈까스',cat:'cutlet',price:8900},
+        {name:'경양식 왕 돈까스',cat:'cutlet',price:9500},{name:'김치우동',cat:'noodle',price:6900},
+        {name:'유부우동',cat:'noodle',price:5900},{name:'수제어묵꼬지우동',cat:'noodle',price:7500},
+        {name:'짬뽕우동',cat:'noodle',price:7900},{name:'마라우동',cat:'noodle',price:6900},
+        {name:'마라냉모밀',cat:'noodle',price:7500},{name:'마제소바',cat:'noodle',price:8500},
+        {name:'알리오올리오',cat:'noodle',price:8500},{name:'까르보나라',cat:'noodle',price:8500},
+        {name:'토마토파스타',cat:'noodle',price:8500},{name:'로제파스타',cat:'noodle',price:8500},
+        {name:'매콤 로제 리조또볼 파스타',cat:'noodle',price:9500},
+        {name:'로제떡볶이',cat:'snack',price:8500},{name:'국물떡볶이',cat:'snack',price:7500},
+        {name:'새우튀김(2ea)',cat:'side',price:3000},
+      ]},
+      { name:'버거&타코', menus:[
+        {name:'고추간장 순살치킨',cat:'chicken',price:8000},{name:'달콤양념 순살치킨',cat:'chicken',price:8000},
+        {name:'손바닥 치킨',cat:'chicken',price:3800},{name:'순살치킨 10ea',cat:'chicken',price:7000},
+        {name:'양념치킨 순살치킨',cat:'chicken',price:3500},{name:'누들떡뽀끼',cat:'snack',price:5900},
+        {name:'짜장누들떡뽀끼',cat:'snack',price:6900},{name:'마라로제누들떡뽀끼',cat:'snack',price:6900},
+        {name:'마라떡뽀끼',cat:'snack',price:7200},{name:'마일드비치팩',cat:'burger',price:10500},
+        {name:'핫비치팩',cat:'burger',price:10500},{name:'마일드슈비팩',cat:'burger',price:10500},
+        {name:'카츠팩',cat:'burger',price:8500},{name:'포커샌드',cat:'side',price:3600},
+        {name:'리얼 치즈스틱 2ea',cat:'side',price:2000},{name:'핫치킨슬로',cat:'side',price:5300},
+        {name:'바삭한 감자튀김',cat:'side',price:2200},{name:'양념치킨감자튀김',cat:'side',price:2700},
+        {name:'어니언링 4ea',cat:'side',price:2200},{name:'콘 샐러드',cat:'side',price:1800},
+        {name:'치킨너겟(6ea)',cat:'side',price:3000},{name:'폴드포크타코',cat:'burger',price:5600},
+        {name:'핫치킨타코',cat:'burger',price:5600},{name:'슈프림타코',cat:'burger',price:5600},
+        {name:'비프타코',cat:'burger',price:5300},{name:'비프더블베이컨치즈',cat:'burger',price:7500},
+        {name:'비프살사',cat:'burger',price:7400},{name:'치즈매니아 버거',cat:'burger',price:7200},
+        {name:'마일드 슈프림버거',cat:'burger',price:5500},{name:'치킨버거 마일드',cat:'burger',price:5500},
+        {name:'비프프레쉬',cat:'burger',price:4500},{name:'비프치즈 마일드',cat:'burger',price:4300},
+        {name:'비프치즈 핫',cat:'burger',price:4300},{name:'비프 1975',cat:'burger',price:4300},
+        {name:'비프 오리지널',cat:'burger',price:4200},{name:'포크클래식 버거',cat:'burger',price:4200},
+      ]},
+      { name:'위델가', menus:[
+        {name:'갈비탕',cat:'soup',price:8000},{name:'육개장',cat:'soup',price:7000},
+        {name:'떡만두국',cat:'soup',price:7000},{name:'물냉면',cat:'noodle',price:6000},
+        {name:'물냉면+바싹불고기',cat:'noodle',price:8000},{name:'비빔냉면',cat:'noodle',price:6000},
+        {name:'비빔냉면+바싹불고기',cat:'noodle',price:8000},{name:'돈육고추장짜글이',cat:'soup',price:7000},
+        {name:'돈육김치찌개',cat:'soup',price:6500},{name:'돈육김치찜',cat:'soup',price:7500},
+        {name:'뚝배기불고기',cat:'soup',price:7000},{name:'스팸김치찌개',cat:'soup',price:6500},
+        {name:'스팸순두부찌개',cat:'soup',price:6500},{name:'바지락순두부',cat:'soup',price:6500},
+        {name:'차돌순두부찌개',cat:'soup',price:6500},{name:'차돌된장찌개',cat:'soup',price:6500},
+        {name:'햄부대찌개',cat:'soup',price:7500},{name:'소고기뚝밥',cat:'rice',price:7000},
+        {name:'알밥',cat:'rice',price:7000},
+      ]},
+      { name:'신머이쌀국수', menus:[
+        {name:'베트남 전통 쌀국수',cat:'noodle',price:5500},
+        {name:'닭반마리쌀국수',          cat:'noodle',price:7500},
+        {name:'닭반마리쌀국수(매운맛)',  cat:'noodle',price:8000},
+        {name:'소고기 쌀국수',cat:'noodle',price:7500},
+        {name:'소고기 쌀국수(매운맛)',cat:'noodle',price:8500},
+        {name:'북부 사파 쌀국수',cat:'noodle',price:9000},
+        {name:'감자말이 새우',cat:'side',price:5500},{name:'버터플라이 새우',cat:'side',price:5500},
+        {name:'계란 반미',cat:'side',price:5500},{name:'해물 짜조',cat:'side',price:5500},
+        {name:'롱 춘권',cat:'side',price:3000},{name:'단팥 춘권',cat:'side',price:3000},
+        {name:'꿔이',cat:'side',price:3500},
+      ]},
+    ]
+  },
+  {name:'이스퀘어',type:'normal',location:'제2복지관 1층',hours:'07:30 - 20:30',lastOrder:'주문마감 19:30',openH:7.5,closeH:20.5,closedWeekend:false,colorHex:'#3B82F6',menus:[
+    {name:'까르보 말랑떡볶이',cat:'snack',price:5500},{name:'맵달라볶이',cat:'snack',price:6000},
+    {name:'사천짜장라볶이',cat:'snack',price:6500},{name:'로제라볶이',cat:'snack',price:6500},
+    {name:'맵달 말랑떡볶이',cat:'snack',price:5000},{name:'사천짜장 말랑떡볶이',cat:'snack',price:5500},
+    {name:'로제 말랑떡볶이',cat:'snack',price:5500},{name:'우삼겹 짬뽕라면',cat:'noodle',price:6500},
+    {name:'냄비 신라면',cat:'noodle',price:3500},{name:'치즈라면',cat:'noodle',price:4000},
+    {name:'떡만두라면',cat:'noodle',price:4500},{name:'매운해장라면',cat:'noodle',price:4500},
+    {name:'얼큰순대라면',cat:'noodle',price:5500},{name:'스퀘어김밥',cat:'snack',price:3500},
+    {name:'치즈김밥',cat:'snack',price:4000},{name:'참치김밥',cat:'snack',price:4500},
+    {name:'치킨까스(140g)',cat:'cutlet',price:4500},{name:'등심돈까스(200g)',cat:'cutlet',price:6800},
+    {name:'핵매운돈까스',cat:'cutlet',price:7800},{name:'고구마치즈돈까스',cat:'cutlet',price:7800},
+    {name:'치즈돈까스',cat:'cutlet',price:7800},{name:'팝만두 15알',cat:'side',price:3000},
+    {name:'소떡소떡',cat:'side',price:3200},{name:'공깃밥',cat:'side',price:1000},
+    {name:'어묵우동',cat:'noodle',price:5500},{name:'얼큰어묵우동',cat:'noodle',price:6000},
+    {name:'제육덮밥',cat:'rice',price:7500},{name:'참치마요덮밥',cat:'rice',price:8000},
+    {name:'치킨마유덮밥',cat:'rice',price:8500},{name:'스팸마요덮밥',cat:'rice',price:8000},
+    {name:'부대찌개',cat:'soup',price:8900},{name:'사골 떡만두국',cat:'soup',price:8000},
+    {name:'물냉면',cat:'noodle',price:6500},{name:'비빔냉면',cat:'noodle',price:7000},
+    {name:'들기름막국수',cat:'noodle',price:7500},{name:'매밀소바',cat:'noodle',price:8000},
+    {name:'냉면 다대기',cat:'side',price:500},{name:'냉면 육수 추가',cat:'side',price:500},
+  ]},
+  {name:'샐리박스',type:'normal',location:'교수연구동 5층',hours:'09:00 - 18:00',lastOrder:'',openH:9.0,closeH:18.0,closedWeekend:true,colorHex:'#EC4899',menus:[
+    {name:'샐리버거단품',cat:'burger',price:7000},{name:'경기버거단품',cat:'burger',price:9000},
+    {name:'통살치킨버거단품',cat:'burger',price:6000},{name:'햄에그샌드위치',cat:'western',price:3500},
+    {name:'치킨샌드위치',cat:'western',price:4000},{name:'크래미샌드위치',cat:'western',price:4000},
+    {name:'통새우샌드위치',cat:'western',price:4000},{name:'샐리핫도그',cat:'western',price:4500},
+    {name:'토마토미트스파게티',cat:'noodle',price:6000},{name:'로제스파게티',cat:'noodle',price:7000},
+    {name:'김치스파게티',cat:'noodle',price:7000},{name:'크림소세지스파게티',cat:'noodle',price:8000},
+    {name:'떡볶이',cat:'snack',price:7000},{name:'어묵우동',cat:'noodle',price:7000},
+    {name:'베이컨김치볶음밥',cat:'rice',price:6500},{name:'게살새우볶음밥',cat:'rice',price:7000},
+    {name:'소불고기볶음밥',cat:'rice',price:7000},{name:'제육덮밥',cat:'rice',price:8000},
+    {name:'돈까스',cat:'cutlet',price:8000},{name:'아메리카노(hot)',cat:'drink',price:2500},
+    {name:'아메리카노(ice)',cat:'drink',price:2500},{name:'카페라떼(ice)',cat:'drink',price:3500},
+    {name:'바닐라라떼(hot)',cat:'drink',price:4000},{name:'바닐라라떼(ice)',cat:'drink',price:4000},
+    {name:'딸기밀크스무디',cat:'drink',price:4000},{name:'망고밀크스무디',cat:'drink',price:4000},
+    {name:'블루베리밀크스무디',cat:'drink',price:4000},{name:'녹차라떼(hot)',cat:'drink',price:3500},
+    {name:'녹차라떼(ice)',cat:'drink',price:3500},{name:'오곡라떼(hot)',cat:'drink',price:4000},
+    {name:'오곡라떼(ice)',cat:'drink',price:4000},{name:'허니자몽블랙티(hot)',cat:'drink',price:3500},
+    {name:'허니자몽블랙티(ice)',cat:'drink',price:3500},{name:'아이스티(복숭아)',cat:'drink',price:3000},
+    {name:'아샷추',cat:'drink',price:3500},{name:'레몬티(hot)',cat:'drink',price:3500},
+    {name:'레몬티(ice)',cat:'drink',price:3500},{name:'레몬자몽티(hot)',cat:'drink',price:3500},
+    {name:'레몬자몽티(ice)',cat:'drink',price:3500},{name:'청귤티(hot)',cat:'drink',price:3500},
+    {name:'청귤티(ice)',cat:'drink',price:3500},{name:'자몽에이드',cat:'drink',price:4000},
+    {name:'레몬에이드',cat:'drink',price:4000},{name:'허니자몽블랙에이드',cat:'drink',price:4000},
+    {name:'청귤에이드',cat:'drink',price:4000},
+  ]},
+];
+
+const CAT_MAP = {
+  rice:   {label:'덮밥·밥류',color:'#D97706',bg:'rgba(217,119,6,.12)'},
+  noodle: {label:'면류',     color:'#6366F1',bg:'rgba(99,102,241,.12)'},
+  cutlet: {label:'돈까스',   color:'#EF4444',bg:'rgba(239,68,68,.12)'},
+  soup:   {label:'탕·찌개',  color:'#059669',bg:'rgba(5,150,105,.12)'},
+  chicken:{label:'치킨류',   color:'#F59E0B',bg:'rgba(245,158,11,.12)'},
+  burger: {label:'버거·타코',color:'#7C3AED',bg:'rgba(124,58,237,.12)'},
+  snack:  {label:'분식류',   color:'#DB2777',bg:'rgba(219,39,119,.12)'},
+  side:   {label:'사이드',   color:'#0891B2',bg:'rgba(8,145,178,.12)'},
+  drink:  {label:'음료·카페',color:'#EC4899',bg:'rgba(236,72,153,.12)'},
+};
+
+/* ============================================================
+   STATE
+============================================================ */
+let cafes, curTab=0, curSub=0;
+let addTarget=null; // {cafeIdx, subIdx}
+
+function loadData(){
+  try{const s=localStorage.getItem('kgu-meal-cafes');if(s)return JSON.parse(s);}catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_CAFES));
+}
+function saveData(){
+  localStorage.setItem('kgu-meal-cafes',JSON.stringify(cafes));
+  updateTotal();
+}
+
+cafes = loadData();
+
+/* ============================================================
+   UTILS
+============================================================ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmt(n){return Number(n).toLocaleString('ko-KR')+'원';}
+function updateTotal(){
+  let t=0;
+  cafes.forEach(c=>{
+    if(c.type==='foodcourt')c.subs.forEach(s=>t+=s.menus.length);
+    else t+=(c.menus||[]).length;
+  });
+  document.getElementById('totalCount').textContent=t;
+}
+
+function showAlert(id,ms=2500){
+  const el=document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),ms);
+}
+
+/* ============================================================
+   RENDER TABS
+============================================================ */
+function renderTabs(){
+  const el=document.getElementById('mainTabs');
+  el.innerHTML=cafes.map((c,i)=>
+    `<button class="t-btn ${i===curTab?'active':''}" onclick="switchTab(${i})">${esc(c.name)}</button>`
+  ).join('');
+}
+
+function switchTab(i){curTab=i;curSub=0;renderTabs();renderPanel();}
+function switchSub(i){curSub=i;renderPanel();}
+
+/* ============================================================
+   RENDER PANEL
+============================================================ */
+function renderPanel(){
+  const c=cafes[curTab];
+  const el=document.getElementById('panelArea');
+
+  if(c.type==='foodcourt'){
+    const subs=c.subs;
+    const s=subs[curSub];
+
+    const subTabsHtml=subs.map((sub,i)=>
+      `<button class="s-btn ${i===curSub?'active':''}" onclick="switchSub(${i})">${esc(sub.name)} <span style="opacity:.65">${sub.menus.length}</span></button>`
+    ).join('');
+
+    el.innerHTML=`<div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" style="color:${c.colorHex}">${esc(c.name)} <span style="color:var(--text2);font-weight:400;font-size:13px">· 푸드코트</span></div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${esc(c.location)} · ${esc(c.hours)}</div>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-outline btn-sm" onclick="openEditCafe(${curTab})">✏️ 정보 수정</button>
+          <button class="btn btn-sm" style="color:var(--danger);border:1.5px solid var(--danger);background:transparent" onclick="deleteCafe(${curTab})">🗑 식당 삭제</button>
+        </div>
+      </div>
+      <div class="sub-tabs">${subTabsHtml}</div>
+      <div class="panel-head" style="border-top:none;padding-top:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="panel-title">${esc(s.name)}</span>
+          <span class="panel-count">${s.menus.length}개 메뉴</span>
+        </div>
+        <div class="panel-actions">
+          <button class="btn btn-primary btn-sm" onclick="openAdd(${curTab},${curSub})">+ 메뉴 추가</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">${renderTable(s.menus, curTab, curSub)}</div>
+      <div class="tbl-footer">
+        <button class="btn btn-primary btn-sm" onclick="openAdd(${curTab},${curSub})">+ 메뉴 추가</button>
+      </div>
+    </div>`;
+  } else {
+    const menus=c.menus||[];
+    el.innerHTML=`<div class="panel">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title" style="color:${c.colorHex}">${esc(c.name)}</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px">${esc(c.location)} · ${esc(c.hours)}</div>
+        </div>
+        <div class="panel-actions">
+          <span class="panel-count">${menus.length}개 메뉴</span>
+          <button class="btn btn-outline btn-sm" onclick="openEditCafe(${curTab})">✏️ 정보 수정</button>
+          <button class="btn btn-sm" style="color:var(--danger);border:1.5px solid var(--danger);background:transparent" onclick="deleteCafe(${curTab})">🗑 식당 삭제</button>
+          <button class="btn btn-primary btn-sm" onclick="openAdd(${curTab},null)">+ 메뉴 추가</button>
+        </div>
+      </div>
+      <div class="tbl-wrap">${renderTable(menus, curTab, null)}</div>
+      <div class="tbl-footer">
+        <button class="btn btn-primary btn-sm" onclick="openAdd(${curTab},null)">+ 메뉴 추가</button>
+      </div>
+    </div>`;
+  }
+}
+
+function renderTable(menus, ci, si){
+  if(!menus.length) return `<div style="padding:40px;text-align:center;color:var(--text2)">메뉴가 없습니다. 위 버튼으로 추가하세요.</div>`;
+  const rows=menus.map((m,i)=>{
+    const cat=CAT_MAP[m.cat]||{label:m.cat,color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
+    return`<tr>
+      <td class="td-num">${i+1}</td>
+      <td>
+        <div class="editable" onclick="startEdit(this,'name',${ci},${si===null?'null':si},${i})">${esc(m.name)}</div>
+      </td>
+      <td>
+        <select class="cat-select" onchange="updateCat(${ci},${si===null?'null':si},${i},this.value)">
+          ${Object.entries(CAT_MAP).map(([k,v])=>`<option value="${k}" ${m.cat===k?'selected':''}>${v.label}</option>`).join('')}
+        </select>
+      </td>
+      <td>
+        <div class="editable" onclick="startEdit(this,'price',${ci},${si===null?'null':si},${i})" style="color:${CAFES[ci]?.colorHex||'var(--primary)'}">
+          ${fmt(m.price)}
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-outline btn-sm btn-icon" onclick="deleteMenu(${ci},${si===null?'null':si},${i})" title="삭제" style="color:var(--danger);border-color:var(--danger);">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+  return`<table>
+    <thead><tr><th>#</th><th>메뉴명</th><th>카테고리</th><th>가격</th><th></th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+// keep reference for edit
+let CAFES = cafes; // alias
+
+/* ============================================================
+   INLINE EDIT
+============================================================ */
+function startEdit(el, field, ci, si, mi){
+  if(el.classList.contains('editing'))return;
+  const c=cafes[ci];
+  const menus=si===null?(c.menus||[]):c.subs[si].menus;
+  const m=menus[mi];
+  const cur=field==='price'?m.price:m.name;
+  el.classList.add('editing');
+  const inp=document.createElement('input');
+  inp.className='cell-input'+(field==='price'?' price-input':'');
+  inp.type=field==='price'?'number':'text';
+  inp.value=cur;
+  if(field==='price')inp.min=0,inp.step=100;
+  el.innerHTML='';
+  el.appendChild(inp);
+  inp.focus();inp.select();
+
+  const commit=()=>{
+    let val=inp.value.trim();
+    if(field==='price'){val=parseInt(val)||0;}
+    if(val!==cur||field==='price'){
+      menus[mi][field]=val;
+      saveData();
+    }
+    el.classList.remove('editing');
+    el.innerHTML=field==='price'
+      ?`<span style="color:${c.colorHex}">${fmt(menus[mi].price)}</span>`
+      :esc(menus[mi].name);
+  };
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')commit();if(e.key==='Escape'){el.classList.remove('editing');el.innerHTML=field==='price'?fmt(cur):esc(cur);}});
+}
+
+function updateCat(ci,si,mi,val){
+  const c=cafes[ci];
+  const menus=si===null?(c.menus||[]):c.subs[si].menus;
+  menus[mi].cat=val;
+  saveData();
+}
+
+function deleteMenu(ci,si,mi){
+  const c=cafes[ci];
+  const menus=si===null?(c.menus||[]):c.subs[si].menus;
+  const name=menus[mi].name;
+  if(!confirm(`"${name}" 메뉴를 삭제하시겠습니까?`))return;
+  menus.splice(mi,1);
+  saveData();
+  renderPanel();
+}
+
+/* ============================================================
+   ADD MENU
+============================================================ */
+function openAdd(ci,si){
+  addTarget={ci,si};
+  const c=cafes[ci];
+  const target=si!==null?c.subs[si].name:c.name;
+  document.getElementById('addModalSub').textContent=`${target}에 새 메뉴를 추가합니다`;
+  document.getElementById('addName').value='';
+  document.getElementById('addPrice').value='';
+  document.getElementById('addCat').value='rice';
+  document.getElementById('addModal').classList.add('open');
+  document.getElementById('addName').focus();
+}
+
+function closeAddModal(){document.getElementById('addModal').classList.remove('open');}
+
+function confirmAdd(){
+  const name=document.getElementById('addName').value.trim();
+  const price=parseInt(document.getElementById('addPrice').value)||0;
+  const cat=document.getElementById('addCat').value;
+  if(!name){alert('메뉴명을 입력해주세요.');return;}
+  const {ci,si}=addTarget;
+  const c=cafes[ci];
+  const menus=si!==null?c.subs[si].menus:(c.menus||(c.menus=[]));
+  menus.push({name,cat,price});
+  saveData();
+  closeAddModal();
+  renderPanel();
+  showAlert('alertSave');
+}
+
+/* ============================================================
+   SAVE ALL (explicit)
+============================================================ */
+function saveAll(){
+  saveData();
+  showAlert('alertSave');
+}
+
+/* ============================================================
+   EXPORT / IMPORT
+============================================================ */
+function exportJSON(){
+  const json=JSON.stringify(cafes,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='kgu-meal-menus.json';
+  a.click();
+  const el=document.getElementById('alertInfo');
+  el.textContent='✅ kgu-meal-menus.json 다운로드 완료! 백업용으로 보관하세요.';
+  showAlert('alertInfo',3000);
+}
+
+function openImport(){document.getElementById('importArea').value='';document.getElementById('importModal').classList.add('open');}
+
+function confirmImport(){
+  try{
+    const data=JSON.parse(document.getElementById('importArea').value);
+    if(!Array.isArray(data))throw new Error('배열 형식이어야 합니다');
+    cafes=data;
+    CAFES=cafes;
+    saveData();
+    document.getElementById('importModal').classList.remove('open');
+    renderTabs();renderPanel();
+    showAlert('alertSave');
+  }catch(e){alert('JSON 형식이 잘못되었습니다: '+e.message);}
+}
+
+/* ============================================================
+   ADD / EDIT / DELETE CAFETERIA
+============================================================ */
+let editCafeIdx = null;
+
+function openAddCafe(){
+  editCafeIdx = null;
+  document.getElementById('addCafeTitle').textContent = '식당 추가';
+  document.getElementById('confirmAddCafeBtn').textContent = '추가';
+  document.getElementById('cName').value = '';
+  document.getElementById('cLocation').value = '';
+  document.getElementById('cHours').value = '';
+  document.getElementById('cLastOrder').value = '';
+  document.getElementById('cOpenH').value = '9';
+  document.getElementById('cCloseH').value = '18';
+  document.getElementById('cColor').value = '#1D9E75';
+  document.getElementById('cWeekend').value = 'true';
+  document.getElementById('addCafeModal').classList.add('open');
+  document.getElementById('cName').focus();
+}
+
+function openEditCafe(ci){
+  editCafeIdx = ci;
+  const c = cafes[ci];
+  document.getElementById('addCafeTitle').textContent = '식당 정보 수정';
+  document.getElementById('confirmAddCafeBtn').textContent = '저장';
+  document.getElementById('cName').value = c.name;
+  document.getElementById('cLocation').value = c.location||'';
+  document.getElementById('cHours').value = c.hours||'';
+  document.getElementById('cLastOrder').value = c.lastOrder||'';
+  document.getElementById('cOpenH').value = c.openH||9;
+  document.getElementById('cCloseH').value = c.closeH||18;
+  document.getElementById('cColor').value = c.colorHex||'#1D9E75';
+  document.getElementById('cWeekend').value = c.closedWeekend ? 'true' : 'false';
+  document.getElementById('addCafeModal').classList.add('open');
+}
+
+function confirmAddCafe(){
+  const name = document.getElementById('cName').value.trim();
+  if(!name){ alert('식당 이름을 입력해주세요.'); return; }
+  const cafe = {
+    name,
+    type: 'normal',
+    location: document.getElementById('cLocation').value.trim(),
+    hours: document.getElementById('cHours').value.trim(),
+    lastOrder: document.getElementById('cLastOrder').value.trim(),
+    openH: parseFloat(document.getElementById('cOpenH').value)||9,
+    closeH: parseFloat(document.getElementById('cCloseH').value)||18,
+    closedWeekend: document.getElementById('cWeekend').value === 'true',
+    colorHex: document.getElementById('cColor').value,
+    menus: [],
+  };
+  if(editCafeIdx !== null){
+    cafe.menus = cafes[editCafeIdx].menus || [];
+    cafe.subs  = cafes[editCafeIdx].subs;
+    cafe.type  = cafes[editCafeIdx].type;
+    cafes[editCafeIdx] = cafe;
+  } else {
+    cafes.push(cafe);
+    curTab = cafes.length - 1;
+  }
+  CAFES = cafes;
+  saveData();
+  document.getElementById('addCafeModal').classList.remove('open');
+  renderTabs(); renderPanel();
+  showAlert('alertSave');
+}
+
+function deleteCafe(ci){
+  const name = cafes[ci].name;
+  if(!confirm(`"${name}"을(를) 삭제하시겠습니까?\n\n이 식당의 모든 메뉴 데이터도 함께 삭제됩니다.`)) return;
+  cafes.splice(ci, 1);
+  CAFES = cafes;
+  curTab = Math.max(0, Math.min(curTab, cafes.length - 1));
+  saveData();
+  renderTabs(); renderPanel();
+  const el = document.getElementById('alertInfo');
+  el.textContent = `🗑 "${name}" 식당이 삭제되었습니다.`;
+  showAlert('alertInfo', 3000);
+}
+
+/* ============================================================
+   RESET
+============================================================ */
+function resetToDefault(){
+  if(!confirm('모든 편집 내용을 초기화하고 기본 데이터로 되돌리겠습니까?'))return;
+  localStorage.removeItem('kgu-meal-cafes');
+  cafes=JSON.parse(JSON.stringify(DEFAULT_CAFES));
+  CAFES=cafes;
+  saveData();
+  renderTabs();renderPanel();
+  const el=document.getElementById('alertInfo');
+  el.textContent='♻️ 기본 데이터로 초기화되었습니다.';
+  showAlert('alertInfo',3000);
+}
+
+/* ============================================================
+   INIT
+============================================================ */
+updateTotal();
+renderTabs();
+renderPanel();
+
+// ESC to close modals
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));
+  }
+});
+document.querySelectorAll('.overlay').forEach(ov=>{
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');});
+});
+</script>
+</body>
+</html>
