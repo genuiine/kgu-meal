@@ -258,157 +258,11 @@
   </div>
 </div>
 
+<script src="data.js"></script>
 <script>
 /* ============================================================
-   SAME DATA AS index.html (localStorage 공유)
+   데이터는 data.js 공유 (DEFAULT_CAFES, CAT_MAP, DATA_VERSION)
 ============================================================ */
-const DEFAULT_CAFES = [
-  {
-    name:'경슐랭', type:'foodcourt',
-    location:'제1복지관 지하 1층', hours:'10:30 - 19:00', lastOrder:'주문마감 18:30',
-    openH:10.5, closeH:19.0, closedWeekend:true, colorHex:'#F97316',
-    subs:[
-      { name:'만권화밥', menus:[
-        {name:'돼지불백덮밥',cat:'rice',price:5500},{name:'소고기카레덮밥',cat:'rice',price:8000},
-        {name:'삼겹가지덮밥',cat:'rice',price:7500},{name:'소고기가지덮밥',cat:'rice',price:7500},
-        {name:'연어장덮밥',cat:'rice',price:8000},{name:'소고기열무비빔밥',cat:'rice',price:7500},
-        {name:'돼껍볶음덮밥',cat:'rice',price:6500},{name:'마라소고기덮밥',cat:'rice',price:7500},
-        {name:'큐브스테이크 카레덮밥',cat:'rice',price:8500},{name:'직화소고기덮밥',cat:'rice',price:7000},
-        {name:'직화삼겹덮밥',cat:'rice',price:8000},{name:'직화제육덮밥',cat:'rice',price:6500},
-        {name:'참치마요덮밥',cat:'rice',price:6500},{name:'매운닭갈비덮밥',cat:'rice',price:6000},
-        {name:'간장닭갈비덮밥',cat:'rice',price:6000},{name:'소불고기덮밥',cat:'rice',price:7000},
-        {name:'명란마요스팸참치',cat:'rice',price:7000},{name:'스팸마요덮밥',cat:'rice',price:6000},
-        {name:'항정살꽈리볶음덮밥',cat:'rice',price:8500},{name:'치즈매운불닭덮밥',cat:'rice',price:7500},
-        {name:'치킨마요덮밥',cat:'rice',price:8000},{name:'오삼덮밥',cat:'rice',price:7500},
-        {name:'오징어덮밥',cat:'rice',price:7000},{name:'낙지덮밥',cat:'rice',price:7000},
-        {name:'큐브스테이크화밥',cat:'rice',price:8000},{name:'마라큐브스테이크',cat:'rice',price:8500},
-        {name:'불맛해물짬뽕',cat:'noodle',price:8500},{name:'직화해물짜장면',cat:'noodle',price:7500},
-        {name:'소고기얼큰면',cat:'noodle',price:6000},
-      ]},
-      { name:'숑숑돈까스', menus:[
-        {name:'돈카츠 라이스커리',cat:'cutlet',price:10500},{name:'통감자 라이스커리',cat:'cutlet',price:8900},
-        {name:'에비덴 라이스커리',cat:'cutlet',price:10900},{name:'숑숑카츠',cat:'cutlet',price:7900},
-        {name:'양파듬뿍카츠',cat:'cutlet',price:9500},{name:'두툼치즈카츠',cat:'cutlet',price:10500},
-        {name:'모둠카츠',cat:'cutlet',price:10900},{name:'큐브치즈카츠1',cat:'cutlet',price:9900},
-        {name:'큐브치즈카츠2',cat:'cutlet',price:10900},{name:'고구마큐브치즈카츠',cat:'cutlet',price:10900},
-        {name:'프리미엄카츠',cat:'cutlet',price:8900},{name:'카츠동',cat:'cutlet',price:7900},
-        {name:'김치치즈가츠나베',cat:'cutlet',price:8900},{name:'눈꽃치즈돈까스',cat:'cutlet',price:9500},
-        {name:'슈프림돈까스',cat:'cutlet',price:8900},{name:'치폴레돈까스',cat:'cutlet',price:8900},
-        {name:'경양식 왕 돈까스',cat:'cutlet',price:9500},{name:'김치우동',cat:'noodle',price:6900},
-        {name:'유부우동',cat:'noodle',price:5900},{name:'수제어묵꼬지우동',cat:'noodle',price:7500},
-        {name:'짬뽕우동',cat:'noodle',price:7900},{name:'마라우동',cat:'noodle',price:6900},
-        {name:'마라냉모밀',cat:'noodle',price:7500},{name:'마제소바',cat:'noodle',price:8500},
-        {name:'알리오올리오',cat:'noodle',price:8500},{name:'까르보나라',cat:'noodle',price:8500},
-        {name:'토마토파스타',cat:'noodle',price:8500},{name:'로제파스타',cat:'noodle',price:8500},
-        {name:'매콤 로제 리조또볼 파스타',cat:'noodle',price:9500},
-        {name:'로제떡볶이',cat:'snack',price:8500},{name:'국물떡볶이',cat:'snack',price:7500},
-        {name:'새우튀김(2ea)',cat:'side',price:3000},
-      ]},
-      { name:'버거&타코', menus:[
-        {name:'고추간장 순살치킨',cat:'chicken',price:8000},{name:'달콤양념 순살치킨',cat:'chicken',price:8000},
-        {name:'손바닥 치킨',cat:'chicken',price:3800},{name:'순살치킨 10ea',cat:'chicken',price:7000},
-        {name:'양념치킨 순살치킨',cat:'chicken',price:3500},{name:'누들떡뽀끼',cat:'snack',price:5900},
-        {name:'짜장누들떡뽀끼',cat:'snack',price:6900},{name:'마라로제누들떡뽀끼',cat:'snack',price:6900},
-        {name:'마라떡뽀끼',cat:'snack',price:7200},{name:'마일드비치팩',cat:'burger',price:10500},
-        {name:'핫비치팩',cat:'burger',price:10500},{name:'마일드슈비팩',cat:'burger',price:10500},
-        {name:'카츠팩',cat:'burger',price:8500},{name:'포커샌드',cat:'side',price:3600},
-        {name:'리얼 치즈스틱 2ea',cat:'side',price:2000},{name:'핫치킨슬로',cat:'side',price:5300},
-        {name:'바삭한 감자튀김',cat:'side',price:2200},{name:'양념치킨감자튀김',cat:'side',price:2700},
-        {name:'어니언링 4ea',cat:'side',price:2200},{name:'콘 샐러드',cat:'side',price:1800},
-        {name:'치킨너겟(6ea)',cat:'side',price:3000},{name:'폴드포크타코',cat:'burger',price:5600},
-        {name:'핫치킨타코',cat:'burger',price:5600},{name:'슈프림타코',cat:'burger',price:5600},
-        {name:'비프타코',cat:'burger',price:5300},{name:'비프더블베이컨치즈',cat:'burger',price:7500},
-        {name:'비프살사',cat:'burger',price:7400},{name:'치즈매니아 버거',cat:'burger',price:7200},
-        {name:'마일드 슈프림버거',cat:'burger',price:5500},{name:'치킨버거 마일드',cat:'burger',price:5500},
-        {name:'비프프레쉬',cat:'burger',price:4500},{name:'비프치즈 마일드',cat:'burger',price:4300},
-        {name:'비프치즈 핫',cat:'burger',price:4300},{name:'비프 1975',cat:'burger',price:4300},
-        {name:'비프 오리지널',cat:'burger',price:4200},{name:'포크클래식 버거',cat:'burger',price:4200},
-      ]},
-      { name:'위델가', menus:[
-        {name:'갈비탕',cat:'soup',price:8000},{name:'육개장',cat:'soup',price:7000},
-        {name:'떡만두국',cat:'soup',price:7000},{name:'물냉면',cat:'noodle',price:6000},
-        {name:'물냉면+바싹불고기',cat:'noodle',price:8000},{name:'비빔냉면',cat:'noodle',price:6000},
-        {name:'비빔냉면+바싹불고기',cat:'noodle',price:8000},{name:'돈육고추장짜글이',cat:'soup',price:7000},
-        {name:'돈육김치찌개',cat:'soup',price:6500},{name:'돈육김치찜',cat:'soup',price:7500},
-        {name:'뚝배기불고기',cat:'soup',price:7000},{name:'스팸김치찌개',cat:'soup',price:6500},
-        {name:'스팸순두부찌개',cat:'soup',price:6500},{name:'바지락순두부',cat:'soup',price:6500},
-        {name:'차돌순두부찌개',cat:'soup',price:6500},{name:'차돌된장찌개',cat:'soup',price:6500},
-        {name:'햄부대찌개',cat:'soup',price:7500},{name:'소고기뚝밥',cat:'rice',price:7000},
-        {name:'알밥',cat:'rice',price:7000},
-      ]},
-      { name:'신머이쌀국수', menus:[
-        {name:'베트남 전통 쌀국수',cat:'noodle',price:5500},
-        {name:'닭반마리쌀국수',          cat:'noodle',price:7500},
-        {name:'닭반마리쌀국수(매운맛)',  cat:'noodle',price:8000},
-        {name:'소고기 쌀국수',cat:'noodle',price:7500},
-        {name:'소고기 쌀국수(매운맛)',cat:'noodle',price:8500},
-        {name:'북부 사파 쌀국수',cat:'noodle',price:9000},
-        {name:'감자말이 새우',cat:'side',price:5500},{name:'버터플라이 새우',cat:'side',price:5500},
-        {name:'계란 반미',cat:'side',price:5500},{name:'해물 짜조',cat:'side',price:5500},
-        {name:'롱 춘권',cat:'side',price:3000},{name:'단팥 춘권',cat:'side',price:3000},
-        {name:'꿔이',cat:'side',price:3500},
-      ]},
-    ]
-  },
-  {name:'이스퀘어',type:'normal',location:'제2복지관 1층',hours:'07:30 - 20:30',lastOrder:'주문마감 19:30',openH:7.5,closeH:20.5,closedWeekend:false,colorHex:'#3B82F6',menus:[
-    {name:'까르보 말랑떡볶이',cat:'snack',price:5500},{name:'맵달라볶이',cat:'snack',price:6000},
-    {name:'사천짜장라볶이',cat:'snack',price:6500},{name:'로제라볶이',cat:'snack',price:6500},
-    {name:'맵달 말랑떡볶이',cat:'snack',price:5000},{name:'사천짜장 말랑떡볶이',cat:'snack',price:5500},
-    {name:'로제 말랑떡볶이',cat:'snack',price:5500},{name:'우삼겹 짬뽕라면',cat:'noodle',price:6500},
-    {name:'냄비 신라면',cat:'noodle',price:3500},{name:'치즈라면',cat:'noodle',price:4000},
-    {name:'떡만두라면',cat:'noodle',price:4500},{name:'매운해장라면',cat:'noodle',price:4500},
-    {name:'얼큰순대라면',cat:'noodle',price:5500},{name:'스퀘어김밥',cat:'snack',price:3500},
-    {name:'치즈김밥',cat:'snack',price:4000},{name:'참치김밥',cat:'snack',price:4500},
-    {name:'치킨까스(140g)',cat:'cutlet',price:4500},{name:'등심돈까스(200g)',cat:'cutlet',price:6800},
-    {name:'핵매운돈까스',cat:'cutlet',price:7800},{name:'고구마치즈돈까스',cat:'cutlet',price:7800},
-    {name:'치즈돈까스',cat:'cutlet',price:7800},{name:'팝만두 15알',cat:'side',price:3000},
-    {name:'소떡소떡',cat:'side',price:3200},{name:'공깃밥',cat:'side',price:1000},
-    {name:'어묵우동',cat:'noodle',price:5500},{name:'얼큰어묵우동',cat:'noodle',price:6000},
-    {name:'제육덮밥',cat:'rice',price:7500},{name:'참치마요덮밥',cat:'rice',price:8000},
-    {name:'치킨마유덮밥',cat:'rice',price:8500},{name:'스팸마요덮밥',cat:'rice',price:8000},
-    {name:'부대찌개',cat:'soup',price:8900},{name:'사골 떡만두국',cat:'soup',price:8000},
-    {name:'물냉면',cat:'noodle',price:6500},{name:'비빔냉면',cat:'noodle',price:7000},
-    {name:'들기름막국수',cat:'noodle',price:7500},{name:'매밀소바',cat:'noodle',price:8000},
-    {name:'냉면 다대기',cat:'side',price:500},{name:'냉면 육수 추가',cat:'side',price:500},
-  ]},
-  {name:'샐리박스',type:'normal',location:'교수연구동 5층',hours:'09:00 - 18:00',lastOrder:'',openH:9.0,closeH:18.0,closedWeekend:true,colorHex:'#EC4899',menus:[
-    {name:'샐리버거단품',cat:'burger',price:7000},{name:'경기버거단품',cat:'burger',price:9000},
-    {name:'통살치킨버거단품',cat:'burger',price:6000},{name:'햄에그샌드위치',cat:'western',price:3500},
-    {name:'치킨샌드위치',cat:'western',price:4000},{name:'크래미샌드위치',cat:'western',price:4000},
-    {name:'통새우샌드위치',cat:'western',price:4000},{name:'샐리핫도그',cat:'western',price:4500},
-    {name:'토마토미트스파게티',cat:'noodle',price:6000},{name:'로제스파게티',cat:'noodle',price:7000},
-    {name:'김치스파게티',cat:'noodle',price:7000},{name:'크림소세지스파게티',cat:'noodle',price:8000},
-    {name:'떡볶이',cat:'snack',price:7000},{name:'어묵우동',cat:'noodle',price:7000},
-    {name:'베이컨김치볶음밥',cat:'rice',price:6500},{name:'게살새우볶음밥',cat:'rice',price:7000},
-    {name:'소불고기볶음밥',cat:'rice',price:7000},{name:'제육덮밥',cat:'rice',price:8000},
-    {name:'돈까스',cat:'cutlet',price:8000},{name:'아메리카노(hot)',cat:'drink',price:2500},
-    {name:'아메리카노(ice)',cat:'drink',price:2500},{name:'카페라떼(ice)',cat:'drink',price:3500},
-    {name:'바닐라라떼(hot)',cat:'drink',price:4000},{name:'바닐라라떼(ice)',cat:'drink',price:4000},
-    {name:'딸기밀크스무디',cat:'drink',price:4000},{name:'망고밀크스무디',cat:'drink',price:4000},
-    {name:'블루베리밀크스무디',cat:'drink',price:4000},{name:'녹차라떼(hot)',cat:'drink',price:3500},
-    {name:'녹차라떼(ice)',cat:'drink',price:3500},{name:'오곡라떼(hot)',cat:'drink',price:4000},
-    {name:'오곡라떼(ice)',cat:'drink',price:4000},{name:'허니자몽블랙티(hot)',cat:'drink',price:3500},
-    {name:'허니자몽블랙티(ice)',cat:'drink',price:3500},{name:'아이스티(복숭아)',cat:'drink',price:3000},
-    {name:'아샷추',cat:'drink',price:3500},{name:'레몬티(hot)',cat:'drink',price:3500},
-    {name:'레몬티(ice)',cat:'drink',price:3500},{name:'레몬자몽티(hot)',cat:'drink',price:3500},
-    {name:'레몬자몽티(ice)',cat:'drink',price:3500},{name:'청귤티(hot)',cat:'drink',price:3500},
-    {name:'청귤티(ice)',cat:'drink',price:3500},{name:'자몽에이드',cat:'drink',price:4000},
-    {name:'레몬에이드',cat:'drink',price:4000},{name:'허니자몽블랙에이드',cat:'drink',price:4000},
-    {name:'청귤에이드',cat:'drink',price:4000},
-  ]},
-];
-
-const CAT_MAP = {
-  rice:   {label:'덮밥·밥류',color:'#D97706',bg:'rgba(217,119,6,.12)'},
-  noodle: {label:'면류',     color:'#6366F1',bg:'rgba(99,102,241,.12)'},
-  cutlet: {label:'돈까스',   color:'#EF4444',bg:'rgba(239,68,68,.12)'},
-  soup:   {label:'탕·찌개',  color:'#059669',bg:'rgba(5,150,105,.12)'},
-  chicken:{label:'치킨류',   color:'#F59E0B',bg:'rgba(245,158,11,.12)'},
-  burger: {label:'버거·타코',color:'#7C3AED',bg:'rgba(124,58,237,.12)'},
-  snack:  {label:'분식류',   color:'#DB2777',bg:'rgba(219,39,119,.12)'},
-  side:   {label:'사이드',   color:'#0891B2',bg:'rgba(8,145,178,.12)'},
-  drink:  {label:'음료·카페',color:'#EC4899',bg:'rgba(236,72,153,.12)'},
-};
 
 /* ============================================================
    STATE
@@ -417,11 +271,16 @@ let cafes, curTab=0, curSub=0;
 let addTarget=null; // {cafeIdx, subIdx}
 
 function loadData(){
-  try{const s=localStorage.getItem('kgu-meal-cafes');if(s)return JSON.parse(s);}catch(e){}
+  try{
+    const v=localStorage.getItem('kgu-meal-ver');
+    const s=localStorage.getItem('kgu-meal-cafes');
+    if(s&&v===String(DATA_VERSION))return JSON.parse(s);
+  }catch(e){}
   return JSON.parse(JSON.stringify(DEFAULT_CAFES));
 }
 function saveData(){
   localStorage.setItem('kgu-meal-cafes',JSON.stringify(cafes));
+  localStorage.setItem('kgu-meal-ver',String(DATA_VERSION)); // index.html이 버전 일치 시에만 로드
   updateTotal();
 }
 
@@ -732,10 +591,12 @@ function confirmAddCafe(){
     menus: [],
   };
   if(editCafeIdx !== null){
-    cafe.menus = cafes[editCafeIdx].menus || [];
-    cafe.subs  = cafes[editCafeIdx].subs;
-    cafe.type  = cafes[editCafeIdx].type;
-    cafes[editCafeIdx] = cafe;
+    // 기존 필드(vacation, vacNote, subs.days, menus.img 등) 보존 후 폼 값 덮어쓰기
+    cafes[editCafeIdx] = Object.assign({}, cafes[editCafeIdx], cafe, {
+      menus: cafes[editCafeIdx].menus || [],
+      subs:  cafes[editCafeIdx].subs,
+      type:  cafes[editCafeIdx].type,
+    });
   } else {
     cafes.push(cafe);
     curTab = cafes.length - 1;
@@ -766,6 +627,7 @@ function deleteCafe(ci){
 function resetToDefault(){
   if(!confirm('모든 편집 내용을 초기화하고 기본 데이터로 되돌리겠습니까?'))return;
   localStorage.removeItem('kgu-meal-cafes');
+  localStorage.removeItem('kgu-meal-ver');
   cafes=JSON.parse(JSON.stringify(DEFAULT_CAFES));
   CAFES=cafes;
   saveData();
