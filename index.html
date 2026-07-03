@@ -53,6 +53,7 @@
     .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
     .sdot.open{background:#10B981;box-shadow:0 0 0 2px rgba(16,185,129,.25);}
     .sdot.closed{background:#9CA3AF;}
+    .sdot.vac{background:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,.25);}
 
     /* TAB NAV */
     .tab-nav{position:sticky;top:60px;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);}
@@ -292,7 +293,7 @@
       </div>
     </div>
 
-    <div class="pool-count"><strong id="poolNum">-</strong>개 메뉴 중 추천</div>
+    <div class="pool-count"><strong id="poolNum">-</strong>개 메뉴 중 추천 <span style="display:block;font-size:11px;margin-top:2px">오늘 운영 중인 식당·매장 메뉴만 대상입니다</span></div>
 
     <div class="result-area" id="resultArea">
       <div class="result-placeholder">
@@ -312,7 +313,26 @@
 
 <script src="data.js"></script>
 <script>
-const EMOJIS = ['🍜','🍛','🥘','🍲','🍱','🍚','🥗','🍝','🥩','🍖','🫕','🥪','🍔','☕','🌮','🍗'];
+/* 메뉴명 → 이모지 매칭 규칙 (위에서부터 먼저 맞는 것 적용, 없으면 CAT_MAP 이모지) */
+const NAME_EMOJI = [
+  [/스파게티|파스타|까르보나라|알리오|마제소바|리조또/, '🍝'],
+  [/냉면|막국수|소바|모밀/,                              '🥢'],
+  [/우동|라면|라볶이|짬뽕|짜장|쌀국수|국수|얼큰면/,      '🍜'],
+  [/찌개|짜글이|김치찜|갈비탕|육개장|만두국|뚝배기|부대|가츠나베/, '🍲'],
+  [/돈까스|카츠|가스/,                                   '🍱'],
+  [/덮밥|비빔밥|볶음밥|알밥|뚝밥|화밥|카레|공깃밥/,      '🍛'],
+  [/버거/,   '🍔'], [/타코/, '🌮'], [/핫도그|소떡/, '🌭'],
+  [/샌드위치|반미|포커샌드/,                             '🥪'],
+  [/치킨|닭/, '🍗'], [/새우/, '🍤'], [/만두/, '🥟'], [/김밥/, '🍙'],
+  [/떡볶이|떡뽀끼/,                                      '🍢'],
+  [/피자/,   '🍕'], [/샐러드/, '🥗'],
+  [/커피|아메리카노|라떼|아샷추/,                        '☕'],
+  [/에이드|스무디|티\(|아이스티|블랙티/,                 '🥤'],
+];
+function menuEmoji(m){
+  for(const [re,e] of NAME_EMOJI) if(re.test(m.name)) return e;
+  return (CAT_MAP[m.cat]||{}).emoji||'🍽️';
+}
 const COMMENTS = [
   '에너지 가득한 하루를 시작해봐요!',
   '오늘 이 메뉴로 결정! 후회 없을 거예요.',
@@ -351,11 +371,20 @@ let spinHistory=[], spinTimer=null, isSpinning=false;
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fmt(n){return n.toLocaleString('ko-KR')+'원';}
 function nowH(){const n=new Date();return n.getHours()+n.getMinutes()/60;}
+// true=영업 중, false=영업 종료, null=방학 단축운영(시간 미확인)
 function isOpen(c){
+  if(c.vacUnknown)return null;
   const d=new Date().getDay();
   if(c.closedWeekend&&(d===0||d===6))return false;
   const h=nowH();return h>=c.openH&&h<c.closeH;
 }
+// 오늘 실제로 문 여는 날인지 (주말 휴무 반영, 시간과 무관) - 랜덤추천 풀 필터용
+function cafeOpenTodayDate(c){
+  const d=new Date().getDay();
+  if(c.closedWeekend&&(d===0||d===6))return false;
+  return true;
+}
+function priceLabel(m){return m.tbd?'가격 확인 중':fmt(m.price);}
 function formatDate(){
   const D=['일','월','화','수','목','금','토'],n=new Date();
   return `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} (${D[n.getDay()]})`;
@@ -390,7 +419,9 @@ function allMenus(cafe){
 function renderStatus(){
   document.getElementById('statusStrip').innerHTML=CAFES.map(c=>{
     const open=isOpen(c);
-    return`<div class="status-chip"><span class="sdot ${open?'open':'closed'}"></span><span>${esc(c.name)}</span><span style="color:var(--text2);font-size:11px">${open?'영업 중':'영업 종료'}</span></div>`;
+    const cls=open===null?'vac':(open?'open':'closed');
+    const label=open===null?'방학 단축운영':(open?'영업 중':'영업 종료');
+    return`<div class="status-chip"><span class="sdot ${cls}"></span><span>${esc(c.name)}</span><span style="color:var(--text2);font-size:11px">${label}</span></div>`;
   }).join('');
 }
 
@@ -403,12 +434,14 @@ function renderVacBanner(){
   const c=CAFES.find(x=>x.vacation);
   if(!c){el.style.display='none';return;}
   const openSubs=(c.subs||[]).filter(subOpenToday).map(s=>s.name);
+  const others=CAFES.filter(x=>x.vacUnknown).map(x=>x.name);
   el.style.display='block';
   el.innerHTML=`<div class="vac-inner">
     <span class="vac-ico">🌴</span>
     <div>
       <b>${esc(c.name)} 여름방학 단축운영</b> · 월~금 ${esc(c.hours)} <span style="color:var(--text2)">(${esc(c.lastOrder)})</span>
       <div class="vac-today">오늘 <b>${todayShort()}</b> 운영 매장 · ${openSubs.length?`<b>${openSubs.map(esc).join(' · ')}</b>`:'<b>휴무</b>'}</div>
+      ${others.length?`<div class="vac-today">${others.map(esc).join(' · ')}도 방학 단축운영 중 <span style="opacity:.75">(운영시간 확인 중)</span></div>`:''}
     </div>
   </div>`;
 }
@@ -428,7 +461,7 @@ function menuCard(m,hex,delay){
     ${thumb}
     <div class="card-body">
       <div class="card-name">${esc(m.name)}</div>
-      <div class="card-price" style="color:${hex}">${fmt(m.price)}</div>
+      <div class="card-price" style="color:${m.tbd?'var(--text2)':hex};${m.tbd?'font-weight:500;font-size:12px':''}">${priceLabel(m)}</div>
     </div>
   </div>`;
 }
@@ -472,8 +505,8 @@ function renderMain(){
         <div class="cafe-head">
           <div class="cafe-dot" style="background:${c.colorHex}"></div>
           <div class="cafe-name">${esc(c.name)}</div>
-          <div class="open-tag" style="background:${open?'rgba(16,185,129,.12)':'var(--bg)'};color:${open?'#059669':'var(--text2)'}">${open?'영업 중':'영업 종료'}</div>
-          <div style="font-size:12px;color:var(--text2)">${esc(c.location)} · ${esc(c.hours)}</div>
+          <div class="open-tag" style="background:${open===null?'rgba(245,158,11,.14)':(open?'rgba(16,185,129,.12)':'var(--bg)')};color:${open===null?'#D97706':(open?'#059669':'var(--text2)')}">${open===null?'🌴 방학 단축운영':(open?'영업 중':'영업 종료')}</div>
+          <div style="font-size:12px;color:var(--text2)">${esc(c.location)} · ${open===null?'운영시간 확인 중':esc(c.hours)}</div>
         </div>
         ${body}
       </div>`;
@@ -543,11 +576,11 @@ function renderMain(){
         <div class="info-bar">
           <div class="info-item">📍 ${esc(c.location)}</div>
           <div class="info-sep"></div>
-          <div class="info-item">🕐 ${esc(c.hours)}</div>
+          <div class="info-item">🕐 ${open===null?'운영시간 확인 중':esc(c.hours)}</div>
           <div class="info-sep"></div>
-          <div class="info-item" style="color:${open?'#059669':'var(--text2)'}">
-            <span style="width:7px;height:7px;border-radius:50%;background:${open?'#10B981':'#9CA3AF'};display:inline-block"></span>
-            ${open?'지금 영업 중':'영업 종료'}
+          <div class="info-item" style="color:${open===null?'#D97706':(open?'#059669':'var(--text2)')}">
+            <span style="width:7px;height:7px;border-radius:50%;background:${open===null?'#F59E0B':(open?'#10B981':'#9CA3AF')};display:inline-block"></span>
+            ${open===null?'🌴 여름방학 단축운영 중':(open?'지금 영업 중':'영업 종료')}
           </div>
         </div>
         ${ms.length
@@ -562,13 +595,23 @@ function renderMain(){
 /* ============================================================
    POOL / RANDOM
 ============================================================ */
+// 랜덤추천 대상: 오늘 실제 운영 중인 식당/매장의 메뉴만
+function poolMenus(cafe){
+  if(!cafeOpenTodayDate(cafe))return[]; // 주말 휴무 등 오늘 문 닫는 식당 제외
+  if(cafe.type==='foodcourt')
+    return cafe.subs
+      .filter(s=>!cafe.vacation||subOpenToday(s)) // 방학 로테이션: 오늘 운영 매장만
+      .flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
+  return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
+}
 function getPool(){
   const all=[];
   CAFES.forEach((c,ci)=>{
     if(filterCafe!=='all'&&parseInt(filterCafe)!==ci)return;
-    const ms=allMenus(c);
+    const ms=poolMenus(c);
     ms.forEach(m=>{
       if(filterCat!=='all'&&m.cat!==filterCat)return;
+      if(filterPrice!=='all'&&m.tbd)return; // 가격 미확인 메뉴는 가격 필터 시 제외
       if(filterPrice==='low'&&m.price>=5000)return;
       if(filterPrice==='mid'&&(m.price<5000||m.price>=9000))return;
       if(filterPrice==='high'&&m.price<9000)return;
@@ -596,7 +639,7 @@ function doSpin(){
   clearInterval(spinTimer);
   spinTimer=setInterval(()=>{
     const r=pool[Math.floor(Math.random()*pool.length)];
-    const e=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+    const e=menuEmoji(r);
     ra.innerHTML=`<div class="result-spinning">
       <span style="font-size:44px;display:block;margin-bottom:8px">${e}</span>
       <div style="font-size:18px;font-weight:700">${esc(r.name)}</div>
@@ -608,7 +651,7 @@ function doSpin(){
       const chosen=pool[Math.floor(Math.random()*pool.length)];
       const cafe=CAFES[chosen.cafeIdx];
       const open=isOpen(cafe);
-      const emoji=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+      const emoji=menuEmoji(chosen);
       const comment=COMMENTS[Math.floor(Math.random()*COMMENTS.length)];
       const cat=CAT_MAP[chosen.cat]||{label:chosen.cat,color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
       spinHistory.unshift(chosen);
@@ -618,11 +661,11 @@ function doSpin(){
         <div class="rf-cafe" style="color:${cafe.colorHex}">${esc(cafe.name)}</div>
         ${chosen.subName?`<div class="rf-sub">${esc(chosen.subName)}</div>`:''}
         <div class="rf-name">${esc(chosen.name)}</div>
-        <div class="rf-price" style="background:${cafe.colorHex}">${fmt(chosen.price)}</div>
+        <div class="rf-price" style="background:${cafe.colorHex}">${priceLabel(chosen)}</div>
         <div class="rf-location">
           <div class="rf-loc-row">📍 <span style="font-weight:500">${esc(cafe.name)}</span> · <span>${esc(cafe.location)}</span></div>
-          <div class="rf-loc-row">🕐 <span>${esc(cafe.hours)}</span>
-            <span style="color:${open?'#059669':'#9CA3AF'};font-weight:600;margin-left:4px">${open?'지금 영업 중':'영업 종료'}</span>
+          <div class="rf-loc-row">🕐 <span>${open===null?'방학 단축운영 · 시간 확인 중':esc(cafe.hours)}</span>
+            ${open===null?'':`<span style="color:${open?'#059669':'#9CA3AF'};font-weight:600;margin-left:4px">${open?'지금 영업 중':'영업 종료'}</span>`}
           </div>
         </div>
         <button class="rf-again" id="btnAgain">다시 추천</button>
@@ -646,7 +689,7 @@ function renderHistory(){
       <span class="h-num">${i+1}</span>
       <span class="h-name">${esc(m.name)}</span>
       <span class="h-cafe" style="color:${m.cafeColorHex}">${esc(m.cafeName)}${m.subName?' · '+esc(m.subName):''}</span>
-      <span class="h-cafe">${fmt(m.price)}</span>
+      <span class="h-cafe">${priceLabel(m)}</span>
     </div>`
   ).join('');
 }

@@ -1,10 +1,11 @@
 /* ============================================================
    kgu-meal 공유 데이터 (index.html + menu-editor.html 공용)
    - DATA_VERSION: 구조 변경 시 +1 하면 옛 localStorage 무시
-   - 메뉴 필드: name, cat, price, img(선택)
+   - 메뉴 필드: name, cat, price, img(선택), tbd(선택: 가격 미확인)
    - 푸드코트 sub 필드: name, days(선택: 방학 로테이션 [[from,to],...]), menus
+   - 식당 필드: vacation(방학 단축, 스케줄 있음) / vacUnknown(단축운영 중이나 시간 미확인)
 ============================================================ */
-const DATA_VERSION = 4;
+const DATA_VERSION = 5;
 
 const DEFAULT_CAFES = [
   {
@@ -136,11 +137,12 @@ const DEFAULT_CAFES = [
         {name:'햄부대찌개',         cat:'soup',   price:7500, img:'images/wedelga/02_L.jpg'},
         {name:'소고기뚝밥',         cat:'rice',   price:7000, img:'images/wedelga/06_R.jpg'},
         {name:'알밥',               cat:'rice',   price:7000, img:'images/wedelga/06_L.jpg'},
-        {name:'참치김치찌개',       cat:'soup',   price:6500, img:'images/wedelga/11_L.jpg'},
-        {name:'카레순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/00_R.jpg'},
-        {name:'쫄면순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/10_L.jpg'},
-        {name:'알밥김치찌개세트',   cat:'rice',   price:8500, img:'images/wedelga/03_L.jpg'},
-        {name:'알밥순두부찌개세트', cat:'rice',   price:8500, img:'images/wedelga/03_R.jpg'},
+        // tbd: 실제 가격 미확인 (price는 필터용 추정값, 화면에는 '가격 확인 중' 표시)
+        {name:'참치김치찌개',       cat:'soup',   price:6500, tbd:true, img:'images/wedelga/11_L.jpg'},
+        {name:'카레순두부찌개',     cat:'soup',   price:6500, tbd:true, img:'images/wedelga/00_R.jpg'},
+        {name:'쫄면순두부찌개',     cat:'soup',   price:6500, tbd:true, img:'images/wedelga/10_L.jpg'},
+        {name:'알밥김치찌개세트',   cat:'rice',   price:8500, tbd:true, img:'images/wedelga/03_L.jpg'},
+        {name:'알밥순두부찌개세트', cat:'rice',   price:8500, tbd:true, img:'images/wedelga/03_R.jpg'},
       ]},
       { name:'신머이쌀국수', days:[['2026-06-29','2026-07-10'],['2026-07-31','2026-08-10']], menus:[
         {name:'베트남 전통 쌀국수',     cat:'noodle', price:5500},
@@ -163,6 +165,8 @@ const DEFAULT_CAFES = [
     name:'이스퀘어', type:'normal',
     location:'제2복지관 1층', hours:'07:30 - 20:30', lastOrder:'주문마감 19:30',
     openH:7.5, closeH:20.5, closedWeekend:false, colorHex:'#3B82F6',
+    vacUnknown:true, // 여름방학 단축운영 중, 구체 시간 미확인
+
     menus:[
       // 분식·떡볶이류
       {name:'까르보 말랑떡볶이',      cat:'snack',  price:5500},
@@ -218,6 +222,8 @@ const DEFAULT_CAFES = [
     name:'샐리박스', type:'normal',
     location:'교수연구동 5층', hours:'09:00 - 18:00', lastOrder:'',
     openH:9.0, closeH:18.0, closedWeekend:true, colorHex:'#EC4899',
+    vacUnknown:true, // 여름방학 단축운영 중, 구체 시간 미확인
+
     menus:[
       // 버거류
       {name:'샐리버거단품',            cat:'burger', price:7000},

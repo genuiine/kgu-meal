@@ -4,3 +4,6 @@
 !.dev.vars.example
 .env*
 !.env.example
+
+# 원본 소스 사진 (크롭 전, 배포 불필요)
+_raw/
