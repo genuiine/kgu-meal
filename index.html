@@ -85,9 +85,23 @@
 
     /* SUB SECTION (경슐랭 입점 식당) */
     .sub-section{margin-bottom:28px;}
-    .sub-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:4px;}
+    .sub-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:4px;flex-wrap:wrap;}
     .sub-name{font-size:15px;font-weight:700;color:var(--text1);}
     .sub-count{font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px;font-weight:500;}
+    .sub-badge{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+    .sub-badge.open{background:rgba(16,185,129,.14);color:#059669;}
+    .sub-badge.off{background:rgba(156,163,175,.18);color:var(--text2);}
+    .sub-section.closed .menu-grid{opacity:.5;filter:grayscale(.35);transition:opacity var(--t);}
+    .sub-section.closed .menu-card:hover{transform:none;box-shadow:var(--shadow-sm);}
+
+    /* VACATION BANNER */
+    .vac-banner{max-width:760px;margin:12px auto 0;padding:0 20px;}
+    .vac-inner{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(249,115,22,.05));border:1px solid rgba(249,115,22,.28);font-size:12.5px;color:var(--text1);line-height:1.5;}
+    .vac-inner b{color:#EA580C;font-weight:700;}
+    .vac-ico{font-size:17px;flex-shrink:0;line-height:1.3;}
+    .vac-today{margin-top:3px;color:var(--text2);}
+    .vac-today b{color:var(--text1);}
+    @media(max-width:480px){.vac-banner{padding:0 14px;}}
 
     /* SINGLE VIEW */
     .single-header{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
@@ -103,12 +117,19 @@
     @media(max-width:320px){.menu-grid{grid-template-columns:1fr;}}
 
     /* MENU CARD */
-    .menu-card{background:var(--surface);border-radius:var(--r);padding:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);opacity:0;transform:translateY(12px);animation:cardIn .28s var(--ease) forwards;transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease);display:flex;flex-direction:column;gap:5px;}
+    .menu-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;opacity:0;transform:translateY(12px);animation:cardIn .28s var(--ease) forwards;transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease);display:flex;flex-direction:column;}
     .menu-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
     @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
-    .card-cat{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:5px;width:fit-content;}
+    .card-thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg);}
+    .card-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s var(--ease);}
+    .menu-card:hover .card-thumb img{transform:scale(1.06);}
+    .card-thumb--ph{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%, var(--phbg), var(--surface) 78%);}
+    .ph-emoji{font-size:42px;opacity:.85;}
+    .thumb-cat{position:absolute;left:8px;top:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.82)!important;backdrop-filter:blur(6px);box-shadow:0 1px 5px rgba(0,0,0,.14);}
+    @media(prefers-color-scheme:dark){.thumb-cat{background:rgba(28,31,38,.8)!important;}}
+    .card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;}
     .card-name{font-size:14px;font-weight:700;line-height:1.3;}
-    .card-price{font-size:13px;font-weight:700;margin-top:3px;}
+    .card-price{font-size:13px;font-weight:700;margin-top:2px;}
 
     /* FAB */
     .fab{position:fixed;bottom:28px;right:50%;transform:translateX(calc(50% + 360px));width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-fab);z-index:200;transition:all var(--t) var(--ease);}
@@ -214,6 +235,8 @@
   </div>
 </header>
 
+<div class="vac-banner" id="vacBanner" style="display:none"></div>
+
 <div class="status-strip" id="statusStrip"></div>
 
 <nav class="tab-nav">
@@ -295,10 +318,11 @@
 const DEFAULT_CAFES = [
   {
     name:'경슐랭', type:'foodcourt',
-    location:'제1복지관 지하 1층', hours:'10:30 - 19:00', lastOrder:'주문마감 18:30',
-    openH:10.5, closeH:19.0, closedWeekend:true, colorHex:'#F97316',
+    location:'제1복지관 지하 1층', hours:'10:30 - 14:00', lastOrder:'라스트오더 13:30',
+    openH:10.5, closeH:14.0, closedWeekend:true, colorHex:'#F97316',
+    vacation:true, vacNote:'여름방학 단축운영 · 매장별 운영기간이 다릅니다',
     subs:[
-      { name:'만권화밥', menus:[
+      { name:'만권화밥', days:[['2026-06-29','2026-07-10'],['2026-08-21','2026-08-31']], menus:[
         {name:'돼지불백덮밥',      cat:'rice',   price:5500},
         {name:'소고기카레덮밥',    cat:'rice',   price:8000},
         {name:'삼겹가지덮밥',      cat:'rice',   price:7500},
@@ -329,7 +353,7 @@ const DEFAULT_CAFES = [
         {name:'직화해물짜장면',    cat:'noodle', price:7500},
         {name:'소고기얼큰면',      cat:'noodle', price:6000},
       ]},
-      { name:'숑숑돈까스', menus:[
+      { name:'숑숑돈까스', days:[['2026-06-16','2026-06-26'],['2026-07-22','2026-07-30']], menus:[
         {name:'돈카츠 라이스커리',     cat:'cutlet', price:10500},
         {name:'통감자 라이스커리',     cat:'cutlet', price:8900},
         {name:'에비덴 라이스커리',     cat:'cutlet', price:10900},
@@ -363,7 +387,7 @@ const DEFAULT_CAFES = [
         {name:'국물떡볶이',           cat:'snack',  price:7500},
         {name:'새우튀김(2ea)',        cat:'side',   price:3000},
       ]},
-      { name:'버거&타코', menus:[
+      { name:'버거&타코', days:[['2026-06-16','2026-06-26'],['2026-08-11','2026-08-20']], menus:[
         {name:'고추간장 순살치킨',    cat:'chicken',price:8000},
         {name:'달콤양념 순살치킨',    cat:'chicken',price:8000},
         {name:'손바닥 치킨',          cat:'chicken',price:3800},
@@ -401,28 +425,33 @@ const DEFAULT_CAFES = [
         {name:'비프 오리지널',        cat:'burger', price:4200},
         {name:'포크클래식 버거',      cat:'burger', price:4200},
       ]},
-      { name:'위델가', menus:[
-        {name:'갈비탕',             cat:'soup',   price:8000},
-        {name:'육개장',             cat:'soup',   price:7000},
-        {name:'떡만두국',           cat:'soup',   price:7000},
-        {name:'물냉면',             cat:'noodle', price:6000},
-        {name:'물냉면+바싹불고기', cat:'noodle', price:8000},
-        {name:'비빔냉면',           cat:'noodle', price:6000},
-        {name:'비빔냉면+바싹불고기',cat:'noodle',price:8000},
-        {name:'돈육고추장짜글이',   cat:'soup',   price:7000},
-        {name:'돈육김치찌개',       cat:'soup',   price:6500},
-        {name:'돈육김치찜',         cat:'soup',   price:7500},
-        {name:'뚝배기불고기',       cat:'soup',   price:7000},
-        {name:'스팸김치찌개',       cat:'soup',   price:6500},
-        {name:'스팸순두부찌개',     cat:'soup',   price:6500},
-        {name:'바지락순두부',       cat:'soup',   price:6500},
-        {name:'차돌순두부찌개',     cat:'soup',   price:6500},
-        {name:'차돌된장찌개',       cat:'soup',   price:6500},
-        {name:'햄부대찌개',         cat:'soup',   price:7500},
-        {name:'소고기뚝밥',         cat:'rice',   price:7000},
-        {name:'알밥',               cat:'rice',   price:7000},
+      { name:'위델가', days:[['2026-06-29','2026-07-10'],['2026-07-13','2026-07-21']], menus:[
+        {name:'갈비탕',             cat:'soup',   price:8000, img:'images/wedelga/09_R.jpg'},
+        {name:'육개장',             cat:'soup',   price:7000, img:'images/wedelga/04_L.jpg'},
+        {name:'떡만두국',           cat:'soup',   price:7000, img:'images/wedelga/02_R.jpg'},
+        {name:'물냉면',             cat:'noodle', price:6000, img:'images/wedelga/07_L.jpg'},
+        {name:'물냉면+바싹불고기', cat:'noodle', price:8000, img:'images/wedelga/07_R.jpg'},
+        {name:'비빔냉면',           cat:'noodle', price:6000, img:'images/wedelga/05_L.jpg'},
+        {name:'비빔냉면+바싹불고기',cat:'noodle',price:8000, img:'images/wedelga/05_R.jpg'},
+        {name:'돈육고추장짜글이',   cat:'soup',   price:7000, img:'images/wedelga/10_R.jpg'},
+        {name:'돈육김치찌개',       cat:'soup',   price:6500, img:'images/wedelga/01_L.jpg'},
+        {name:'돈육김치찜',         cat:'soup',   price:7500, img:'images/wedelga/11_R.jpg'},
+        {name:'뚝배기불고기',       cat:'soup',   price:7000, img:'images/wedelga/09_L.jpg'},
+        {name:'스팸김치찌개',       cat:'soup',   price:6500, img:'images/wedelga/01_R.jpg'},
+        {name:'스팸순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/08_R.jpg'},
+        {name:'바지락순두부',       cat:'soup',   price:6500, img:'images/wedelga/08_L.jpg'},
+        {name:'차돌순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/00_L.jpg'},
+        {name:'차돌된장찌개',       cat:'soup',   price:6500, img:'images/wedelga/04_R.jpg'},
+        {name:'햄부대찌개',         cat:'soup',   price:7500, img:'images/wedelga/02_L.jpg'},
+        {name:'소고기뚝밥',         cat:'rice',   price:7000, img:'images/wedelga/06_R.jpg'},
+        {name:'알밥',               cat:'rice',   price:7000, img:'images/wedelga/06_L.jpg'},
+        {name:'참치김치찌개',       cat:'soup',   price:6500, img:'images/wedelga/11_L.jpg'},
+        {name:'카레순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/00_R.jpg'},
+        {name:'쫄면순두부찌개',     cat:'soup',   price:6500, img:'images/wedelga/10_L.jpg'},
+        {name:'알밥김치찌개세트',   cat:'rice',   price:8500, img:'images/wedelga/03_L.jpg'},
+        {name:'알밥순두부찌개세트', cat:'rice',   price:8500, img:'images/wedelga/03_R.jpg'},
       ]},
-      { name:'신머이쌀국수', menus:[
+      { name:'신머이쌀국수', days:[['2026-06-29','2026-07-10'],['2026-07-31','2026-08-10']], menus:[
         {name:'베트남 전통 쌀국수',     cat:'noodle', price:5500},
         {name:'닭반마리쌀국수',          cat:'noodle',price:7500},
         {name:'닭반마리쌀국수(매운맛)',  cat:'noodle',price:8000},
@@ -558,16 +587,16 @@ const DEFAULT_CAFES = [
    CAT MAP
 ============================================================ */
 const CAT_MAP = {
-  rice:    {label:'덮밥·밥류', color:'#D97706', bg:'rgba(217,119,6,.12)'},
-  noodle:  {label:'면류',      color:'#6366F1', bg:'rgba(99,102,241,.12)'},
-  cutlet:  {label:'돈까스',    color:'#EF4444', bg:'rgba(239,68,68,.12)'},
-  soup:    {label:'탕·찌개',   color:'#059669', bg:'rgba(5,150,105,.12)'},
-  chicken: {label:'치킨류',    color:'#F59E0B', bg:'rgba(245,158,11,.12)'},
-  burger:  {label:'버거·타코', color:'#7C3AED', bg:'rgba(124,58,237,.12)'},
-  snack:   {label:'분식류',    color:'#DB2777', bg:'rgba(219,39,119,.12)'},
-  western: {label:'샌드위치',  color:'#84CC16', bg:'rgba(132,204,22,.12)'},
-  side:    {label:'사이드',    color:'#0891B2', bg:'rgba(8,145,178,.12)'},
-  drink:   {label:'음료·카페', color:'#EC4899', bg:'rgba(236,72,153,.12)'},
+  rice:    {label:'덮밥·밥류', color:'#D97706', bg:'rgba(217,119,6,.12)', emoji:'🍚'},
+  noodle:  {label:'면류',      color:'#6366F1', bg:'rgba(99,102,241,.12)', emoji:'🍜'},
+  cutlet:  {label:'돈까스',    color:'#EF4444', bg:'rgba(239,68,68,.12)', emoji:'🍖'},
+  soup:    {label:'탕·찌개',   color:'#059669', bg:'rgba(5,150,105,.12)', emoji:'🍲'},
+  chicken: {label:'치킨류',    color:'#F59E0B', bg:'rgba(245,158,11,.12)', emoji:'🍗'},
+  burger:  {label:'버거·타코', color:'#7C3AED', bg:'rgba(124,58,237,.12)', emoji:'🍔'},
+  snack:   {label:'분식류',    color:'#DB2777', bg:'rgba(219,39,119,.12)', emoji:'🍢'},
+  western: {label:'샌드위치',  color:'#84CC16', bg:'rgba(132,204,22,.12)', emoji:'🥪'},
+  side:    {label:'사이드',    color:'#0891B2', bg:'rgba(8,145,178,.12)', emoji:'🍟'},
+  drink:   {label:'음료·카페', color:'#EC4899', bg:'rgba(236,72,153,.12)', emoji:'🥤'},
 };
 
 const EMOJIS = ['🍜','🍛','🥘','🍲','🍱','🍚','🥗','🍝','🥩','🍖','🫕','🥪','🍔','☕','🌮','🍗'];
@@ -587,10 +616,12 @@ const COMMENTS = [
 /* ============================================================
    DATA LOAD (localStorage 우선)
 ============================================================ */
+const DATA_VERSION = 4; // 사진·방학 로테이션 반영. 구조 변경 시 올리면 옛 localStorage 무시
 function loadCafes() {
   try {
+    const v = localStorage.getItem('kgu-meal-ver');
     const saved = localStorage.getItem('kgu-meal-cafes');
-    if (saved) return JSON.parse(saved);
+    if (saved && v === String(DATA_VERSION)) return JSON.parse(saved);
   } catch(e) {}
   return DEFAULT_CAFES;
 }
@@ -617,6 +648,25 @@ function formatDate(){
   const D=['일','월','화','수','목','금','토'],n=new Date();
   return `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} (${D[n.getDay()]})`;
 }
+function todayStr(){
+  const n=new Date();
+  return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
+}
+// 방학 로테이션: sub.days 스케줄에 오늘이 포함되면 운영. days 없으면 상시 운영으로 간주
+function subOpenToday(sub){
+  if(!sub.days||!sub.days.length)return true;
+  const t=todayStr();
+  return sub.days.some(([f,to])=>t>=f&&t<=to);
+}
+// 다음 운영 시작일 (오늘 휴무인 경우) - 'M/D' 문자열 또는 null
+function subNextOpen(sub){
+  if(!sub.days||!sub.days.length)return null;
+  const t=todayStr();
+  const upcoming=sub.days.map(([f])=>f).filter(f=>f>t).sort();
+  if(!upcoming.length)return null;
+  const [,m,d]=upcoming[0].split('-');
+  return `${parseInt(m)}/${parseInt(d)}`;
+}
 function allMenus(cafe){
   if(cafe.type==='foodcourt')return cafe.subs.flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
   return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
@@ -633,14 +683,41 @@ function renderStatus(){
 }
 
 /* ============================================================
+   VACATION BANNER (방학 단축운영 + 오늘 운영 매장)
+============================================================ */
+function todayShort(){const n=new Date();return`${n.getMonth()+1}/${n.getDate()}`;}
+function renderVacBanner(){
+  const el=document.getElementById('vacBanner');
+  const c=CAFES.find(x=>x.vacation);
+  if(!c){el.style.display='none';return;}
+  const openSubs=(c.subs||[]).filter(subOpenToday).map(s=>s.name);
+  el.style.display='block';
+  el.innerHTML=`<div class="vac-inner">
+    <span class="vac-ico">🌴</span>
+    <div>
+      <b>${esc(c.name)} 여름방학 단축운영</b> · 월~금 ${esc(c.hours)} <span style="color:var(--text2)">(${esc(c.lastOrder)})</span>
+      <div class="vac-today">오늘 <b>${todayShort()}</b> 운영 매장 · ${openSubs.length?`<b>${openSubs.map(esc).join(' · ')}</b>`:'<b>휴무</b>'}</div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
    CARD
 ============================================================ */
 function menuCard(m,hex,delay){
-  const cat=CAT_MAP[m.cat]||{label:m.cat||'',color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
-  return`<div class="menu-card" style="animation-delay:${delay}s">
-    <div class="card-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</div>
-    <div class="card-name">${esc(m.name)}</div>
-    <div class="card-price" style="color:${hex}">${fmt(m.price)}</div>
+  const cat=CAT_MAP[m.cat]||{label:m.cat||'',color:'#9CA3AF',bg:'rgba(156,163,175,.12)',emoji:'🍽️'};
+  const thumb=m.img
+    ?`<div class="card-thumb"><img src="${esc(m.img)}" alt="${esc(m.name)}" loading="lazy" decoding="async">
+        <span class="thumb-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></div>`
+    :`<div class="card-thumb card-thumb--ph" style="--ph:${cat.color};--phbg:${cat.bg}">
+        <span class="ph-emoji">${cat.emoji||'🍽️'}</span>
+        <span class="thumb-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></div>`;
+  return`<div class="menu-card${m.img?' has-img':''}" style="animation-delay:${delay}s">
+    ${thumb}
+    <div class="card-body">
+      <div class="card-name">${esc(m.name)}</div>
+      <div class="card-price" style="color:${hex}">${fmt(m.price)}</div>
+    </div>
   </div>`;
 }
 
@@ -659,10 +736,16 @@ function renderMain(){
       if(c.type==='foodcourt'){
         body=c.subs.map(s=>{
           if(!s.menus.length)return'';
-          return`<div class="sub-section">
+          const on=subOpenToday(s), nx=subNextOpen(s);
+          const badge=c.vacation
+            ?(on?`<span class="sub-badge open">오늘 운영</span>`
+                :`<span class="sub-badge off">오늘 휴무${nx?` · ${nx} 오픈`:''}</span>`)
+            :'';
+          return`<div class="sub-section${c.vacation&&!on?' closed':''}">
             <div class="sub-head">
               <div class="sub-name">${esc(s.name)}</div>
               <div class="sub-count">${s.menus.length}개</div>
+              ${badge}
             </div>
             <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
           </div>`;
@@ -704,8 +787,13 @@ function renderMain(){
       const activeSubs=curSub==='all'?subs:[subs[parseInt(curSub)]];
       const body=activeSubs.map(s=>{
         if(!s.menus.length)return`<div class="empty">메뉴 없음</div>`;
-        return`<div class="sub-section">
-          <div class="sub-head"><div class="sub-name">${esc(s.name)}</div><div class="sub-count">${s.menus.length}개</div></div>
+        const on=subOpenToday(s), nx=subNextOpen(s);
+        const badge=c.vacation
+          ?(on?`<span class="sub-badge open">오늘 운영</span>`
+              :`<span class="sub-badge off">오늘 휴무${nx?` · ${nx} 오픈`:''}</span>`)
+          :'';
+        return`<div class="sub-section${c.vacation&&!on?' closed':''}">
+          <div class="sub-head"><div class="sub-name">${esc(s.name)}</div><div class="sub-count">${s.menus.length}개</div>${badge}</div>
           <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
         </div>`;
       }).join('');
@@ -725,8 +813,9 @@ function renderMain(){
             ${open?'지금 영업 중':'영업 종료'}
           </div>
           <div class="info-sep"></div>
-          <div class="info-item" style="color:var(--text2)">주말 휴무</div>
+          <div class="info-item" style="color:var(--text2)">${c.vacation?'🌴 방학 단축 · 주말 휴무':'주말 휴무'}</div>
         </div>
+        ${c.vacation?`<div class="info-item" style="color:#EA580C;font-size:12px;margin:-6px 0 16px;padding-left:2px">오늘 운영 · ${(c.subs||[]).filter(subOpenToday).map(s=>esc(s.name)).join(' · ')||'휴무'}</div>`:''}
         ${body}
       </div>`;
 
@@ -912,6 +1001,7 @@ document.getElementById('btnSpin').addEventListener('click',doSpin);
    INIT
 ============================================================ */
 document.getElementById('dateBadge').textContent=formatDate();
+renderVacBanner();
 renderStatus();
 renderTabNav();
 renderMain();
