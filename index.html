@@ -2,312 +2,543 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F4F6">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101013">
   <title>경기대 밥먹자 - 수원캠퍼스 학식</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- M1: preload로 렌더 블로킹 해소 — 시스템 폰트 스택으로 즉시 렌더 후 스왑 -->
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css"></noscript>
   <style>
+    /* ============ TDS TOKENS ============ */
     :root {
-      --primary:#1D9E75; --primary-dark:#0F6E56; --primary-light:rgba(29,158,117,.10);
-      --c1:#F97316; --c1-light:rgba(249,115,22,.10);
-      --c2:#3B82F6; --c2-light:rgba(59,130,246,.10);
-      --c3:#EC4899; --c3-light:rgba(236,72,153,.10);
-      --surface:#FFFFFF; --bg:#F3F4F6;
-      --text1:#111827; --text2:#6B7280;
-      --border:rgba(0,0,0,.07);
-      --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
-      --shadow-md:0 4px 14px rgba(0,0,0,.08);
-      --shadow-fab:0 4px 20px rgba(29,158,117,.45);
-      --r:16px; --r-sm:10px; --ease:cubic-bezier(.4,0,.2,1); --t:.18s;
+      --grey-50:#F9FAFB; --grey-100:#F2F4F6; --grey-200:#E5E8EB; --grey-300:#D1D6DB;
+      --grey-400:#B0B8C1; --grey-500:#8B95A1; --grey-600:#6B7684; --grey-700:#4E5968;
+      --grey-800:#333D4B; --grey-900:#191F28;
+
+      --bg:#F2F4F6;
+      --surface:#FFFFFF;
+      --surface2:#F9FAFB;
+      --text-primary:var(--grey-900);
+      --text-secondary:var(--grey-600);
+      --text-tertiary:var(--grey-500);
+      --divider:rgba(2,32,71,.06);
+
+      --blue:#3182F6; --blue-dark:#1B64DA; --blue-light:#E8F3FF;
+      --green:#02A262; --green-bg:#E5F9F0;
+      --orange:#FF9500; --orange-bg:#FFF4E5;
+      --red:#F04452; --red-bg:#FDEDEE;
+      /* M3: 틴트 배경 위 텍스트 전용 상태 컬러 (4.5:1 대비) — 도트·배경은 기존 토큰 유지 */
+      --orange-text:#C2410C; --green-text:#067A4E;
+      /* A1: red-bg 틴트 위 텍스트 전용 red (M3 누락 보완) */
+      --red-text:#C4142A;
+      /* A2: grey-100 배경 위 보조 텍스트 전용 강화 토큰 (4.5:1 확보) */
+      --text-secondary-strong:#4E5968;
+
+      --font:'Pretendard Variable',Pretendard,-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+
+      --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:20px; --sp-6:24px; --sp-8:32px;
+      --page-x:20px;
+
+      --r-chip:999px; --r-btn:14px; --r-card:20px; --r-thumb:16px; --r-badge:8px;
+
+      --shadow-float:0 8px 24px rgba(2,32,71,.10);
+      --shadow-card:0 1px 2px rgba(2,32,71,.04);
+
+      --ease-spring:cubic-bezier(.22,1.2,.36,1);
+      --ease-out:cubic-bezier(.25,.1,.25,1);
+      --dur-fast:.15s; --dur-base:.25s; --dur-sheet:.35s;
+
+      --touch-min:44px;
     }
-    @media(prefers-color-scheme:dark){
-      :root{
-        --surface:#1C1F26; --bg:#111318; --text1:#F0F2F5; --text2:#9CA3AF;
-        --border:rgba(255,255,255,.07);
-        --shadow-sm:0 1px 3px rgba(0,0,0,.35),0 1px 2px rgba(0,0,0,.25);
-        --shadow-md:0 4px 14px rgba(0,0,0,.4);
-        --primary-light:rgba(29,158,117,.14);
-        --c1-light:rgba(249,115,22,.14); --c2-light:rgba(59,130,246,.14); --c3-light:rgba(236,72,153,.14);
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg:#101013; --surface:#1B1D21; --surface2:#222429;
+        --text-primary:#E5E8EB; --text-secondary:#9BA5B1; --text-tertiary:#6B7684;
+        --divider:rgba(255,255,255,.07);
+        --blue-light:rgba(49,130,246,.16);
+        --green-bg:rgba(2,162,98,.16); --orange-bg:rgba(255,149,0,.14); --red-bg:rgba(240,68,82,.14);
+        --orange-text:#FFA938; --green-text:#3DD68C;
+        --red-text:#FF6B78;
+        --text-secondary-strong:#9BA5B1;
+        --shadow-card:none;
       }
     }
+
+    /* ============ BASE ============ */
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
     html{scroll-behavior:smooth;}
-    body{font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:400;line-height:1.6;background:var(--bg);color:var(--text1);min-height:100vh;-webkit-font-smoothing:antialiased;}
-    button{font-family:inherit;cursor:pointer;}
+    body{
+      font-family:var(--font);font-size:15px;font-weight:500;line-height:1.55;
+      letter-spacing:-.01em;background:var(--bg);color:var(--text-primary);
+      min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+    }
+    body.lock{overflow:hidden;}
+    button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;letter-spacing:inherit;}
+    a{color:var(--blue);text-decoration:none;}
+    :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px;}
+    .wrap{max-width:640px;margin:0 auto;padding:0 var(--page-x);}
 
-    /* HEADER */
-    .app-header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
-    .header-inner{max-width:760px;margin:0 auto;padding:0 20px;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
-    .logo{display:flex;align-items:center;gap:10px;flex-shrink:0;}
-    .logo-icon{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--primary-dark));display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;box-shadow:0 2px 8px rgba(29,158,117,.3);}
-    .logo-name{font-size:16px;font-weight:700;line-height:1.2;letter-spacing:-.3px;}
-    .logo-sub{font-size:11px;color:var(--text2);}
-    .date-badge{font-size:12px;font-weight:500;color:var(--text2);padding:5px 12px;border-radius:20px;background:var(--bg);border:1px solid var(--border);white-space:nowrap;}
+    /* ============ BIG HEADER ============ */
+    .big-header{background:var(--surface);padding-top:max(16px,env(safe-area-inset-top));}
+    .bh-inner{max-width:640px;margin:0 auto;padding:16px var(--page-x) 18px;}
+    .bh-caption{font-size:13px;font-weight:400;color:var(--text-secondary);margin-bottom:6px;}
+    .bh-title{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.3;}
+    /* 영업 요약 리스트 셀 */
+    .status-cell{
+      display:flex;align-items:center;gap:8px;width:100%;min-height:var(--touch-min);
+      margin-top:10px;padding:10px 14px;border-radius:var(--r-btn);background:var(--grey-100);
+      font-size:14px;font-weight:500;color:var(--text-secondary-strong);text-align:left;
+      transition:background var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out);
+    }
+    @media (prefers-color-scheme: dark){.status-cell{background:var(--surface2);}}
+    .status-cell:active{transform:scale(.985);}
+    .sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+    .sdot.open{background:var(--green);box-shadow:0 0 0 3px var(--green-bg);}
+    .sdot.closed{background:var(--grey-400);}
+    .sdot.vac{background:var(--orange);box-shadow:0 0 0 3px var(--orange-bg);}
+    .status-cell .chev{margin-left:auto;color:var(--text-tertiary);flex-shrink:0;transition:transform var(--dur-base) var(--ease-out);}
+    .status-cell[aria-expanded="true"] .chev{transform:rotate(180deg);}
+    .status-panel{display:none;margin-top:8px;border-radius:var(--r-btn);background:var(--grey-100);overflow:hidden;}
+    @media (prefers-color-scheme: dark){.status-panel{background:var(--surface2);}}
+    .status-panel.open{display:block;}
+    .status-row{display:flex;align-items:center;gap:10px;min-height:var(--touch-min);padding:10px 14px;font-size:14px;}
+    .status-row + .status-row{border-top:1px solid var(--divider);}
+    .status-row .sr-name{font-weight:600;}
+    .status-row .sr-label{margin-left:auto;font-size:14px;font-weight:500;color:var(--text-secondary);}
+    .status-row .sr-label.on{color:var(--green-text);}
+    .status-row .sr-label.vac{color:var(--orange-text);}
 
-    /* STATUS STRIP */
-    .status-strip{max-width:760px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
-    .status-strip::-webkit-scrollbar{display:none;}
-    .status-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow-sm);}
-    .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-    .sdot.open{background:#10B981;box-shadow:0 0 0 2px rgba(16,185,129,.25);}
-    .sdot.closed{background:#9CA3AF;}
-    .sdot.vac{background:#F59E0B;box-shadow:0 0 0 2px rgba(245,158,11,.25);}
+    /* ============ MINI BAR (스크롤 축소 헤더) ============ */
+    .sticky-head{position:sticky;top:0;z-index:100;background:var(--surface);}
+    .mini-bar{
+      max-height:0;overflow:hidden;opacity:0;
+      transition:max-height var(--dur-base) var(--ease-out),opacity var(--dur-base) var(--ease-out);
+    }
+    .sticky-head.scrolled .mini-bar{max-height:48px;opacity:1;}
+    /* D1: 하강 스크롤 중 미니바만 접기 (탭바·sub필터는 유지) */
+    .sticky-head.scrolled.hide-mini .mini-bar{max-height:0;opacity:0;}
+    .mini-inner{max-width:640px;margin:0 auto;padding:0 var(--page-x);height:48px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .mini-logo{font-size:15px;font-weight:700;letter-spacing:-.02em;}
+    .mini-date{font-size:13px;font-weight:400;color:var(--text-secondary);white-space:nowrap;}
+    /* P2-10: 미니바 영업 상태 축약 병기 */
+    .mini-status{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--text-secondary);white-space:nowrap;}
 
-    /* TAB NAV */
-    .tab-nav{position:sticky;top:60px;z-index:99;background:var(--surface);border-bottom:1px solid var(--border);}
-    .tab-scroll{max-width:760px;margin:0 auto;padding:0 20px;display:flex;overflow-x:auto;scrollbar-width:none;}
+    /* ============ SEGMENT TABS ============ */
+    .tab-nav{background:var(--surface);border-bottom:1px solid var(--divider);}
+    .tab-scroll{
+      max-width:640px;margin:0 auto;padding:0 calc(var(--page-x) - 8px);
+      display:flex;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;
+    }
     .tab-scroll::-webkit-scrollbar{display:none;}
-    .tab-btn{position:relative;padding:14px 16px;border:none;background:transparent;font-size:14px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;transition:color var(--t) var(--ease);}
-    .tab-btn::after{content:'';position:absolute;bottom:0;left:10px;right:10px;height:2.5px;border-radius:2px 2px 0 0;transform:scaleX(0);transform-origin:center;transition:transform var(--t) var(--ease);}
-    .tab-btn.active{font-weight:700;}
+    .tab-btn{
+      position:relative;min-height:48px;padding:0 14px;font-size:15px;font-weight:500;
+      color:var(--text-secondary);white-space:nowrap;flex-shrink:0;
+      transition:color var(--dur-fast) var(--ease-out);
+    }
+    .tab-btn::after{
+      content:'';position:absolute;bottom:0;left:12px;right:12px;height:2.5px;
+      border-radius:2px 2px 0 0;background:var(--text-primary);
+      transform:scaleX(0);transform-origin:center;transition:transform var(--dur-base) var(--ease-out);
+    }
+    .tab-btn.active{color:var(--text-primary);font-weight:700;}
     .tab-btn.active::after{transform:scaleX(1);}
-    .tab-btn.active{color:var(--tab-clr,var(--primary));}
-    .tab-btn.active::after{background:var(--tab-clr,var(--primary));}
-    .tab-btn:hover:not(.active){color:var(--text1);}
 
-    /* SUB FILTER */
-    .sub-filter{max-width:760px;margin:0 auto;padding:12px 20px;display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;background:var(--bg);}
+    /* ============ VACATION BANNER ============ */
+    .vac-banner{max-width:640px;margin:12px auto 0;padding:0 var(--page-x);}
+    .vac-inner{
+      display:flex;align-items:flex-start;gap:12px;padding:16px;
+      border-radius:var(--r-card);background:var(--orange-bg);
+      font-size:14px;font-weight:400;color:var(--grey-700);line-height:1.6;
+    }
+    @media (prefers-color-scheme: dark){.vac-inner{color:var(--text-secondary);}}
+    .vac-ico{font-size:22px;flex-shrink:0;line-height:1.4;}
+    .vac-inner b{color:var(--text-primary);font-weight:700;}
+    .vac-inner .vac-strong{color:var(--orange-text);font-weight:700;}
+    .vac-today{margin-top:2px;font-weight:600;}
+
+    /* ============ SUB FILTER CHIPS (sticky-head 내부) ============ */
+    .sub-filter{
+      background:var(--surface);border-bottom:1px solid var(--divider);
+      padding:8px var(--page-x);
+      display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;
+    }
+    @media (min-width:640px){.sub-filter{padding-left:calc((100% - 600px)/2);padding-right:calc((100% - 600px)/2);}}
     .sub-filter::-webkit-scrollbar{display:none;}
-    .sub-chip{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);white-space:nowrap;flex-shrink:0;transition:all var(--t) var(--ease);}
-    .sub-chip.active{color:#fff;border-color:transparent;}
-    .sub-chip:hover:not(.active){border-color:var(--c1);color:var(--c1);}
+    .chip{
+      position:relative;
+      display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;
+      margin:4px 0;border-radius:var(--r-chip);background:var(--grey-100);
+      font-size:14px;font-weight:500;color:var(--text-secondary);white-space:nowrap;flex-shrink:0;
+      transition:background var(--dur-fast) var(--ease-out),color var(--dur-fast) var(--ease-out),transform var(--dur-fast) var(--ease-out);
+    }
+    @media (prefers-color-scheme: dark){.chip{background:var(--surface2);}}
+    .chip:active{transform:scale(.96);}
+    .chip.active{background:var(--grey-900);color:#fff;font-weight:600;}
+    @media (prefers-color-scheme: dark){.chip.active{background:var(--grey-200);color:var(--grey-900);}}
+    /* 시각 36px 유지 + 터치 타깃 44px 확보 */
+    .chip::after{content:'';position:absolute;left:0;right:0;top:-4px;bottom:-4px;}
 
-    /* MAIN */
-    .main{max-width:760px;margin:0 auto;padding:20px 20px 100px;}
+    /* ============ MAIN ============ */
+    .main{max-width:640px;margin:0 auto;padding:16px var(--page-x) 24px;}
 
-    /* CAFE SECTION */
-    .cafe-section{margin-bottom:36px;}
-    .cafe-head{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+    /* 매장 화이트 카드 섹션 */
+    .cafe-card{background:var(--surface);border-radius:var(--r-card);padding:20px;margin-bottom:12px;}
+    .cafe-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
     .cafe-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-    .cafe-name{font-size:18px;font-weight:700;}
-    .open-tag{font-size:11px;font-weight:500;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .cafe-name{font-size:19px;font-weight:700;letter-spacing:-.02em;}
+    .badge{font-size:13px;font-weight:600;padding:4px 8px;border-radius:var(--r-badge);white-space:nowrap;}
+    .badge.open{background:var(--green-bg);color:var(--green-text);}
+    .badge.off{background:var(--grey-100);color:var(--grey-700);}
+    @media (prefers-color-scheme: dark){.badge.off{background:var(--surface2);color:var(--text-secondary);}}
+    .badge.vac{background:var(--orange-bg);color:var(--orange-text);}
+    .cafe-meta{font-size:14px;font-weight:400;color:var(--text-secondary);margin-top:4px;}
 
-    /* SUB SECTION (경슐랭 입점 식당) */
-    .sub-section{margin-bottom:28px;}
-    .sub-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-left:4px;flex-wrap:wrap;}
-    .sub-name{font-size:15px;font-weight:700;color:var(--text1);}
-    .sub-count{font-size:11px;color:var(--primary);background:var(--primary-light);padding:2px 8px;border-radius:6px;font-weight:500;}
-    .sub-badge{font-size:10.5px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
-    .sub-badge.open{background:rgba(16,185,129,.14);color:#059669;}
-    .sub-badge.off{background:rgba(156,163,175,.18);color:var(--text2);}
-    .sub-section.closed .menu-grid{opacity:.5;filter:grayscale(.35);transition:opacity var(--t);}
-    .sub-section.closed .menu-card:hover{transform:none;box-shadow:var(--shadow-sm);}
-
-    /* VACATION BANNER */
-    .vac-banner{max-width:760px;margin:12px auto 0;padding:0 20px;}
-    .vac-inner{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-radius:12px;background:linear-gradient(135deg,rgba(249,115,22,.15),rgba(249,115,22,.05));border:1px solid rgba(249,115,22,.28);font-size:12.5px;color:var(--text1);line-height:1.5;}
-    .vac-inner b{color:#EA580C;font-weight:700;}
-    .vac-ico{font-size:17px;flex-shrink:0;line-height:1.3;}
-    .vac-today{margin-top:3px;color:var(--text2);}
-    .vac-today b{color:var(--text1);}
-    @media(max-width:480px){.vac-banner{padding:0 14px;}}
-
-    /* SINGLE VIEW */
-    .single-header{display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
-    .single-name{font-size:22px;font-weight:900;letter-spacing:-.5px;}
-    .single-meta{font-size:12px;color:var(--text2);padding-bottom:2px;}
-    .info-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 16px;border-radius:var(--r-sm);margin-bottom:18px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);}
-    .info-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);}
-    .info-sep{width:1px;height:12px;background:var(--border);flex-shrink:0;}
-
-    /* MENU GRID */
-    .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
-    @media(max-width:480px){.menu-grid{grid-template-columns:1fr 1fr;gap:9px;}}
-    @media(max-width:320px){.menu-grid{grid-template-columns:1fr;}}
-
-    /* MENU CARD */
-    .menu-card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;opacity:0;transform:translateY(12px);animation:cardIn .28s var(--ease) forwards;transition:transform var(--t) var(--ease),box-shadow var(--t) var(--ease);display:flex;flex-direction:column;}
-    .menu-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
-    @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
-    .card-thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--bg);}
-    .card-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s var(--ease);}
-    .menu-card:hover .card-thumb img{transform:scale(1.06);}
-    .card-thumb--ph{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 38%, var(--phbg), var(--surface) 78%);}
-    .ph-emoji{font-size:42px;opacity:.85;}
-    .thumb-cat{position:absolute;left:8px;top:8px;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.82)!important;backdrop-filter:blur(6px);box-shadow:0 1px 5px rgba(0,0,0,.14);}
-    @media(prefers-color-scheme:dark){.thumb-cat{background:rgba(28,31,38,.8)!important;}}
-    .card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:2px;}
-    .card-name{font-size:14px;font-weight:700;line-height:1.3;}
-    .card-price{font-size:13px;font-weight:700;margin-top:2px;}
-
-    /* FAB */
-    .fab{position:fixed;bottom:28px;right:50%;transform:translateX(calc(50% + 360px));width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border:none;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-fab);z-index:200;transition:all var(--t) var(--ease);}
-    .fab:hover{transform:translateX(calc(50% + 360px)) scale(1.1);box-shadow:0 6px 28px rgba(29,158,117,.55);}
-    .fab:active{transform:translateX(calc(50% + 360px)) scale(.94);}
-    @media(max-width:760px){
-      .fab{right:20px;transform:none;}
-      .fab:hover{transform:scale(1.1);}
-      .fab:active{transform:scale(.94);}
+    /* sub 섹션 */
+    .sub-section{margin-top:18px;}
+    .sub-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+    .sub-name{font-size:17px;font-weight:600;letter-spacing:-.01em;}
+    .sub-count{font-size:13px;font-weight:500;color:var(--text-secondary);}
+    .sub-section.closed .card-thumb{filter:grayscale(.7);opacity:.7;}
+    .sub-section.closed .card-name,.sub-section.closed .card-price{color:var(--text-secondary);}
+    .sub-section.collapsed .menu-grid{display:none;}
+    .sub-toggle{
+      position:relative;
+      margin-left:auto;min-height:32px;padding:0 12px;border-radius:var(--r-chip);
+      background:var(--grey-100);color:var(--text-secondary);font-size:14px;font-weight:600;
+      transition:transform var(--dur-fast) var(--ease-out);
+    }
+    @media (prefers-color-scheme: dark){.sub-toggle{background:var(--surface2);}}
+    .sub-toggle:active{transform:scale(.96);}
+    /* 시각 32px 유지 + 터치 타깃 44px 확보 (칩 패턴 재사용) */
+    .sub-toggle::after,.more-btn::after{content:'';position:absolute;left:-4px;right:-4px;top:-6px;bottom:-6px;}
+    /* 전체보기 미리보기 축약: 2열 3행=6개만 노출 */
+    .sub-section.preview .menu-card:nth-child(n+7){display:none;}
+    .sub-section.collapsed .more-btn{display:none;}
+    .more-btn{
+      position:relative;display:block;width:100%;min-height:var(--touch-min);margin-top:10px;
+      border-radius:var(--r-btn);background:var(--grey-100);color:var(--text-secondary);
+      font-size:14px;font-weight:600;
+      transition:transform var(--dur-fast) var(--ease-out),background var(--dur-fast) var(--ease-out);
+    }
+    @media (prefers-color-scheme: dark){.more-btn{background:var(--surface2);}}
+    .more-btn:active{transform:scale(.98);}
+    /* 단독 뷰 메뉴 도구 행: 카테고리 칩 + 가격 정렬 토글 */
+    .tool-row{
+      display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;
+      margin-bottom:12px;
+    }
+    .tool-row::-webkit-scrollbar{display:none;}
+    /* M5: 전체보기 전역 도구 행 — 페이지 배경(grey-100) 위에서는 화이트 칩으로 대비 확보 */
+    .main>.tool-row .chip{background:var(--surface);box-shadow:var(--shadow-card);}
+    .main>.tool-row .chip.active{background:var(--grey-900);color:#fff;box-shadow:none;}
+    @media (prefers-color-scheme: dark){
+      .main>.tool-row .chip{background:var(--surface2);}
+      .main>.tool-row .chip.active{background:var(--grey-200);color:var(--grey-900);}
     }
 
-    /* MODAL */
-    .modal-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:flex;align-items:flex-end;justify-content:center;opacity:0;visibility:hidden;transition:opacity var(--t) var(--ease),visibility var(--t) var(--ease);}
-    .modal-overlay.open{opacity:1;visibility:visible;}
-    .modal{background:var(--surface);border-radius:24px 24px 0 0;padding:24px 24px 36px;width:100%;max-width:760px;max-height:92dvh;overflow-y:auto;transform:translateY(40px);transition:transform .28s var(--ease);position:relative;}
-    .modal-overlay.open .modal{transform:translateY(0);}
-    .modal-handle{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 18px;}
-    .modal-title{font-size:20px;font-weight:700;margin-bottom:18px;}
-    .btn-close{position:absolute;top:20px;right:20px;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--bg);color:var(--text2);display:flex;align-items:center;justify-content:center;transition:all var(--t) var(--ease);}
-    .btn-close:hover{background:var(--surface);color:var(--text1);}
+    /* ============ MENU GRID / CARD ============ */
+    .menu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+    @media (min-width:420px){.menu-grid{grid-template-columns:repeat(3,1fr);}}
+    @media (min-width:760px){.menu-grid{grid-template-columns:repeat(4,1fr);}}
+    @media (max-width:320px){.menu-grid{grid-template-columns:1fr;}}
 
-    /* FILTER CHIPS IN MODAL */
-    .filter-sec{margin-bottom:14px;}
-    .filter-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;}
-    .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
-    .chip-row.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
-    .chip-row.scroll::-webkit-scrollbar{display:none;}
-    .fchip{padding:7px 14px;min-height:36px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:500;color:var(--text2);transition:all var(--t) var(--ease);white-space:nowrap;flex-shrink:0;}
-    .fchip.active{background:var(--primary);border-color:var(--primary);color:#fff;}
-    .fchip[data-cafe="0"].active{background:var(--c1);border-color:var(--c1);}
-    .fchip[data-cafe="1"].active{background:var(--c2);border-color:var(--c2);}
-    .fchip[data-cafe="2"].active{background:var(--c3);border-color:var(--c3);}
-    .fchip:hover:not(.active){border-color:var(--primary);color:var(--primary);}
+    .menu-card{
+      background:var(--surface);border:1px solid var(--divider);border-radius:var(--r-thumb);
+      overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-card);
+      opacity:0;transform:translateY(12px);animation:cardIn .28s var(--ease-out) forwards;
+    }
+    .cafe-card .menu-card{background:var(--surface2);border-color:var(--divider);}
+    @keyframes cardIn{to{opacity:1;transform:translateY(0);}}
+    /* 최초 렌더 이후 재렌더 시 등장 애니메이션 억제 */
+    .no-anim .menu-card{animation:none;opacity:1;transform:none;}
+    .card-thumb{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--grey-100);}
+    .card-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .card-thumb--ph{display:flex;align-items:center;justify-content:center;}
+    .ph-emoji{font-size:44px;line-height:1;}
+    /* M4: 카테고리 색은 6px 도트로만 — 글자는 항상 고대비 primary */
+    .thumb-cat{
+      position:absolute;left:8px;top:8px;font-size:13px;font-weight:600;padding:3px 8px;
+      display:inline-flex;align-items:center;gap:4px;color:var(--text-primary);
+      border-radius:var(--r-badge);background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+    }
+    @media (prefers-color-scheme: dark){.thumb-cat{background:rgba(27,29,33,.9);}}
+    .tc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .card-body{padding:12px;display:flex;flex-direction:column;gap:2px;}
+    .card-name{font-size:15px;font-weight:600;line-height:1.35;color:var(--text-primary);}
+    .card-price{font-size:16px;font-weight:700;color:var(--text-primary);margin-top:2px;}
+    .card-price.tbd{font-size:13px;font-weight:400;color:var(--text-secondary);}
 
-    .pool-count{font-size:12px;color:var(--text2);text-align:center;margin:10px 0;padding:8px;background:var(--bg);border-radius:8px;}
-    .pool-count strong{color:var(--primary);font-weight:700;}
+    /* ============ SINGLE VIEW ============ */
+    .single-header{display:flex;align-items:baseline;gap:10px;margin:8px 0 14px;flex-wrap:wrap;}
+    .single-name{font-size:22px;font-weight:700;letter-spacing:-.02em;display:flex;align-items:center;gap:8px;}
+    .single-meta{font-size:13px;font-weight:400;color:var(--text-secondary);}
+    .info-card{background:var(--surface);border-radius:var(--r-card);padding:4px 20px;margin-bottom:16px;}
+    .info-row{display:flex;align-items:center;gap:10px;min-height:var(--touch-min);padding:10px 0;font-size:14px;color:var(--text-secondary);}
+    .info-row + .info-row{border-top:1px solid var(--divider);}
+    .info-row .ir-ico{flex-shrink:0;font-size:15px;}
+    .info-row .ir-val{margin-left:auto;font-weight:600;color:var(--text-primary);text-align:right;}
+    .info-row .ir-val.on{color:var(--green-text);}
+    .info-row .ir-val.off{color:var(--text-secondary);}
+    .info-row .ir-val.vac{color:var(--orange-text);}
+    .info-row .ir-val a{color:var(--blue);}
 
-    /* RESULT */
-    .result-area{min-height:170px;margin:14px 0;}
-    .result-placeholder{height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:var(--bg);border-radius:var(--r);color:var(--text2);font-size:14px;}
-    .rp-icon{font-size:42px;}
-    .result-spinning{background:var(--bg);border-radius:var(--r);padding:24px;text-align:center;animation:rpulse .35s ease infinite alternate;}
+    /* ============ FIXED BOTTOM CTA ============ */
+    .bottom-cta{
+      position:fixed;left:0;right:0;bottom:0;z-index:200;
+      padding:12px var(--page-x) calc(12px + env(safe-area-inset-bottom));
+      background:linear-gradient(to top,var(--bg) 65%,rgba(242,244,246,0));
+      pointer-events:none;
+    }
+    @media (prefers-color-scheme: dark){.bottom-cta{background:linear-gradient(to top,var(--bg) 65%,rgba(16,16,19,0));}}
+    .cta-btn{
+      pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:8px;
+      width:100%;max-width:600px;margin:0 auto;height:56px;border-radius:var(--r-btn);
+      background:var(--blue);color:#fff;font-size:17px;font-weight:700;letter-spacing:-.01em;
+      box-shadow:var(--shadow-float);
+      transition:transform var(--dur-fast) var(--ease-out),filter var(--dur-fast) var(--ease-out),
+        width var(--dur-base) var(--ease-out),max-width var(--dur-base) var(--ease-out),
+        border-radius var(--dur-base) var(--ease-out),gap var(--dur-base) var(--ease-out);
+    }
+    .cta-btn:active{transform:scale(.97);filter:brightness(.96);}
+    /* D1: 하강 스크롤 중 CTA를 우측 56px 원형 🎲 FAB로 축소 (하단 탭바 이동의 대체책) */
+    .bottom-cta.fab-mode .cta-btn{width:56px;max-width:56px;border-radius:50%;margin-right:0;gap:0;font-size:22px;padding:0;}
+    .bottom-cta.fab-mode .cta-label{display:none;}
+
+    /* ============ BOTTOM SHEET ============ */
+    .sheet-overlay{
+      position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.5);
+      display:flex;align-items:flex-end;justify-content:center;
+      opacity:0;visibility:hidden;
+      transition:opacity var(--dur-base) var(--ease-out),visibility var(--dur-base) var(--ease-out);
+    }
+    .sheet-overlay.open{opacity:1;visibility:visible;}
+    .sheet{
+      position:relative;width:100%;max-width:640px;max-height:92dvh;
+      display:flex;flex-direction:column;
+      background:var(--surface);border-radius:24px 24px 0 0;
+      transform:translateY(100%);transition:transform var(--dur-base) var(--ease-out);
+    }
+    .sheet-overlay.open .sheet{transform:translateY(0);transition:transform var(--dur-sheet) var(--ease-spring);}
+    .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--grey-300);margin:10px auto 4px;flex-shrink:0;}
+    .sheet-close{
+      position:absolute;top:12px;right:12px;width:var(--touch-min);height:var(--touch-min);
+      display:flex;align-items:center;justify-content:center;border-radius:50%;
+      color:var(--text-tertiary);font-size:18px;line-height:1;z-index:2;
+    }
+    .sheet-close:active{background:var(--grey-100);transform:scale(.94);}
+    .sheet-body{overflow-y:auto;padding:8px var(--page-x) 0;overscroll-behavior:contain;}
+    .sheet-title{font-size:26px;font-weight:700;letter-spacing:-.02em;margin-top:8px;}
+    .sheet-sub{font-size:13px;font-weight:400;color:var(--text-secondary);margin:4px 0 16px;}
+
+    .filter-sec{margin-bottom:12px;}
+    .filter-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;}
+    .chip-row{
+      display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;
+      margin:0 calc(-1 * var(--page-x));padding:0 var(--page-x);
+    }
+    /* P2-2: 오른쪽에 더 스크롤할 내용이 있을 때만 페이드 마스크 */
+    .chip-row.has-fade,.tool-row.has-fade{
+      -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);
+      mask-image:linear-gradient(to right,#000 calc(100% - 28px),transparent);
+    }
+    .chip-row::-webkit-scrollbar{display:none;}
+    /* P2-13: 흐림(opacity) 대신 명시적 비활성 색 — 라벨 ' · 0' 병기와 세트 */
+    .chip:disabled{background:var(--grey-100);color:var(--grey-400);cursor:not-allowed;}
+    @media (prefers-color-scheme: dark){.chip:disabled{background:var(--surface2);color:var(--grey-600);}}
+    .chip:disabled:active{transform:none;}
+
+    .pool-count{
+      font-size:14px;font-weight:500;color:var(--text-secondary-strong);text-align:center;
+      margin:14px 0;padding:12px;border-radius:var(--r-btn);background:var(--grey-100);
+    }
+    /* C2: 풀 0개 즉시 해결 버튼 (openNow 원인 한정) */
+    .pool-count .chip{margin-top:8px;background:var(--surface);box-shadow:var(--shadow-card);}
+    @media (prefers-color-scheme: dark){.pool-count{background:var(--surface2);}}
+    .pool-count strong{color:var(--blue);font-weight:700;}
+    .pool-hint{display:block;font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:2px;}
+
+    /* 결과 영역 */
+    .result-area{min-height:180px;margin-bottom:14px;}
+    .result-placeholder{
+      min-height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+      background:var(--grey-100);border-radius:var(--r-card);color:var(--text-secondary-strong);font-size:14px;font-weight:400;
+    }
+    @media (prefers-color-scheme: dark){.result-placeholder,.result-spinning,.result-final{background:var(--surface2);}}
+    .rp-icon{font-size:44px;}
+    .result-spinning{background:var(--grey-100);border-radius:var(--r-card);padding:28px 20px;text-align:center;animation:rpulse .35s ease infinite alternate;}
     @keyframes rpulse{from{opacity:.6}to{opacity:1}}
-    .result-final{background:var(--bg);border-radius:var(--r);padding:24px;text-align:center;animation:resultPop .3s var(--ease);}
-    @keyframes resultPop{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
-    .rf-emoji{font-size:48px;display:block;margin-bottom:10px;}
-    .rf-cafe{font-size:11px;font-weight:600;margin-bottom:4px;}
-    .rf-sub{font-size:11px;color:var(--text2);margin-bottom:4px;}
-    .rf-name{font-size:22px;font-weight:900;margin-bottom:10px;letter-spacing:-.5px;}
-    .rf-price{display:inline-block;padding:6px 20px;border-radius:20px;font-size:14px;font-weight:700;color:#fff;margin-bottom:12px;}
-    .rf-location{font-size:12px;color:var(--text2);padding:10px 14px;background:var(--surface);border-radius:10px;border:1px solid var(--border);margin-bottom:12px;text-align:left;display:flex;flex-direction:column;gap:4px;}
-    .rf-loc-row{display:flex;align-items:center;gap:6px;}
-    .rf-comment{font-size:12px;color:var(--text2);font-style:italic;padding-top:12px;border-top:1px solid var(--border);line-height:1.6;}
-    .rf-again{font-size:13px;font-weight:600;padding:10px 20px;border-radius:var(--r-sm);border:1.5px solid var(--primary);background:transparent;color:var(--primary);transition:all var(--t) var(--ease);}
-    .rf-again:hover{background:var(--primary);color:#fff;}
+    .rs-emoji{font-size:44px;display:block;margin-bottom:8px;}
+    .rs-name{font-size:19px;font-weight:700;}
+    .rs-cafe{font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:4px;}
+    .result-final{background:var(--grey-100);border-radius:var(--r-card);padding:24px 20px;text-align:center;animation:resultPop .3s var(--ease-spring);}
+    @keyframes resultPop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+    .rf-emoji{font-size:56px;display:block;margin-bottom:10px;line-height:1.2;}
+    /* C1: 사진 보유 메뉴는 이모지 대신 96px 라운드 썸네일 */
+    .rf-thumb{width:96px;height:96px;border-radius:var(--r-thumb);object-fit:cover;display:block;margin:0 auto 10px;}
+    /* A3: 매장명은 고대비 primary + 컬러 도트 병기 (컬러 텍스트 대비 미달 해소) */
+    .rf-cafe{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;margin-bottom:2px;color:var(--text-primary);}
+    .rf-sub{font-size:13px;font-weight:400;color:var(--text-secondary);margin-bottom:4px;}
+    .rf-name{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;}
+    .rf-price{display:inline-block;padding:6px 18px;border-radius:var(--r-chip);font-size:15px;font-weight:700;background:var(--blue-light);color:var(--blue);margin-bottom:14px;}
+    .rf-price.tbd{background:var(--grey-100);color:var(--text-secondary);}
+    @media (prefers-color-scheme: dark){.rf-price.tbd{background:var(--surface2);}}
+    .rf-warn{background:var(--red-bg);color:var(--red-text);font-size:13px;font-weight:700;border-radius:var(--r-badge);padding:8px 12px;margin-bottom:10px;}
+    .rf-warn.vac{background:var(--orange-bg);color:var(--orange-text);}
+    .rf-info{background:var(--surface);border-radius:var(--r-btn);padding:2px 14px;margin-bottom:14px;text-align:left;}
+    .rf-info-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:38px;padding:8px 0;font-size:13px;color:var(--text-secondary);}
+    .rf-info-row + .rf-info-row{border-top:1px solid var(--divider);}
+    .rf-info-row .on{color:var(--green-text);font-weight:600;margin-left:auto;}
+    .rf-info-row .off{color:var(--text-secondary);font-weight:600;margin-left:auto;}
+    .rf-again{
+      min-height:var(--touch-min);padding:10px 20px;border-radius:var(--r-btn);
+      background:var(--blue-light);color:var(--blue);font-size:14px;font-weight:700;
+      transition:transform var(--dur-fast) var(--ease-out);
+    }
+    .rf-again:active{transform:scale(.96);}
+    .rf-comment{font-size:13px;font-weight:400;color:var(--text-secondary);padding-top:12px;margin-top:12px;border-top:1px solid var(--divider);line-height:1.6;}
 
-    .btn-spin{width:100%;padding:14px;border:none;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff;border-radius:var(--r-sm);font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(29,158,117,.35);transition:all var(--t) var(--ease);}
-    .btn-spin:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(29,158,117,.45);}
-    .btn-spin:disabled{opacity:.5;transform:none;cursor:not-allowed;}
+    /* 히스토리 */
+    .history-sec{margin-bottom:14px;}
+    .history-label{font-size:13px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;}
+    .history-item{display:flex;align-items:center;gap:10px;min-height:var(--touch-min);padding:8px 14px;background:var(--grey-100);border-radius:var(--r-btn);font-size:14px;margin-bottom:6px;}
+    @media (prefers-color-scheme: dark){.history-item{background:var(--surface2);}}
+    .h-num{font-size:13px;color:var(--text-secondary);font-weight:600;width:16px;text-align:center;flex-shrink:0;}
+    .h-name{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .h-cafe{font-size:13px;font-weight:400;color:var(--text-secondary-strong);white-space:nowrap;}
+    /* A3+P2-14: 히스토리 매장 스팬 — 도트 병기 + 38% 말줄임, 가격 스팬 고정 */
+    .h-shop{display:inline-flex;align-items:center;gap:5px;max-width:38%;min-width:0;}
+    .h-shop-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .h-price{flex-shrink:0;}
 
-    /* HISTORY */
-    .history-sec{margin-top:14px;}
-    .history-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px;}
-    .history-item{display:flex;align-items:center;gap:10px;padding:7px 12px;background:var(--bg);border-radius:10px;font-size:13px;margin-bottom:5px;}
-    .h-num{font-size:11px;color:var(--text2);font-weight:600;width:16px;text-align:center;flex-shrink:0;}
-    .h-name{font-weight:600;flex:1;}
-    .h-cafe{font-size:11px;color:var(--text2);}
+    /* 시트 하단 sticky CTA */
+    .sheet-cta{
+      position:sticky;bottom:0;flex-shrink:0;
+      padding:12px var(--page-x) calc(12px + env(safe-area-inset-bottom));
+      background:var(--surface);border-top:1px solid var(--divider);
+    }
+    .btn-spin{
+      display:flex;align-items:center;justify-content:center;width:100%;height:56px;
+      border-radius:var(--r-btn);background:var(--blue);color:#fff;font-size:17px;font-weight:700;
+      transition:transform var(--dur-fast) var(--ease-out),filter var(--dur-fast) var(--ease-out),opacity var(--dur-fast) var(--ease-out);
+    }
+    .btn-spin:active:not(:disabled){transform:scale(.97);filter:brightness(.96);}
+    .btn-spin:disabled{opacity:.4;cursor:not-allowed;}
 
-    /* FOOTER */
-    footer{max-width:760px;margin:0 auto;border-top:1px solid var(--border);padding:20px;text-align:center;}
-    footer p{font-size:11px;color:var(--text2);line-height:1.9;}
-    .foot-link{color:var(--primary);font-weight:600;text-decoration:none;}
+    /* ============ FOOTER / EMPTY ============ */
+    footer{max-width:640px;margin:0 auto;padding:8px var(--page-x) calc(110px + env(safe-area-inset-bottom));text-align:center;}
+    footer p{font-size:13px;font-weight:400;color:var(--text-secondary);line-height:1.9;}
+    /* P2-11: 편집기 링크 44px 터치 타깃 (시각 크기 유지) */
+    .foot-link{display:inline-block;color:var(--blue);font-weight:600;padding:10px 6px;margin:-10px -6px;}
+    .empty{padding:40px 20px;text-align:center;color:var(--text-secondary);font-size:14px;font-weight:400;line-height:1.8;}
+    /* B1: 전체보기 전역 필터 빈 안내 — 카드 공간을 잡아먹지 않는 1줄 */
+    .empty-slim{padding:12px 0 4px;color:var(--text-secondary);font-size:14px;font-weight:400;}
 
-    /* EMPTY */
-    .empty{padding:48px 20px;text-align:center;color:var(--text2);font-size:14px;line-height:1.8;}
-
-    /* MOBILE SPECIFIC */
-    @media(max-width:480px){
-      .header-inner{padding:0 14px;height:54px;}
-      .tab-nav{top:54px;}
-      .tab-btn{padding:13px 13px;font-size:13px;}
-      .main{padding:16px 14px 90px;}
-      .sub-filter{padding:10px 14px;}
-      .status-strip{padding:8px 14px;}
-      .date-badge{display:none;}
-      .info-sep{display:none;}
-      .info-item{font-size:11px;}
+    /* ============ MOTION / A11Y ============ */
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}
+      html{scroll-behavior:auto;}
+      .menu-card{opacity:1;transform:none;}
     }
   </style>
 </head>
 <body>
 
-<header class="app-header">
-  <div class="header-inner">
-    <div class="logo">
-      <div class="logo-icon">🍽️</div>
-      <div>
-        <div class="logo-name">경기대 밥먹자</div>
-        <div class="logo-sub">수원캠퍼스 학식</div>
-      </div>
-    </div>
-    <div class="date-badge" id="dateBadge"></div>
+<!-- ① 빅 헤더 -->
+<header class="big-header" id="bigHeader">
+  <div class="bh-inner">
+    <div class="bh-caption">경기대 밥먹자 · 수원캠퍼스</div>
+    <h1 class="bh-title" id="headTitle"></h1>
+    <button class="status-cell" id="statusToggle" aria-expanded="false" aria-controls="statusPanel">
+      <span class="sdot open" id="statusDot"></span>
+      <span id="statusSummary">영업 상태 확인 중</span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 5.25L7 9.25l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="status-panel" id="statusPanel" role="region" aria-label="식당별 영업 상태"></div>
   </div>
 </header>
 
+<!-- ② 방학 배너 -->
 <div class="vac-banner" id="vacBanner" style="display:none"></div>
 
-<div class="status-strip" id="statusStrip"></div>
+<!-- ③ 미니바 + 세그먼트 탭 (sticky) -->
+<div class="sticky-head" id="stickyHead">
+  <div class="mini-bar">
+    <div class="mini-inner">
+      <span class="mini-logo">경기대 밥먹자</span>
+      <span class="mini-status" id="miniStatus"><span class="sdot closed" id="miniDot"></span><span id="miniLabel"></span></span>
+      <span class="mini-date" id="dateBadge"></span>
+    </div>
+  </div>
+  <nav class="tab-nav">
+    <div class="tab-scroll" id="tabNav"></div>
+  </nav>
+  <!-- ④ sub 필터칩 (sticky — 긴 리스트 스크롤 중에도 매장 전환 유지) -->
+  <div class="sub-filter" id="subFilter" style="display:none"></div>
+</div>
 
-<nav class="tab-nav">
-  <div class="tab-scroll" id="tabNav"></div>
-</nav>
-
-<div class="sub-filter" id="subFilter" style="display:none"></div>
-
+<!-- ⑤ 콘텐츠 -->
 <main class="main" id="mainContent"></main>
 
+<!-- ⑥ 푸터 -->
 <footer>
   <p>메뉴 정보는 실제와 다를 수 있습니다. 잘못된 정보는 <a class="foot-link" href="menu-editor.html">편집기</a>에서 수정해주세요.</p>
-  <p>경슐랭 (만권화밥·숑숑돈까스·버거&amp;타코·위델가·신머이쌀국수) · 이스퀘어 · 샐리박스</p>
+  <p>경슐랭 (위델가·만권화밥·숑숑돈까스·버거&amp;타코·신머이쌀국수) · 이스퀘어 · 샐리박스</p>
 </footer>
 
-<button class="fab" id="fabBtn" aria-label="랜덤 메뉴 추천">🎲</button>
+<!-- 하단 고정 CTA -->
+<div class="bottom-cta">
+  <button class="cta-btn" id="fabBtn" aria-label="랜덤 메뉴 추천 열기"><span class="cta-ico" aria-hidden="true">🎲</span><span class="cta-label">오늘 뭐 먹지?</span></button>
+</div>
 
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal" role="dialog" aria-modal="true">
-    <button class="btn-close" id="btnClose" aria-label="닫기">
-      <i data-lucide="x" width="15" height="15"></i>
-    </button>
-    <div class="modal-handle"></div>
-    <div class="modal-title">오늘 뭐 먹지? 🎲</div>
+<!-- ⑦ 랜덤추천 바텀시트 -->
+<div class="sheet-overlay" id="modalOverlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="랜덤 메뉴 추천">
+    <div class="sheet-handle"></div>
+    <button class="sheet-close" id="btnClose" aria-label="닫기"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+    <div class="sheet-body">
+      <div class="sheet-title">오늘 뭐 먹지?</div>
+      <div class="sheet-sub">오늘 운영하는 매장 메뉴에서 추천해요 · 단축운영 매장은 시간 미확인</div>
 
-    <div class="filter-sec">
-      <div class="filter-label">식당</div>
-      <div class="chip-row scroll" id="cafeFilter"></div>
-    </div>
-    <div class="filter-sec">
-      <div class="filter-label">카테고리</div>
-      <div class="chip-row scroll" id="catFilter2">
-        <button class="fchip active" data-cat="all">전체</button>
-        <button class="fchip" data-cat="rice">덮밥·밥류</button>
-        <button class="fchip" data-cat="noodle">면류</button>
-        <button class="fchip" data-cat="cutlet">돈까스</button>
-        <button class="fchip" data-cat="soup">탕·찌개</button>
-        <button class="fchip" data-cat="chicken">치킨류</button>
-        <button class="fchip" data-cat="burger">버거·타코</button>
-        <button class="fchip" data-cat="snack">분식류</button>
-        <button class="fchip" data-cat="western">샌드위치</button>
-        <button class="fchip" data-cat="drink">음료</button>
-        <button class="fchip" data-cat="side">사이드</button>
+      <div class="filter-sec">
+        <div class="filter-label">식당</div>
+        <div class="chip-row" id="cafeFilter"></div>
+        <div class="chip-row" style="margin-top:8px">
+          <button class="chip active" id="openNowChip" aria-pressed="true">✓ 지금 영업 중만</button>
+        </div>
+      </div>
+      <div class="filter-sec">
+        <div class="filter-label">카테고리</div>
+        <div class="chip-row" id="catFilter2"></div>
+      </div>
+      <div class="filter-sec">
+        <div class="filter-label">가격대</div>
+        <div class="chip-row" id="priceFilter">
+          <button class="chip active" data-price="all">전체</button>
+          <button class="chip" data-price="low">5천원 이하</button>
+          <button class="chip" data-price="mid">5-9천원</button>
+          <button class="chip" data-price="high">9천원 이상</button>
+        </div>
+      </div>
+
+      <div class="pool-count"><span id="poolMsg">지금 <strong id="poolNum">-</strong>개 메뉴에서 뽑을 수 있어요</span><span class="pool-hint" id="poolHint">주말·방학 로테이션 휴무 매장은 제외됩니다</span></div>
+
+      <div class="result-area" id="resultArea">
+        <div class="result-placeholder">
+          <span class="rp-icon">🎲</span>
+          <span>버튼을 눌러 오늘의 메뉴를 뽑아보세요!</span>
+        </div>
+      </div>
+
+      <div id="historySec" style="display:none" class="history-sec">
+        <div class="history-label">최근 추천</div>
+        <div id="historyList"></div>
       </div>
     </div>
-    <div class="filter-sec">
-      <div class="filter-label">가격대</div>
-      <div class="chip-row scroll" id="priceFilter">
-        <button class="fchip active" data-price="all">전체</button>
-        <button class="fchip" data-price="low">5천원 이하</button>
-        <button class="fchip" data-price="mid">5-9천원</button>
-        <button class="fchip" data-price="high">9천원 이상</button>
-      </div>
+    <div class="sheet-cta">
+      <button class="btn-spin" id="btnSpin">추천!</button>
     </div>
-
-    <div class="pool-count"><strong id="poolNum">-</strong>개 메뉴 중 추천 <span style="display:block;font-size:11px;margin-top:2px">오늘 운영 중인 식당·매장 메뉴만 대상입니다</span></div>
-
-    <div class="result-area" id="resultArea">
-      <div class="result-placeholder">
-        <span class="rp-icon">🎲</span>
-        <span>버튼을 눌러 오늘의 메뉴를 뽑아보세요!</span>
-      </div>
-    </div>
-
-    <div id="historySec" style="display:none" class="history-sec">
-      <div class="history-label">최근 추천</div>
-      <div id="historyList"></div>
-    </div>
-
-    <button class="btn-spin" id="btnSpin">추천!</button>
   </div>
 </div>
 
@@ -337,17 +568,17 @@ const COMMENTS = [
   '에너지 가득한 하루를 시작해봐요!',
   '오늘 이 메뉴로 결정! 후회 없을 거예요.',
   '이거 먹으면 오후 졸음도 날아갈 거예요.',
-  '교수님도 즐겨 드신다는 그 메뉴!',
+  '고민은 그만, 오늘은 이 메뉴로 가볍게 정해봐요.',
   '칼로리 걱정은 내일의 내가 할게요.',
-  '오늘 메뉴 중 단연 인기 1위 예상!',
+  '따뜻한 한 끼면 오늘 하루도 충분해요.',
   '한 끼 든든하게 채우고 공부 시작해봐요.',
-  '의외로 자꾸 생각나는 숨은 명작이에요.',
-  '오늘 운명의 메뉴가 나타났습니다!',
+  '무난하게 실패 없는 선택이에요.',
+  '오늘의 추천 메뉴가 정해졌어요!',
   '이 조합, 생각보다 훨씬 맛있어요.',
 ];
 
 /* ============================================================
-   DATA LOAD (localStorage 우선)
+   DATA LOAD (localStorage 우선 — menu-editor.html 계약 유지)
 ============================================================ */
 function loadCafes() {
   try {
@@ -364,6 +595,22 @@ let CAFES = loadCafes();
 ============================================================ */
 let curTab='all', curSub='all', filterCafe='all', filterCat='all', filterPrice='all';
 let spinHistory=[], spinTimer=null, isSpinning=false;
+let openNowOnly=true;                 // 랜덤시트 '지금 영업 중만' 토글 (기본 ON)
+let mainCat='all', sortPrice=false;   // 단독 뷰 메뉴 도구 행 (탭·sub 전환 시 리셋)
+let lastChosen=null, lastComment='';  // P2-5: 마지막 추천 결과 — 영업 상태 변화 시 라벨만 재렌더
+const expandedSubs=new Set();         // 휴무 sub 펼침 상태 (키 `${cafeIdx}-${subName}`) — 재렌더에도 보존
+const previewOpen=new Set();          // 전체보기 미리보기 확장 상태 (동일 키) — 재렌더에도 보존
+
+/* spinHistory persist — 별도 키(kgu-meal-spin-history), 당일만 복원. kgu-meal-cafes/ver 계약 불가침 */
+function saveSpinHistory(){
+  try{localStorage.setItem('kgu-meal-spin-history',JSON.stringify({date:todayStr(),items:spinHistory.slice(0,3)}));}catch(e){}
+}
+function loadSpinHistory(){
+  try{
+    const d=JSON.parse(localStorage.getItem('kgu-meal-spin-history')||'null');
+    if(d&&d.date===todayStr()&&Array.isArray(d.items))spinHistory=d.items.slice(0,3);
+  }catch(e){}
+}
 
 /* ============================================================
    UTILS
@@ -372,10 +619,13 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').repl
 function fmt(n){return n.toLocaleString('ko-KR')+'원';}
 function nowH(){const n=new Date();return n.getHours()+n.getMinutes()/60;}
 // true=영업 중, false=영업 종료, null=방학 단축운영(시간 미확인)
+// 검사 순서 중요: 주말 휴무가 vacUnknown보다 먼저 (샐리박스: closedWeekend+vacUnknown → 주말엔 false)
 function isOpen(c){
-  if(c.vacUnknown)return null;
   const d=new Date().getDay();
   if(c.closedWeekend&&(d===0||d===6))return false;
+  // B1: 단축운영은 평시보다 짧아질 뿐 — 평시 시간 밖이면 확정 종료(false), 평시 내에만 미확인(null)
+  if(c.vacUnknown){const h=nowH();if(h<c.openH||h>=c.closeH)return false;return null;}
+  if(c.vacation&&c.subs&&!c.subs.some(subOpenToday))return false; // 방학 로테이션: 오늘 운영 매장 0곳이면 휴무
   const h=nowH();return h>=c.openH&&h<c.closeH;
 }
 // 오늘 실제로 문 여는 날인지 (주말 휴무 반영, 시간과 무관) - 랜덤추천 풀 필터용
@@ -384,10 +634,17 @@ function cafeOpenTodayDate(c){
   if(c.closedWeekend&&(d===0||d===6))return false;
   return true;
 }
-function priceLabel(m){return m.tbd?'가격 확인 중':fmt(m.price);}
+/* P2-14: tbd라도 추정가가 있으면 병기 — 가격 필터 제외 로직(priceMatch)은 불변 */
+function priceLabel(m){return m.tbd?(m.price?'약 '+fmt(m.price)+' · 확인 중':'가격 확인 중'):fmt(m.price);}
 function formatDate(){
   const D=['일','월','화','수','목','금','토'],n=new Date();
   return `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} (${D[n.getDay()]})`;
+}
+function headTitleStr(){
+  const D=['일','월','화','수','목','금','토'],n=new Date();
+  const h=nowH();
+  const emo=h<11?'☀️':(h<17?'🍚':'🌙');
+  return `${n.getMonth()+1}월 ${n.getDate()}일 ${D[n.getDay()]}요일 ${emo}`;
 }
 function todayStr(){
   const n=new Date();
@@ -398,6 +655,15 @@ function subOpenToday(sub){
   if(!sub.days||!sub.days.length)return true;
   const t=todayStr();
   return sub.days.some(([f,to])=>t>=f&&t<=to);
+}
+// M6: 오늘이 속한 운영 기간의 종료일 - 'M/D' 문자열 또는 null (운영 중 sub 전용)
+function subCurrentRangeEnd(sub){
+  if(!sub.days||!sub.days.length)return null;
+  const t=todayStr();
+  const cur=sub.days.find(([f,to])=>t>=f&&t<=to);
+  if(!cur)return null;
+  const [,m,d]=cur[1].split('-');
+  return `${parseInt(m)}/${parseInt(d)}`;
 }
 // 다음 운영 시작일 (오늘 휴무인 경우) - 'M/D' 문자열 또는 null
 function subNextOpen(sub){
@@ -412,16 +678,65 @@ function allMenus(cafe){
   if(cafe.type==='foodcourt')return cafe.subs.flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
   return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
 }
+function openLabel(open){return open===null?'방학 단축운영':(open?'영업 중':'영업 종료');}
+function openCls(open){return open===null?'vac':(open?'open':'closed');}
+/* P3: 위치 → 네이버지도 검색 딥링크 (콘텐츠 링크 — CDN 자원 아님) */
+function mapLink(c){
+  return`<a href="https://map.naver.com/p/search/${encodeURIComponent('경기대학교 '+c.location)}" target="_blank" rel="noopener">${esc(c.location)} ↗</a>`;
+}
+/* P2-2: 가로 스크롤 칩 행 페이드 마스크 동적 토글 — 오른쪽에 잘린 내용이 있을 때만.
+   resize는 전역 1개 리스너로 처리 (재렌더 시 리스너 누적 방지, 분리된 노드는 자동 정리) */
+const fadeEls=new Set();
+function fadeUpd(el){el.classList.toggle('has-fade',el.scrollWidth>el.clientWidth&&el.scrollLeft<el.scrollWidth-el.clientWidth-4);}
+function bindFade(el){
+  if(!el)return;
+  if(!fadeEls.has(el)){
+    fadeEls.add(el);
+    el.addEventListener('scroll',()=>fadeUpd(el),{passive:true});
+  }
+  fadeUpd(el);
+}
+window.addEventListener('resize',()=>{
+  fadeEls.forEach(el=>{if(el.isConnected)fadeUpd(el);else fadeEls.delete(el);});
+});
 
 /* ============================================================
-   STATUS STRIP
+   HEADER STATUS (지금 영업 요약 + 식당별 상태 패널)
 ============================================================ */
 function renderStatus(){
-  document.getElementById('statusStrip').innerHTML=CAFES.map(c=>{
-    const open=isOpen(c);
-    const cls=open===null?'vac':(open?'open':'closed');
-    const label=open===null?'방학 단축운영':(open?'영업 중':'영업 종료');
-    return`<div class="status-chip"><span class="sdot ${cls}"></span><span>${esc(c.name)}</span><span style="color:var(--text2);font-size:11px">${label}</span></div>`;
+  const states=CAFES.map(c=>({c,open:isOpen(c)}));
+  const openCnt=states.filter(s=>s.open===true).length;
+  const vacCnt=states.filter(s=>s.open===null).length;
+  const dot=document.getElementById('statusDot');
+  const sum=document.getElementById('statusSummary');
+  // B5: 영업 1~2곳이면 매장명 병기 — '몇 곳'보다 '어디'가 실사용 정보
+  if(openCnt>0){
+    dot.className='sdot open';
+    const openNames=states.filter(s=>s.open===true).map(s=>s.c.name);
+    sum.textContent=(openCnt<=2?`지금 영업 중 · ${openNames.join(' · ')}`:`지금 영업 중 ${openCnt}곳`)
+      +(vacCnt?` · 단축운영 ${vacCnt}곳`:'');
+  }
+  else if(vacCnt>0){dot.className='sdot vac';sum.textContent=`영업 중 0곳 · 방학 단축운영 ${vacCnt}곳`;}
+  else {dot.className='sdot closed';sum.textContent='지금 영업 중인 식당이 없어요';}
+  // P2-10: 미니바 상태 축약 동기 갱신
+  const mdot=document.getElementById('miniDot'),mlab=document.getElementById('miniLabel');
+  if(mdot&&mlab){
+    if(openCnt>0){mdot.className='sdot open';mlab.textContent=`영업 ${openCnt}곳`;}
+    else if(vacCnt>0){mdot.className='sdot vac';mlab.textContent=`단축 ${vacCnt}곳`;}
+    else {mdot.className='sdot closed';mlab.textContent='영업 종료';}
+  }
+  document.getElementById('statusPanel').innerHTML=states.map(({c,open})=>{
+    // 방학 로테이션 식당은 오늘 운영 sub 병기 (예: '영업 중 · 숑숑돈까스')
+    let label=open===null?'🌴 '+openLabel(open):openLabel(open);
+    if(c.vacation&&c.subs&&open!==false){
+      const names=(c.subs||[]).filter(subOpenToday).map(s=>esc(s.name));
+      if(names.length)label=`${openLabel(open)} · ${names.join(' · ')}`;
+    }
+    return`<div class="status-row">
+      <span class="sdot ${openCls(open)}"></span>
+      <span class="sr-name">${esc(c.name)}</span>
+      <span class="sr-label ${open===null?'vac':(open?'on':'')}">${label}</span>
+    </div>`;
   }).join('');
 }
 
@@ -436,32 +751,35 @@ function renderVacBanner(){
   const openSubs=(c.subs||[]).filter(subOpenToday).map(s=>s.name);
   const others=CAFES.filter(x=>x.vacUnknown).map(x=>x.name);
   el.style.display='block';
+  // 2줄 구성: ①단축운영+시간 ②오늘 운영 매장 + 시간 미확인 매장 (정보 무손실)
   el.innerHTML=`<div class="vac-inner">
     <span class="vac-ico">🌴</span>
     <div>
-      <b>${esc(c.name)} 여름방학 단축운영</b> · 월~금 ${esc(c.hours)} <span style="color:var(--text2)">(${esc(c.lastOrder)})</span>
-      <div class="vac-today">오늘 <b>${todayShort()}</b> 운영 매장 · ${openSubs.length?`<b>${openSubs.map(esc).join(' · ')}</b>`:'<b>휴무</b>'}</div>
-      ${others.length?`<div class="vac-today">${others.map(esc).join(' · ')}도 방학 단축운영 중 <span style="opacity:.75">(운영시간 확인 중)</span></div>`:''}
+      <b>${esc(c.name)} 여름방학 단축운영</b> · 월~금 ${esc(c.hours)} (${esc(c.lastOrder)})
+      <div class="vac-today">오늘 ${todayShort()} 운영 · ${openSubs.length?`<b class="vac-strong">${openSubs.map(esc).join(' · ')}</b>`:'<b class="vac-strong">휴무</b>'}${others.length?` · ${others.map(esc).join('·')} 시간 미확인`:''}</div>
     </div>
   </div>`;
 }
 
 /* ============================================================
-   CARD
+   MENU CARD
 ============================================================ */
-function menuCard(m,hex,delay){
+function menuCard(m,idx){
   const cat=CAT_MAP[m.cat]||{label:m.cat||'',color:'#9CA3AF',bg:'rgba(156,163,175,.12)',emoji:'🍽️'};
+  const delay=(Math.min(idx,10)*.03).toFixed(2);
+  // M4: 카테고리 색은 도트에만 — 라벨은 고대비 primary 고정
+  const catTag=`<span class="thumb-cat"><span class="tc-dot" style="background:${cat.color}"></span>${cat.label}</span>`;
   const thumb=m.img
     ?`<div class="card-thumb"><img src="${esc(m.img)}" alt="${esc(m.name)}" loading="lazy" decoding="async">
-        <span class="thumb-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></div>`
-    :`<div class="card-thumb card-thumb--ph" style="--ph:${cat.color};--phbg:${cat.bg}">
+        ${catTag}</div>`
+    :`<div class="card-thumb card-thumb--ph" style="background:${cat.bg}">
         <span class="ph-emoji">${cat.emoji||'🍽️'}</span>
-        <span class="thumb-cat" style="background:${cat.bg};color:${cat.color}">${cat.label}</span></div>`;
-  return`<div class="menu-card${m.img?' has-img':''}" style="animation-delay:${delay}s">
+        ${catTag}</div>`;
+  return`<div class="menu-card" style="animation-delay:${delay}s">
     ${thumb}
     <div class="card-body">
       <div class="card-name">${esc(m.name)}</div>
-      <div class="card-price" style="color:${m.tbd?'var(--text2)':hex};${m.tbd?'font-weight:500;font-size:12px':''}">${priceLabel(m)}</div>
+      <div class="card-price${m.tbd?' tbd':''}">${priceLabel(m)}</div>
     </div>
   </div>`;
 }
@@ -469,47 +787,121 @@ function menuCard(m,hex,delay){
 /* ============================================================
    RENDER MAIN
 ============================================================ */
+function cafeBadge(open){
+  return open===null?`<span class="badge vac">🌴 방학 단축운영</span>`
+    :(open?`<span class="badge open">영업 중</span>`:`<span class="badge off">영업 종료</span>`);
+}
+function subBadge(c,s){
+  if(!c.vacation)return'';
+  const on=subOpenToday(s), nx=subNextOpen(s);
+  if(on){
+    const end=subCurrentRangeEnd(s); // M6/P2-9: 종료일 명시 — '~7/30'의 방향 모호성 제거
+    return`<span class="badge open">오늘 운영${end?` · ${end}까지 운영`:''}</span>`;
+  }
+  // P2-9: days 전 기간 종료 sub는 '로테이션 종료'로 사실만 (미래 추정 문구 금지 — 라운드3 원칙)
+  const ended=s.days&&s.days.length&&s.days.every(([,to])=>to<todayStr());
+  return`<span class="badge off">오늘 휴무${nx?` · ${nx} 오픈`:(ended?' · 방학 로테이션 종료':' · 운영 일정 확인 중')}</span>`;
+}
+/* 단독 뷰 메뉴 도구 행: 보유 카테고리 칩 + 가격 낮은순 토글 (state: mainCat/sortPrice) */
+function menuToolRow(menus){
+  if(menus.length<2)return'';
+  const cats=[...new Set(menus.map(m=>m.cat))].filter(k=>CAT_MAP[k]);
+  // B2: 정렬 칩을 2번째로 — 스크롤 없이 항상 보이는 위치
+  return`<div class="tool-row">
+    <button class="chip${mainCat==='all'?' active':''}" data-mcat="all">전체</button>
+    <button class="chip${sortPrice?' active':''}" data-sort="price" aria-pressed="${sortPrice}">↓ 가격 낮은순</button>
+    ${cats.map(k=>`<button class="chip${mainCat===k?' active':''}" data-mcat="${k}">${CAT_MAP[k].label}</button>`).join('')}
+  </div>`;
+}
+function applyMenuTools(menus){
+  let ms=mainCat==='all'?menus:menus.filter(m=>m.cat===mainCat);
+  if(sortPrice)ms=[...ms].sort((a,b)=>a.price-b.price||(a.tbd?1:0)-(b.tbd?1:0)); // P2-2: 추정가 우선 정렬, tbd는 동가 후순위 (비파괴)
+  return ms;
+}
+/* forceExpand: 휴무 sub를 직접 선택했을 때 접힘 해제 + 전용 도구 행 표시.
+   M5: 도구(mainCat/sortPrice)는 운영 sub 전체에 적용 — 휴무 collapsed sub는 대상 외 */
+function subSection(c,s,forceExpand){
+  if(!s.menus.length)return'';
+  const on=subOpenToday(s);
+  const closed=c.vacation&&!on;
+  const key=`${CAFES.indexOf(c)}-${s.name}`;
+  const collapsible=closed&&!forceExpand;
+  const collapse=collapsible&&!expandedSubs.has(key);
+  const toolTarget=forceExpand||!closed||!collapse; // P2-7: 펼친 휴무 sub에도 도구 적용 (필터-화면 불일치 해소)
+  const ms=toolTarget?applyMenuTools(s.menus):s.menus;
+  // B1①: 전체보기 전역 필터에서 매치 0인 운영 sub는 섹션째 생략 (단독 뷰는 현행 .empty 유지)
+  if(curTab==='all'&&!forceExpand&&!closed&&toolTarget&&!ms.length)return'';
+  // 전체보기 한정 미리보기 축약 (운영 sub · 6개 초과 · collapsed와 독립 · 도구 사용 중엔 비활성)
+  const preview=curTab==='all'&&!closed&&s.menus.length>6&&!previewOpen.has(key)&&mainCat==='all'&&!sortPrice;
+  return`<div class="sub-section${closed?' closed':''}${collapse?' collapsed':''}${preview?' preview':''}" data-key="${esc(key)}">
+    <div class="sub-head">
+      <span class="sub-name">${esc(s.name)}</span>
+      <span class="sub-count">${preview?`6/${s.menus.length}개`:`${ms.length}개`}</span>
+      ${subBadge(c,s)}
+      ${collapsible?`<button class="sub-toggle" aria-expanded="${String(!collapse)}">${collapse?'메뉴 보기':'접기'}</button>`:''}
+    </div>
+    ${forceExpand?menuToolRow(s.menus):''}
+    ${toolTarget&&!ms.length
+      ?(curTab==='all'?`<div class="empty-slim">해당 카테고리 없음</div>`:`<div class="empty">이 카테고리 메뉴가 없어요</div>`)
+      :`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,i)).join('')}</div>`}
+    ${preview?`<button class="more-btn">메뉴 ${s.menus.length}개 전체 보기</button>`:''}
+  </div>`;
+}
+
 function renderMain(){
   const root=document.getElementById('mainContent');
   const subFilter=document.getElementById('subFilter');
+  fadeEls.forEach(el=>{if(!el.isConnected)fadeEls.delete(el);}); // P2-6: 분리 노드 즉시 정리
 
   if(curTab==='all'){
     subFilter.style.display='none';
-    root.innerHTML=CAFES.map((c,ci)=>{
-      const open=isOpen(c);
+    // M5: 전체보기 전역 도구 행 — 오늘 운영 섹션의 메뉴 합집합 기준, 운영 섹션 전체에 적용
+    const globalMenus=CAFES.flatMap(c=>c.type==='foodcourt'
+      ?c.subs.filter(s=>!c.vacation||subOpenToday(s)).flatMap(s=>s.menus)
+      :(c.menus||[]));
+    // B3: 영업 종료(false) 매장을 뒤로 — stable 정렬, 원본 ci 보존 (previewOpen/expandedSubs 키·탭 매핑 불변)
+    root.innerHTML=menuToolRow(globalMenus)+CAFES.map((c,ci)=>({c,ci,open:isOpen(c)}))
+      .sort((a,b)=>(b.open!==false)-(a.open!==false))
+      .map(({c,ci,open})=>{
       let body='';
       if(c.type==='foodcourt'){
-        body=c.subs.map(s=>{
-          if(!s.menus.length)return'';
-          const on=subOpenToday(s), nx=subNextOpen(s);
-          const badge=c.vacation
-            ?(on?`<span class="sub-badge open">오늘 운영</span>`
-                :`<span class="sub-badge off">오늘 휴무${nx?` · ${nx} 오픈`:''}</span>`)
-            :'';
-          return`<div class="sub-section${c.vacation&&!on?' closed':''}">
-            <div class="sub-head">
-              <div class="sub-name">${esc(s.name)}</div>
-              <div class="sub-count">${s.menus.length}개</div>
-              ${badge}
-            </div>
-            <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
-          </div>`;
-        }).join('');
+        // 오늘 운영 매장 우선 (stable sort — 그룹 내 data.js 순서 유지, 위델가 최우선)
+        const sorted=[...c.subs].sort((a,b)=>subOpenToday(b)-subOpenToday(a));
+        body=sorted.map(s=>subSection(c,s)).join('');
+        // B1③: 전역 필터에 매치되는 sub가 0이면 헤더+한 줄 안내만
+        if(mainCat!=='all'){
+          const anyMatch=sorted.some(s=>{
+            if(!s.menus.length)return false;
+            const on=subOpenToday(s);
+            const closed=c.vacation&&!on;
+            const expanded=expandedSubs.has(`${ci}-${s.name}`);
+            return(!closed||expanded)&&applyMenuTools(s.menus).length>0;
+          });
+          if(!anyMatch)body=`<div class="empty-slim">해당 카테고리 없음</div>`;
+        }
       } else {
-        const ms=c.menus||[];
-        body=ms.length
-          ?`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>`
+        const ms0=c.menus||[];
+        const ms=applyMenuTools(ms0); // M5: 전역 도구 적용
+        const key=`${ci}-`;
+        const preview=ms0.length>6&&!previewOpen.has(key)&&mainCat==='all'&&!sortPrice; // 전체보기 미리보기 축약 (normal 공통)
+        body=ms0.length
+          ?(ms.length
+            ?`<div class="sub-section${preview?' preview':''}" data-key="${esc(key)}">
+                <div class="menu-grid">${ms.map((m,i)=>menuCard(m,i)).join('')}</div>
+                ${preview?`<button class="more-btn">메뉴 ${ms0.length}개 전체 보기</button>`:''}
+              </div>`
+            :`<div class="empty-slim">해당 카테고리 없음</div>`)
           :`<div class="empty">메뉴 데이터 준비 중 - 편집기에서 추가해주세요</div>`;
       }
-      return`<div class="cafe-section">
+      return`<section class="cafe-card">
         <div class="cafe-head">
-          <div class="cafe-dot" style="background:${c.colorHex}"></div>
-          <div class="cafe-name">${esc(c.name)}</div>
-          <div class="open-tag" style="background:${open===null?'rgba(245,158,11,.14)':(open?'rgba(16,185,129,.12)':'var(--bg)')};color:${open===null?'#D97706':(open?'#059669':'var(--text2)')}">${open===null?'🌴 방학 단축운영':(open?'영업 중':'영업 종료')}</div>
-          <div style="font-size:12px;color:var(--text2)">${esc(c.location)} · ${open===null?'운영시간 확인 중':esc(c.hours)}</div>
+          <span class="cafe-dot" style="background:${c.colorHex}"></span>
+          <span class="cafe-name">${esc(c.name)}</span>
+          ${cafeBadge(open)}
         </div>
+        <div class="cafe-meta">${c.type==='foodcourt'?`푸드코트 · 코너 ${c.subs.length}곳 · `:''}${mapLink(c)} · ${open===null?`평시 ${esc(c.hours)} · 단축운영 시 변동`:esc(c.hours)}</div>
         ${body}
-      </div>`;
+      </section>`;
     }).join('');
 
   } else {
@@ -518,84 +910,72 @@ function renderMain(){
     const open=isOpen(c);
 
     if(c.type==='foodcourt'){
-      // 서브 필터 렌더
+      // sub 필터칩 (data.js subs 순서 그대로 — 위델가 첫 번째)
       subFilter.style.display='flex';
-      const subs=c.subs;
-      subFilter.innerHTML=`<button class="sub-chip ${curSub==='all'?'active':''}" data-sub="all" style="${curSub==='all'?`background:${c.colorHex};border-color:${c.colorHex}`:''}">전체</button>`
-        +subs.map((s,i)=>`<button class="sub-chip ${curSub===String(i)?'active':''}" data-sub="${i}"
-          style="${curSub===String(i)?`background:${c.colorHex};border-color:${c.colorHex}`:''}">
-          ${esc(s.name)}</button>`).join('');
-      subFilter.querySelectorAll('.sub-chip').forEach(ch=>ch.addEventListener('click',()=>{
-        curSub=ch.dataset.sub; renderMain();
+      subFilter.innerHTML=`<button class="chip ${curSub==='all'?'active':''}" data-sub="all">전체</button>`
+        +c.subs.map((s,i)=>{
+          const on=subOpenToday(s);
+          return`<button class="chip ${curSub===String(i)?'active':''}" data-sub="${i}">${esc(s.name)}${c.vacation&&!on?' · 휴무':''}</button>`;
+        }).join('');
+      subFilter.querySelectorAll('.chip').forEach(ch=>ch.addEventListener('click',()=>{
+        curSub=ch.dataset.sub; mainCat='all'; sortPrice=false; renderMain(); // sub 전환 시 도구 리셋
       }));
 
-      const activeSubs=curSub==='all'?subs:[subs[parseInt(curSub)]];
-      const body=activeSubs.map(s=>{
-        if(!s.menus.length)return`<div class="empty">메뉴 없음</div>`;
-        const on=subOpenToday(s), nx=subNextOpen(s);
-        const badge=c.vacation
-          ?(on?`<span class="sub-badge open">오늘 운영</span>`
-              :`<span class="sub-badge off">오늘 휴무${nx?` · ${nx} 오픈`:''}</span>`)
-          :'';
-        return`<div class="sub-section${c.vacation&&!on?' closed':''}">
-          <div class="sub-head"><div class="sub-name">${esc(s.name)}</div><div class="sub-count">${s.menus.length}개</div>${badge}</div>
-          <div class="menu-grid">${s.menus.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>
-        </div>`;
-      }).join('');
+      const activeSubs=curSub==='all'
+        ?[...c.subs].sort((a,b)=>subOpenToday(b)-subOpenToday(a)) // 오늘 운영 우선, stable
+        :[c.subs[parseInt(curSub)]];
+      // 휴무 sub 직접 선택 시 접힘 해제(forceExpand) + 도구 행 표시
+      const body=activeSubs.map(s=>s.menus.length?subSection(c,s,curSub!=='all'):`<div class="empty">메뉴 없음</div>`).join('');
+      const openSubs=(c.subs||[]).filter(subOpenToday).map(s=>esc(s.name)).join(' · ');
+      // M5: 푸드코트 '전체' 뷰 상단 도구 행 — 오늘 운영 sub 메뉴 합집합 기준
+      const fcToolRow=curSub==='all'
+        ?menuToolRow(c.subs.filter(s=>!c.vacation||subOpenToday(s)).flatMap(s=>s.menus))
+        :'';
 
       root.innerHTML=`<div>
         <div class="single-header">
-          <div class="single-name" style="color:${c.colorHex}">${esc(c.name)}</div>
+          <div class="single-name"><span class="cafe-dot" style="background:${c.colorHex}"></span>${esc(c.name)}</div>
           <div class="single-meta">푸드코트 · ${c.subs.reduce((a,s)=>a+s.menus.length,0)}개 메뉴</div>
         </div>
-        <div class="info-bar">
-          <div class="info-item">📍 ${esc(c.location)}</div>
-          <div class="info-sep"></div>
-          <div class="info-item">🕐 ${esc(c.hours)}</div>
-          <div class="info-sep"></div>
-          <div class="info-item" style="color:${open?'#059669':'var(--text2)'}">
-            <span style="width:7px;height:7px;border-radius:50%;background:${open?'#10B981':'#9CA3AF'};display:inline-block"></span>
-            ${open?'지금 영업 중':'영업 종료'}
-          </div>
-          <div class="info-sep"></div>
-          <div class="info-item" style="color:var(--text2)">${c.vacation?'🌴 방학 단축 · 주말 휴무':'주말 휴무'}</div>
+        <div class="info-card">
+          <div class="info-row"><span class="ir-ico">📍</span>위치<span class="ir-val">${mapLink(c)}</span></div>
+          <div class="info-row"><span class="ir-ico">🕐</span>운영시간<span class="ir-val">${open===null?`평시 ${esc(c.hours)} · 단축운영 시 변동`:esc(c.hours)}</span></div>
+          <div class="info-row"><span class="ir-ico">🍽️</span>영업 상태<span class="ir-val ${open===null?'vac':(open?'on':'off')}">${open===null?'🌴 여름방학 단축운영 중':(open?'지금 영업 중':'영업 종료')}</span></div>
+          <div class="info-row"><span class="ir-ico">📅</span>휴무<span class="ir-val off">${c.vacation?'🌴 방학 단축 · 주말 휴무':'주말 휴무'}</span></div>
+          ${c.vacation?`<div class="info-row"><span class="ir-ico">🌴</span>오늘 운영<span class="ir-val vac">${openSubs||'휴무'}</span></div>`:''}
         </div>
-        ${c.vacation?`<div class="info-item" style="color:#EA580C;font-size:12px;margin:-6px 0 16px;padding-left:2px">오늘 운영 · ${(c.subs||[]).filter(subOpenToday).map(s=>esc(s.name)).join(' · ')||'휴무'}</div>`:''}
-        ${body}
+        <div class="cafe-card">${fcToolRow}${body}</div>
       </div>`;
 
     } else {
       subFilter.style.display='none';
       const ms=c.menus||[];
-      const open=isOpen(c);
+      const fms=applyMenuTools(ms);
       root.innerHTML=`<div>
         <div class="single-header">
-          <div class="single-name" style="color:${c.colorHex}">${esc(c.name)}</div>
+          <div class="single-name"><span class="cafe-dot" style="background:${c.colorHex}"></span>${esc(c.name)}</div>
           <div class="single-meta">${ms.length}개 메뉴</div>
         </div>
-        <div class="info-bar">
-          <div class="info-item">📍 ${esc(c.location)}</div>
-          <div class="info-sep"></div>
-          <div class="info-item">🕐 ${open===null?'운영시간 확인 중':esc(c.hours)}</div>
-          <div class="info-sep"></div>
-          <div class="info-item" style="color:${open===null?'#D97706':(open?'#059669':'var(--text2)')}">
-            <span style="width:7px;height:7px;border-radius:50%;background:${open===null?'#F59E0B':(open?'#10B981':'#9CA3AF')};display:inline-block"></span>
-            ${open===null?'🌴 여름방학 단축운영 중':(open?'지금 영업 중':'영업 종료')}
-          </div>
+        <div class="info-card">
+          <div class="info-row"><span class="ir-ico">📍</span>위치<span class="ir-val">${mapLink(c)}</span></div>
+          <div class="info-row"><span class="ir-ico">🕐</span>운영시간<span class="ir-val">${open===null?`평시 ${esc(c.hours)} · 단축운영 시 변동`:esc(c.hours)}</span></div>
+          <div class="info-row"><span class="ir-ico">🍽️</span>영업 상태<span class="ir-val ${open===null?'vac':(open?'on':'off')}">${open===null?'🌴 여름방학 단축운영 중':(open?'지금 영업 중':'영업 종료')}</span></div>
         </div>
         ${ms.length
-          ?`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,c.colorHex,i*.03)).join('')}</div>`
+          ?`<div class="cafe-card">${menuToolRow(ms)}${fms.length
+              ?`<div class="sub-section" style="margin-top:0"><div class="menu-grid">${fms.map((m,i)=>menuCard(m,i)).join('')}</div></div>`
+              :`<div class="empty">이 카테고리 메뉴가 없어요</div>`}</div>`
           :`<div class="empty">메뉴 데이터 준비 중 - <a class="foot-link" href="menu-editor.html">편집기</a>에서 추가</div>`}
       </div>`;
     }
   }
-  if(typeof lucide!=='undefined')lucide.createIcons();
+  // P2-2: 재렌더된 도구 행 페이드 바인딩
+  document.querySelectorAll('.tool-row').forEach(bindFade);
 }
 
 /* ============================================================
-   POOL / RANDOM
+   POOL / RANDOM (오늘 실제 운영 중인 식당/매장의 메뉴만)
 ============================================================ */
-// 랜덤추천 대상: 오늘 실제 운영 중인 식당/매장의 메뉴만
 function poolMenus(cafe){
   if(!cafeOpenTodayDate(cafe))return[]; // 주말 휴무 등 오늘 문 닫는 식당 제외
   if(cafe.type==='foodcourt')
@@ -604,79 +984,202 @@ function poolMenus(cafe){
       .flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
   return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
 }
+// '지금 영업 중만' ON이면 영업 종료(false) 식당 제외 — null(vacUnknown)은 배제 근거 없어 유지
+function cafeInPool(c){
+  return !(openNowOnly&&isOpen(c)===false);
+}
+function priceMatch(m){
+  if(filterPrice!=='all'&&m.tbd)return false; // 가격 미확인 메뉴는 가격 필터 시 제외
+  if(filterPrice==='low'&&m.price>5000)return false;
+  if(filterPrice==='mid'&&(m.price<=5000||m.price>=9000))return false;
+  if(filterPrice==='high'&&m.price<9000)return false;
+  return true;
+}
 function getPool(){
   const all=[];
   CAFES.forEach((c,ci)=>{
     if(filterCafe!=='all'&&parseInt(filterCafe)!==ci)return;
+    if(!cafeInPool(c))return;
     const ms=poolMenus(c);
     ms.forEach(m=>{
+      if(filterCat==='all'&&m.cat==='drink')return; // P2-8: '전체' 스핀에서 음료 제외 — 음료·카페 칩 직접 선택 시만 포함
       if(filterCat!=='all'&&m.cat!==filterCat)return;
-      if(filterPrice!=='all'&&m.tbd)return; // 가격 미확인 메뉴는 가격 필터 시 제외
-      if(filterPrice==='low'&&m.price>=5000)return;
-      if(filterPrice==='mid'&&(m.price<5000||m.price>=9000))return;
-      if(filterPrice==='high'&&m.price<9000)return;
+      if(!priceMatch(m))return;
       all.push({...m,cafeIdx:ci});
     });
   });
   return all;
 }
-
-function updatePoolCount(){
-  const n=getPool().length;
-  document.getElementById('poolNum').textContent=n;
-  const btn=document.getElementById('btnSpin');
-  btn.disabled=n===0;
+// 카테고리별 풀 개수 (filterCafe·filterPrice·영업중 토글 적용, filterCat 무시) — 0개 칩 비활성용
+function catPoolCounts(){
+  const counts={};
+  CAFES.forEach((c,ci)=>{
+    if(filterCafe!=='all'&&parseInt(filterCafe)!==ci)return;
+    if(!cafeInPool(c))return;
+    poolMenus(c).forEach(m=>{
+      if(!priceMatch(m))return;
+      counts[m.cat]=(counts[m.cat]||0)+1;
+    });
+  });
+  return counts;
+}
+/* 카테고리 칩 동적 렌더 — CAT_MAP 단일 소스 (라벨 불일치 원천 차단) */
+function renderCatFilterChips(){
+  document.getElementById('catFilter2').innerHTML=
+    `<button class="chip ${filterCat==='all'?'active':''}" data-cat="all">전체</button>`+
+    Object.entries(CAT_MAP).map(([k,v])=>
+      `<button class="chip ${filterCat===k?'active':''}" data-cat="${k}">${v.label}</button>`).join('');
+  updateCatChipStates();
+  bindFade(document.getElementById('catFilter2'));
+}
+function updateCatChipStates(auto){
+  const counts=catPoolCounts();
+  // 활성 카테고리가 0개가 되면 '전체'로 리셋해 막다른 상태 해소 (재호출 1회 — filterCat='all'이라 재귀 안전)
+  // P2-4: auto(60초 갱신) 경로에서는 사용자가 고른 카테고리를 몰래 리셋하지 않음 — disabled만 갱신
+  if(!auto&&filterCat!=='all'&&!(counts[filterCat]>0)){filterCat='all';renderCatFilterChips();return;}
+  document.querySelectorAll('#catFilter2 .chip').forEach(ch=>{
+    const k=ch.dataset.cat;
+    if(k==='all')return;
+    const dis=!(counts[k]>0);
+    ch.disabled=dis;
+    // P2-13: 비활성 사유 가시화 — 라벨에 ' · 0' 병기 + 툴팁
+    ch.textContent=dis?`${CAT_MAP[k].label} · 0`:CAT_MAP[k].label;
+    if(dis)ch.title='지금 조건에서 뽑을 메뉴가 0개예요';else ch.removeAttribute('title');
+  });
 }
 
-function doSpin(){
-  if(isSpinning)return;
+function updatePoolCount(auto){
+  updateCatChipStates(auto); // P2-4: auto 전파 — 자동 갱신은 filterCat 리셋 없이 disabled만
   const pool=getPool();
+  const n=pool.length;
+  // P2-1: 풀 0개 원인 탐지 — boolean 플래그(가격대 → 영업중 토글 → 카테고리 휴무 순)
+  let zeroMsg='',openCause=false;
+  if(n===0){
+    let priceCause=false;
+    if(filterPrice!=='all'){
+      const p0=filterPrice;filterPrice='all';
+      priceCause=getPool().length>0;
+      filterPrice=p0;
+    }
+    if(!priceCause&&openNowOnly){
+      openNowOnly=false;
+      openCause=getPool().length>0;
+      openNowOnly=true;
+    }
+    const catCause=filterCat!=='all'; // P2-4 auto 경로에서 리셋이 생략되므로 도달 가능
+    zeroMsg=priceCause?'이 조건의 가격대 메뉴가 없어요 — 가격대를 넓혀보세요'
+      :openCause?'지금 영업 중 매장에 없어요'
+      :catCause?'이 카테고리 매장은 오늘 휴무예요'
+      :'오늘 뽑을 수 있는 메뉴가 없어요';
+  }
+  document.getElementById('poolMsg').innerHTML=n===0
+    ?esc(zeroMsg)+(openCause?`<br><button class="chip" id="poolFixBtn">영업시간 무시하고 보기</button>`:'')
+    :`지금 <strong id="poolNum">${n}</strong>개 메뉴에서 뽑을 수 있어요`;
+  // C2: 원인이 openNowOnly일 때 즉시 해결 버튼 — 칩 클릭 로직 재사용 (상태 이중화 금지)
+  const fixBtn=document.getElementById('poolFixBtn');
+  if(fixBtn)fixBtn.addEventListener('click',()=>document.getElementById('openNowChip').click());
+  document.getElementById('btnSpin').disabled=n===0;
+  // 가격 필터 적용 시 tbd(가격 미확인) 메뉴가 몇 개 빠졌는지 안내
+  let tbdCnt=0;
+  if(filterPrice!=='all'){
+    CAFES.forEach((c,ci)=>{
+      if(filterCafe!=='all'&&parseInt(filterCafe)!==ci)return;
+      if(!cafeInPool(c))return;
+      poolMenus(c).forEach(m=>{
+        if(filterCat==='all'&&m.cat==='drink')return; // P2-8 정합: '전체' 풀 기준과 동일 모수
+        if(filterCat!=='all'&&m.cat!==filterCat)return;
+        if(m.tbd)tbdCnt++;
+      });
+    });
+  }
+  let hint=openNowOnly?'영업 종료·주말·방학 휴무 매장은 제외됩니다':'주말·방학 로테이션 휴무 매장은 제외됩니다';
+  if(filterCat==='all')hint+=' · 음료·카페는 칩 선택 시에만 포함'; // P2-8 고지
+  // B1: '지금 영업 중만' ON일 때 풀에 남은 vacUnknown(시간 미확인) 매장 정직 고지
+  if(openNowOnly){
+    const vacInPool=CAFES.filter((c,ci)=>c.vacUnknown&&pool.some(m=>m.cafeIdx===ci)).length;
+    if(vacInPool)hint+=` · 단축운영(시간 미확인) ${vacInPool}곳 포함`;
+  }
+  if(tbdCnt)hint+=` · 가격 확인 중 ${tbdCnt}개 제외`;
+  document.getElementById('poolHint').textContent=hint;
+}
+
+function doSpin(quick){
+  if(isSpinning)return;
+  let pool=getPool();
   if(!pool.length)return;
+  // P2-9: 핑퐁 방지 — 히스토리 3건 전부 제외, 비면 직전 1건만 제외, 그래도 비면 전체 풀
+  if(pool.length>1&&spinHistory.length){
+    const excl=list=>pool.filter(m=>!list.some(p=>p.name===m.name&&p.cafeName===m.cafeName));
+    let rest=excl(spinHistory);
+    if(!rest.length)rest=excl([spinHistory[0]]);
+    if(rest.length)pool=rest;
+  }
   isSpinning=true;
   document.getElementById('btnSpin').textContent='추천 중...';
-  let count=0,total=22;
+  let count=0,total=quick?8:22;
   const ra=document.getElementById('resultArea');
   clearInterval(spinTimer);
   spinTimer=setInterval(()=>{
     const r=pool[Math.floor(Math.random()*pool.length)];
     const e=menuEmoji(r);
     ra.innerHTML=`<div class="result-spinning">
-      <span style="font-size:44px;display:block;margin-bottom:8px">${e}</span>
-      <div style="font-size:18px;font-weight:700">${esc(r.name)}</div>
-      <div style="font-size:12px;color:var(--text2);margin-top:4px">${esc(r.cafeName)}${r.subName?' · '+esc(r.subName):''}</div>
+      <span class="rs-emoji">${e}</span>
+      <div class="rs-name">${esc(r.name)}</div>
+      <div class="rs-cafe">${esc(r.cafeName)}${r.subName?' · '+esc(r.subName):''}</div>
     </div>`;
     count++;
     if(count>=total){
       clearInterval(spinTimer);
       const chosen=pool[Math.floor(Math.random()*pool.length)];
       const cafe=CAFES[chosen.cafeIdx];
-      const open=isOpen(cafe);
-      const emoji=menuEmoji(chosen);
-      const comment=COMMENTS[Math.floor(Math.random()*COMMENTS.length)];
-      const cat=CAT_MAP[chosen.cat]||{label:chosen.cat,color:'#9CA3AF',bg:'rgba(156,163,175,.12)'};
+      // P2-10: 로테이션 종료 임박 데이터 코멘트를 후보에 추가 (해당 sub 한정)
+      const subRef=chosen.subName?(cafe.subs||[]).find(s=>s.name===chosen.subName):null;
+      const subEnd=subRef?subCurrentRangeEnd(subRef):null;
+      const cands=subEnd?COMMENTS.concat(`${chosen.subName}는 ${subEnd}까지 운영해요.`):COMMENTS;
+      lastComment=cands[Math.floor(Math.random()*cands.length)];
+      lastChosen=chosen;
       spinHistory.unshift(chosen);
       if(spinHistory.length>3)spinHistory.pop();
-      ra.innerHTML=`<div class="result-final">
-        <span class="rf-emoji">${emoji}</span>
-        <div class="rf-cafe" style="color:${cafe.colorHex}">${esc(cafe.name)}</div>
-        ${chosen.subName?`<div class="rf-sub">${esc(chosen.subName)}</div>`:''}
-        <div class="rf-name">${esc(chosen.name)}</div>
-        <div class="rf-price" style="background:${cafe.colorHex}">${priceLabel(chosen)}</div>
-        <div class="rf-location">
-          <div class="rf-loc-row">📍 <span style="font-weight:500">${esc(cafe.name)}</span> · <span>${esc(cafe.location)}</span></div>
-          <div class="rf-loc-row">🕐 <span>${open===null?'방학 단축운영 · 시간 확인 중':esc(cafe.hours)}</span>
-            ${open===null?'':`<span style="color:${open?'#059669':'#9CA3AF'};font-weight:600;margin-left:4px">${open?'지금 영업 중':'영업 종료'}</span>`}
-          </div>
-        </div>
-        <button class="rf-again" id="btnAgain">다시 추천</button>
-        <div class="rf-comment">"${comment}"</div>
-      </div>`;
-      document.getElementById('btnAgain').addEventListener('click',()=>{isSpinning=false;document.getElementById('btnSpin').textContent='추천!';doSpin();});
+      saveSpinHistory();
+      showResultCard();
       renderHistory();
       isSpinning=false;
-      document.getElementById('btnSpin').textContent='추천!';
+      document.getElementById('btnSpin').textContent='다시 추천'; // P2-13: 결과 후 하단 CTA도 재추천 의미로
+      ra.scrollIntoView({block:'nearest',behavior:'smooth'}); // 결과 카드 가시성 확보
     }
   },72);
+}
+
+/* P2-5: 결과 카드 생성 분리 — refreshStatus가 영업 라벨·경고만 최신 상태로 재렌더 (재스핀 없음) */
+function renderResultCard(chosen){
+  const cafe=CAFES[chosen.cafeIdx];
+  const open=isOpen(cafe);
+  // C1: 사진 있는 메뉴는 96px 라운드 썸네일, 없으면 이모지 폴백 (스핀 중 카드는 이모지 유지)
+  const visual=chosen.img
+    ?`<img class="rf-thumb" src="${esc(chosen.img)}" alt="${esc(chosen.name)}">`
+    :`<span class="rf-emoji">${menuEmoji(chosen)}</span>`;
+  return`<div class="result-final">
+    ${visual}
+    <div class="rf-cafe"><span class="cafe-dot" style="background:${cafe.colorHex}"></span>${esc(cafe.name)}</div>
+    ${chosen.subName?`<div class="rf-sub">${esc(chosen.subName)}</div>`:''}
+    <div class="rf-name">${esc(chosen.name)}</div>
+    <div class="rf-price${chosen.tbd?' tbd':''}">${priceLabel(chosen)}</div>
+    ${open===false?`<div class="rf-warn">⚠️ 지금은 영업 종료 · ${esc(cafe.hours)} 운영</div>`:''}
+    ${open===null?`<div class="rf-warn vac">⚠️ 방학 단축운영 — 평시 ${esc(cafe.hours)} 기준, 방문 전 확인</div>`:''}
+    <div class="rf-info">
+      <div class="rf-info-row">📍 <span style="font-weight:600;color:var(--text-primary)">${esc(cafe.name)}</span> · <span>${esc(cafe.location)}</span></div>
+      <div class="rf-info-row">🕐 <span>${open===null?'방학 단축운영 · 시간 확인 중':esc(cafe.hours)}</span>
+        ${open===null?'':`<span class="${open?'on':'off'}">${open?'지금 영업 중':'영업 종료'}</span>`}
+      </div>
+    </div>
+    <button class="rf-again" id="btnAgain">다시 추천</button>
+    <div class="rf-comment">"${esc(lastComment)}"</div>
+  </div>`;
+}
+function showResultCard(){
+  if(!lastChosen)return;
+  document.getElementById('resultArea').innerHTML=renderResultCard(lastChosen);
+  document.getElementById('btnAgain').addEventListener('click',()=>{isSpinning=false;doSpin(true);});
 }
 
 function renderHistory(){
@@ -684,12 +1187,13 @@ function renderHistory(){
   const list=document.getElementById('historyList');
   if(!spinHistory.length){sec.style.display='none';return;}
   sec.style.display='block';
+  // A3: 컬러 텍스트 → 도트 병기 + 고대비 / P2-14: 매장 38% 말줄임, 가격 고정, tbd는 '약 N원'만
   list.innerHTML=spinHistory.slice(0,3).map((m,i)=>
     `<div class="history-item">
       <span class="h-num">${i+1}</span>
       <span class="h-name">${esc(m.name)}</span>
-      <span class="h-cafe" style="color:${m.cafeColorHex}">${esc(m.cafeName)}${m.subName?' · '+esc(m.subName):''}</span>
-      <span class="h-cafe">${priceLabel(m)}</span>
+      <span class="h-cafe h-shop"><span class="cafe-dot" style="background:${m.cafeColorHex}"></span><span class="h-shop-txt">${esc(m.cafeName)}${m.subName?' · '+esc(m.subName):''}</span></span>
+      <span class="h-cafe h-price">${m.tbd?(m.price?'약 '+fmt(m.price):'가격 확인 중'):fmt(m.price)}</span>
     </div>`
   ).join('');
 }
@@ -699,18 +1203,40 @@ function renderHistory(){
 ============================================================ */
 function renderTabNav(){
   document.getElementById('tabNav').innerHTML=
-    `<button class="tab-btn ${curTab==='all'?'active':''}" data-tab="all" style="--tab-clr:var(--primary)">전체보기</button>`+
-    CAFES.map((c,i)=>`<button class="tab-btn ${curTab===String(i)?'active':''}" data-tab="${i}" style="--tab-clr:${c.colorHex}">${esc(c.name)}</button>`).join('');
+    `<button class="tab-btn ${curTab==='all'?'active':''}" data-tab="all">전체보기</button>`+
+    CAFES.map((c,i)=>`<button class="tab-btn ${curTab===String(i)?'active':''}" data-tab="${i}">${esc(c.name)}</button>`).join('');
 }
 
 function renderCafeFilterChips(){
   document.getElementById('cafeFilter').innerHTML=
-    `<button class="fchip ${filterCafe==='all'?'active':''}" data-cafe="all">전체</button>`+
-    CAFES.map((c,i)=>{
-      const on=filterCafe===String(i);
-      return`<button class="fchip" data-cafe="${i}" data-color="${c.colorHex}"
-        style="${on?`background:${c.colorHex};border-color:${c.colorHex};color:#fff`:''}">${esc(c.name)}</button>`;
-    }).join('');
+    `<button class="chip ${filterCafe==='all'?'active':''}" data-cafe="all">전체</button>`+
+    CAFES.map((c,i)=>`<button class="chip ${filterCafe===String(i)?'active':''}" data-cafe="${i}"${c.vacUnknown?' title="단축운영 · 시간 미확인"':''}>${esc(c.name)}${c.vacUnknown?' ⏱':''}</button>`).join(''); // P2-15
+  bindFade(document.getElementById('cafeFilter'));
+}
+
+/* ============================================================
+   SHEET OPEN/CLOSE
+============================================================ */
+const RESULT_PLACEHOLDER=`<div class="result-placeholder">
+          <span class="rp-icon">🎲</span>
+          <span>버튼을 눌러 오늘의 메뉴를 뽑아보세요!</span>
+        </div>`;
+function openSheet(){
+  renderCafeFilterChips();
+  renderCatFilterChips();
+  renderHistory();
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.classList.add('lock');
+  updatePoolCount();
+  bindFade(document.getElementById('priceFilter')); // P2-2: 정적 칩 행도 페이드 동적화
+}
+function closeSheet(){
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.classList.remove('lock');
+  clearInterval(spinTimer);
+  if(isSpinning)document.getElementById('resultArea').innerHTML=RESULT_PLACEHOLDER; // 스핀 잔상 리셋
+  isSpinning=false;
+  document.getElementById('btnSpin').textContent='추천!';
 }
 
 /* ============================================================
@@ -719,30 +1245,65 @@ function renderCafeFilterChips(){
 document.getElementById('tabNav').addEventListener('click',e=>{
   const b=e.target.closest('.tab-btn');if(!b)return;
   curTab=b.dataset.tab; curSub='all';
+  mainCat='all'; sortPrice=false; // 탭 전환 시 메뉴 도구 리셋
   if(curTab==='all')document.getElementById('subFilter').style.display='none';
-  renderTabNav();
+  // innerHTML 재생성 대신 클래스 토글 — ::after scaleX 인디케이터 트랜지션 보존
+  document.querySelectorAll('#tabNav .tab-btn').forEach(x=>x.classList.toggle('active',x===b));
   renderMain();
 });
 
-document.getElementById('fabBtn').addEventListener('click',()=>{
-  renderCafeFilterChips();
-  document.getElementById('modalOverlay').classList.add('open');
-  updatePoolCount();
+/* 콘텐츠 이벤트 위임 (재렌더에도 유지): 휴무 sub 접기/펼치기 · 미리보기 확장 · 메뉴 도구 행 */
+document.getElementById('mainContent').addEventListener('click',e=>{
+  // ① 휴무 sub 접기/펼치기 — expandedSubs Set으로 상태 승격 (refreshStatus 재렌더에도 보존)
+  const t=e.target.closest('.sub-toggle');
+  if(t){
+    const sec=t.closest('.sub-section');
+    const key=sec.dataset.key||'';
+    const nowCollapsed=sec.classList.toggle('collapsed');
+    if(nowCollapsed)expandedSubs.delete(key);else expandedSubs.add(key);
+    t.textContent=nowCollapsed?'메뉴 보기':'접기';
+    t.setAttribute('aria-expanded',String(!nowCollapsed));
+    return;
+  }
+  // ② 전체보기 미리보기 → 전체 보기 (previewOpen Set 보존)
+  const mb=e.target.closest('.more-btn');
+  if(mb){
+    const sec=mb.closest('.sub-section');
+    if(sec){previewOpen.add(sec.dataset.key||'');sec.classList.remove('preview');}
+    mb.remove();
+    return;
+  }
+  // ③ 단독 뷰 카테고리 칩 / 가격 낮은순 토글
+  const mc=e.target.closest('[data-mcat]');
+  if(mc){mainCat=mc.dataset.mcat;renderMain();return;}
+  const sp=e.target.closest('[data-sort]');
+  if(sp){sortPrice=!sortPrice;renderMain();}
 });
-document.getElementById('btnClose').addEventListener('click',()=>document.getElementById('modalOverlay').classList.remove('open'));
-document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))document.getElementById('modalOverlay').classList.remove('open');});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('modalOverlay').classList.remove('open');});
+
+document.getElementById('statusToggle').addEventListener('click',()=>{
+  const btn=document.getElementById('statusToggle');
+  const panel=document.getElementById('statusPanel');
+  const open=panel.classList.toggle('open');
+  btn.setAttribute('aria-expanded',String(open));
+});
+
+document.getElementById('fabBtn').addEventListener('click',openSheet);
+document.getElementById('btnClose').addEventListener('click',closeSheet);
+document.getElementById('modalOverlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modalOverlay'))closeSheet();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
 
 document.getElementById('cafeFilter').addEventListener('click',e=>{
-  const ch=e.target.closest('.fchip');if(!ch)return;
+  const ch=e.target.closest('.chip');if(!ch)return;
   filterCafe=ch.dataset.cafe;
   renderCafeFilterChips();
   updatePoolCount();
 });
 ['catFilter2','priceFilter'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{
-    const ch=e.target.closest('.fchip');if(!ch)return;
-    document.querySelectorAll(`#${id} .fchip`).forEach(c=>c.classList.remove('active'));
+    const ch=e.target.closest('.chip');if(!ch||ch.disabled)return; // 풀 0개 비활성 칩 무시
+    document.querySelectorAll(`#${id} .chip`).forEach(c=>c.classList.remove('active'));
     ch.classList.add('active');
     if(id==='catFilter2')filterCat=ch.dataset.cat;
     else filterPrice=ch.dataset.price;
@@ -750,17 +1311,81 @@ document.getElementById('cafeFilter').addEventListener('click',e=>{
   });
 });
 
-document.getElementById('btnSpin').addEventListener('click',doSpin);
+/* '지금 영업 중만' 토글 (기본 ON) */
+document.getElementById('openNowChip').addEventListener('click',()=>{
+  openNowOnly=!openNowOnly;
+  const chip=document.getElementById('openNowChip');
+  chip.classList.toggle('active',openNowOnly);
+  chip.setAttribute('aria-pressed',String(openNowOnly));
+  chip.textContent=openNowOnly?'✓ 지금 영업 중만':'지금 영업 중만';
+  updatePoolCount();
+});
+
+document.getElementById('btnSpin').addEventListener('click',()=>doSpin(false));
+
+/* 스크롤 시 미니바 표시 (헤더 축소 전환)
+   D1: 하강 스크롤 중 크롬 축소 — 미니바 접힘 + CTA를 우측 원형 FAB로. 상승 또는 정지 150ms 시 복원.
+   ※하단 탭바 이동은 4라운드 연속 기각 — 이것이 대체책. prefers-reduced-motion 시 축소 비활성 */
+(function(){
+  const head=document.getElementById('stickyHead');
+  const big=document.getElementById('bigHeader');
+  const cta=document.querySelector('.bottom-cta');
+  const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ticking=false,lastY=window.scrollY,idleTimer=null;
+  function restoreChrome(){head.classList.remove('hide-mini');cta.classList.remove('fab-mode');}
+  function onScroll(){
+    if(ticking)return;
+    ticking=true;
+    requestAnimationFrame(()=>{
+      const y=window.scrollY;
+      head.classList.toggle('scrolled',y>big.offsetHeight-10);
+      if(!reduceMotion){
+        if(y>lastY+2&&y>80){head.classList.add('hide-mini');cta.classList.add('fab-mode');}
+        else if(y<lastY-2)restoreChrome();
+        clearTimeout(idleTimer);
+        idleTimer=setTimeout(restoreChrome,150);
+      }
+      lastY=y;
+      ticking=false;
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+})();
 
 /* ============================================================
    INIT
 ============================================================ */
+document.getElementById('headTitle').textContent=headTitleStr();
 document.getElementById('dateBadge').textContent=formatDate();
+loadSpinHistory(); // 당일 추천 히스토리 복원
 renderVacBanner();
 renderStatus();
 renderTabNav();
 renderMain();
-if(typeof lucide!=='undefined')lucide.createIcons();
+// 최초 등장 애니메이션이 끝난 뒤 재렌더 애니메이션 억제 (탭 전환 시 깜빡임 방지)
+setTimeout(()=>document.getElementById('mainContent').classList.add('no-anim'),700);
+
+/* 60초 자동 갱신 + 탭 복귀 시 갱신 — 영업 상태 시그니처가 바뀔 때만 renderMain (스크롤·애니메이션 보호) */
+// P2-3: 날짜 접두 — 자정 로테이션 전환(subOpenToday 변동)도 시그니처 변화로 감지해 강제 재렌더
+function calcOpenSig(){return todayStr()+'|'+CAFES.map(c=>String(isOpen(c))).join();}
+let openSig=calcOpenSig();
+function refreshStatus(){
+  document.getElementById('headTitle').textContent=headTitleStr();
+  document.getElementById('dateBadge').textContent=formatDate();
+  renderStatus();
+  const sig=calcOpenSig();
+  const sheetOpen=document.getElementById('modalOverlay').classList.contains('open');
+  if(sig!==openSig){
+    openSig=sig;renderVacBanner();renderMain();
+    // P2-5: 열린 시트에 결과 카드가 있으면 영업 라벨·경고만 최신화 (재스핀 없음)
+    if(sheetOpen&&!isSpinning&&lastChosen&&document.querySelector('#resultArea .result-final'))showResultCard();
+  }
+  // P2-8+P2-4: 시트가 열려 있으면 풀 카운트·칩 상태 갱신 — auto라 filterCat 자동 리셋은 생략
+  if(sheetOpen)updatePoolCount(true);
+}
+setInterval(refreshStatus,60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshStatus();});
 </script>
 </body>
 </html>
