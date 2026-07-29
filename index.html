@@ -1331,19 +1331,22 @@ document.getElementById('btnSpin').addEventListener('click',()=>doSpin(false));
   const big=document.getElementById('bigHeader');
   const cta=document.querySelector('.bottom-cta');
   const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let ticking=false,lastY=window.scrollY,idleTimer=null;
+  let ticking=false,lastY=Math.max(0,window.scrollY);
   function restoreChrome(){head.classList.remove('hide-mini');cta.classList.remove('fab-mode');}
   function onScroll(){
     if(ticking)return;
     ticking=true;
     requestAnimationFrame(()=>{
-      const y=window.scrollY;
+      const y=Math.max(0,window.scrollY); // 상단 오버스크롤(러버밴드) 음수 무시
       head.classList.toggle('scrolled',y>big.offsetHeight-10);
       if(!reduceMotion){
-        if(y>lastY+2&&y>80){head.classList.add('hide-mini');cta.classList.add('fab-mode');}
-        else if(y<lastY-2)restoreChrome();
-        clearTimeout(idleTimer);
-        idleTimer=setTimeout(restoreChrome,150);
+        const dy=y-lastY;
+        const maxY=document.documentElement.scrollHeight-window.innerHeight;
+        // 하강 접힘 / 상승·상단 근접 복원. 정지 시 상태 유지 — 정지 복원 타이머는 모멘텀 스크롤의
+        // 이벤트 공백(>150ms)마다 접힘↔복원 진동(스윙)을 일으켜 제거함. |dy|<=6 히스테리시스로 미세 떨림 흡수,
+        // 하단 러버밴드 반동(y>=maxY 부근의 역방향)은 복원 트리거에서 제외.
+        if(dy>6&&y>80){head.classList.add('hide-mini');cta.classList.add('fab-mode');}
+        else if((dy<-6&&y<maxY-4)||y<=80)restoreChrome();
       }
       lastY=y;
       ticking=false;
