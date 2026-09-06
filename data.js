@@ -4,17 +4,17 @@
    - 메뉴 필드: name, cat, price, img(선택), tbd(선택: 가격 미확인)
    - 푸드코트 sub 필드: name, days(선택: 방학 로테이션 [[from,to],...]), menus
    - 식당 필드: vacation(방학 단축, 스케줄 있음) / vacUnknown(단축운영 중이나 시간 미확인)
+   - 2026-09-07: 개강 반영 - 방학 단축운영/로테이션 전면 해제, 정상 학기 운영시간 복원
 ============================================================ */
-const DATA_VERSION = 5;
+const DATA_VERSION = 6;
 
 const DEFAULT_CAFES = [
   {
     name:'경슐랭', type:'foodcourt',
-    location:'제1복지관 지하 1층', hours:'10:30 - 14:00', lastOrder:'라스트오더 13:30',
-    openH:10.5, closeH:14.0, closedWeekend:true, colorHex:'#F97316',
-    vacation:true, vacNote:'여름방학 단축운영 · 매장별 운영기간이 다릅니다',
+    location:'제1복지관 지하 1층', hours:'10:30 - 19:00', lastOrder:'주문마감 18:30',
+    openH:10.5, closeH:19.0, closedWeekend:true, colorHex:'#F97316',
     subs:[
-      { name:'위델가', days:[['2026-06-29','2026-07-10'],['2026-07-13','2026-07-21']], menus:[
+      { name:'위델가', menus:[
         {name:'갈비탕',             cat:'soup',   price:8000, img:'images/wedelga/09_R.jpg'},
         {name:'육개장',             cat:'soup',   price:7000, img:'images/wedelga/04_L.jpg'},
         {name:'떡만두국',           cat:'soup',   price:7000, img:'images/wedelga/02_R.jpg'},
@@ -41,7 +41,7 @@ const DEFAULT_CAFES = [
         {name:'알밥김치찌개세트',   cat:'rice',   price:8500, tbd:true, img:'images/wedelga/03_L.jpg'},
         {name:'알밥순두부찌개세트', cat:'rice',   price:8500, tbd:true, img:'images/wedelga/03_R.jpg'},
       ]},
-      { name:'만권화밥', days:[['2026-06-29','2026-07-10'],['2026-08-21','2026-08-31']], menus:[
+      { name:'만권화밥', menus:[
         {name:'돼지불백덮밥',      cat:'rice',   price:5500},
         {name:'소고기카레덮밥',    cat:'rice',   price:8000},
         {name:'삼겹가지덮밥',      cat:'rice',   price:7500},
@@ -72,7 +72,7 @@ const DEFAULT_CAFES = [
         {name:'직화해물짜장면',    cat:'noodle', price:7500},
         {name:'소고기얼큰면',      cat:'noodle', price:6000},
       ]},
-      { name:'숑숑돈까스', days:[['2026-06-16','2026-06-26'],['2026-07-22','2026-07-30']], menus:[
+      { name:'숑숑돈까스', menus:[
         {name:'돈카츠 라이스커리',     cat:'cutlet', price:10500},
         {name:'통감자 라이스커리',     cat:'cutlet', price:8900},
         {name:'에비덴 라이스커리',     cat:'cutlet', price:10900},
@@ -106,7 +106,7 @@ const DEFAULT_CAFES = [
         {name:'국물떡볶이',           cat:'snack',  price:7500},
         {name:'새우튀김(2ea)',        cat:'side',   price:3000},
       ]},
-      { name:'버거&타코', days:[['2026-06-16','2026-06-26'],['2026-08-11','2026-08-20']], menus:[
+      { name:'버거&타코', menus:[
         {name:'고추간장 순살치킨',    cat:'chicken',price:8000},
         {name:'달콤양념 순살치킨',    cat:'chicken',price:8000},
         {name:'손바닥 치킨',          cat:'chicken',price:3800},
@@ -144,7 +144,7 @@ const DEFAULT_CAFES = [
         {name:'비프 오리지널',        cat:'burger', price:4200},
         {name:'포크클래식 버거',      cat:'burger', price:4200},
       ]},
-      { name:'신머이쌀국수', days:[['2026-06-29','2026-07-10'],['2026-07-31','2026-08-10']], menus:[
+      { name:'신머이쌀국수', menus:[
         {name:'베트남 전통 쌀국수',     cat:'noodle', price:5500},
         {name:'닭반마리쌀국수',          cat:'noodle',price:7500},
         {name:'닭반마리쌀국수(매운맛)',  cat:'noodle',price:8000},
@@ -165,8 +165,6 @@ const DEFAULT_CAFES = [
     name:'이스퀘어', type:'normal',
     location:'제2복지관 1층', hours:'07:30 - 20:30', lastOrder:'주문마감 19:30',
     openH:7.5, closeH:20.5, closedWeekend:false, colorHex:'#3B82F6',
-    vacUnknown:true, // 여름방학 단축운영 중, 구체 시간 미확인
-
     menus:[
       // 분식·떡볶이류
       {name:'까르보 말랑떡볶이',      cat:'snack',  price:5500},
@@ -222,8 +220,6 @@ const DEFAULT_CAFES = [
     name:'샐리박스', type:'normal',
     location:'교수연구동 5층', hours:'09:00 - 18:00', lastOrder:'',
     openH:9.0, closeH:18.0, closedWeekend:true, colorHex:'#EC4899',
-    vacUnknown:true, // 여름방학 단축운영 중, 구체 시간 미확인
-
     menus:[
       // 버거류
       {name:'샐리버거단품',            cat:'burger', price:7000},
