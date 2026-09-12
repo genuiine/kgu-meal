@@ -12,7 +12,7 @@
        · sourceUrl: 공식 식단 페이지 링크 (미게시 시 안내)
        · menus: 식단 외 고정 코너 메뉴 (감성코어 돈까스·라면) — 없으면 []
 ============================================================ */
-const DATA_VERSION = 7;
+const DATA_VERSION = 8;
 
 const DEFAULT_CAFES = [
   {
@@ -284,7 +284,7 @@ const DEFAULT_CAFES = [
     name:'감성코어', type:'daily', dailyKey:'gamsung',
     location:'제3복지관 1층', hours:'10:30 - 16:00', lastOrder:'한식 11:00-14:30 · 돈까스/라면 10:30-16:00',
     openH:10.5, closeH:16.0, closedWeekend:true, colorHex:'#10B981',
-    dailyLabel:'한식 식단', dailyPrice:6000, dailyTbd:true, // 백반 6,000원은 2024년 기준 — 실가격 확인 필요
+    dailyLabel:'한식 식단', dailyPrice:6500, dailyTbd:false, // 2026-09-13 사용자 확인: 한식 6,500원
     sourceUrl:'https://www.kyonggi.ac.kr/www/selectTnRstrntMenuListU.do?key=7138&sc1=30',
     cornerName:'돈까스·라면 코너', cornerHours:'10:30 - 16:00',
     menus:[
