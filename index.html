@@ -392,10 +392,13 @@
     }
     @media (prefers-color-scheme: dark){.result-placeholder,.result-spinning,.result-final{background:var(--surface2);}}
     .rp-icon{font-size:44px;}
-    .result-spinning{background:var(--grey-100);border-radius:var(--r-card);padding:28px 20px;text-align:center;animation:rpulse .35s ease infinite alternate;}
-    @keyframes rpulse{from{opacity:.6}to{opacity:1}}
-    .rs-emoji{font-size:44px;display:block;margin-bottom:8px;}
-    .rs-name{font-size:19px;font-weight:700;}
+    /* 스핀: 카드 틀 고정(깜빡임·펄스 없음), 내용만 틱마다 아래→위 슬롯 슬라이드 */
+    .result-spinning{background:var(--grey-100);border-radius:var(--r-card);padding:28px 20px;text-align:center;color:var(--text-primary);}
+    .rs-inner{min-height:104px;overflow:hidden;}
+    .rs-item{animation:rsTick .18s var(--ease-out);}
+    @keyframes rsTick{from{transform:translateY(10px);opacity:.35}to{transform:translateY(0);opacity:1}}
+    .rs-emoji{font-size:44px;display:block;margin-bottom:8px;line-height:1.2;}
+    .rs-name{font-size:19px;font-weight:700;color:var(--text-primary);}
     .rs-cafe{font-size:13px;font-weight:400;color:var(--text-secondary);margin-top:4px;}
     .result-final{background:var(--grey-100);border-radius:var(--r-card);padding:24px 20px;text-align:center;animation:resultPop .3s var(--ease-spring);}
     @keyframes resultPop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
@@ -405,7 +408,7 @@
     /* A3: 매장명은 고대비 primary + 컬러 도트 병기 (컬러 텍스트 대비 미달 해소) */
     .rf-cafe{display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:600;margin-bottom:2px;color:var(--text-primary);}
     .rf-sub{font-size:13px;font-weight:400;color:var(--text-secondary);margin-bottom:4px;}
-    .rf-name{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;}
+    .rf-name{font-size:24px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;color:var(--text-primary);}
     .rf-price{display:inline-block;padding:6px 18px;border-radius:var(--r-chip);font-size:15px;font-weight:700;background:var(--blue-light);color:var(--blue);margin-bottom:14px;}
     .rf-price.tbd{background:var(--grey-100);color:var(--text-secondary);}
     @media (prefers-color-scheme: dark){.rf-price.tbd{background:var(--surface2);}}
@@ -1383,19 +1386,28 @@ function doSpin(quick){
   document.getElementById('btnSpin').textContent='추천 중...';
   let count=0,total=quick?8:22;
   const ra=document.getElementById('resultArea');
-  clearInterval(spinTimer);
-  spinTimer=setInterval(()=>{
-    const r=pool[Math.floor(Math.random()*pool.length)];
-    const e=menuEmoji(r);
-    ra.innerHTML=`<div class="result-spinning">
-      <span class="rs-emoji">${e}</span>
-      <div class="rs-name">${esc(r.name)}</div>
-      <div class="rs-cafe">${esc(r.cafeName)}${r.subName?' · '+esc(r.subName):''}</div>
-    </div>`;
+  clearTimeout(spinTimer);
+  // 슬롯머신식 감속: 카드 틀은 고정, 내용만 틱마다 교체(rsTick 슬라이드) — 틱 간격 55ms→260ms로 점점 느려짐
+  ra.innerHTML=`<div class="result-spinning"><div class="rs-inner"></div></div>`;
+  const inner=ra.querySelector('.rs-inner');
+  const chosen=pool[Math.floor(Math.random()*pool.length)]; // 최종 결과 선확정 → 마지막 틱이 결과와 일치
+  const tick=()=>{
     count++;
-    if(count>=total){
-      clearInterval(spinTimer);
-      const chosen=pool[Math.floor(Math.random()*pool.length)];
+    const last=count>=total;
+    const r=last?chosen:pool[Math.floor(Math.random()*pool.length)];
+    // 같은 내용 재삽입으로 애니메이션 재시작
+    const node=document.createElement('div');
+    node.className='rs-item';
+    node.innerHTML=`<span class="rs-emoji">${menuEmoji(r)}</span>
+      <div class="rs-name">${esc(r.name)}</div>
+      <div class="rs-cafe">${esc(r.cafeName)}${r.subName?' · '+esc(r.subName):''}</div>`;
+    inner.replaceChildren(node);
+    if(!last){
+      const t=Math.min(260,55*Math.pow(1.09,count)); // 감속 곡선
+      spinTimer=setTimeout(tick,t);
+      return;
+    }
+    spinTimer=setTimeout(()=>{
       const cafe=CAFES[chosen.cafeIdx];
       // P2-10: 로테이션 종료 임박 데이터 코멘트를 후보에 추가 (해당 sub 한정)
       const subRef=chosen.subName?(cafe.subs||[]).find(s=>s.name===chosen.subName):null;
@@ -1411,8 +1423,9 @@ function doSpin(quick){
       isSpinning=false;
       document.getElementById('btnSpin').textContent='다시 추천'; // P2-13: 결과 후 하단 CTA도 재추천 의미로
       ra.scrollIntoView({block:'nearest',behavior:'smooth'}); // 결과 카드 가시성 확보
-    }
-  },72);
+    },320); // 마지막 틱(=결과 메뉴)을 잠깐 멈춰 보여준 뒤 결과 카드로 전환
+  };
+  tick();
 }
 
 /* P2-5: 결과 카드 생성 분리 — refreshStatus가 영업 라벨·경고만 최신 상태로 재렌더 (재스핀 없음) */
