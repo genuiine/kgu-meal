@@ -1,0 +1,44 @@
+name: daily-menu (감성코어·경기드림타워 식단 수집)
+
+on:
+  schedule:
+    # KST 06:30 / 10:30 / 16:30 (UTC 21:30 전날 / 01:30 / 07:30) — 주간표는 금요일·월요일 아침에 주로 올라옴
+    - cron: "30 21 * * *"
+    - cron: "30 1 * * *"
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-menu
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install --quiet pdfplumber requests
+
+      - name: Fetch menus
+        run: python scripts/fetch_daily.py
+
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- daily.json; then
+            echo "no change"; exit 0
+          fi
+          git config user.name "kgumeal-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add daily.json
+          git commit -m "식단 자동 갱신 $(TZ=Asia/Seoul date '+%Y-%m-%d %H:%M')"
+          git push

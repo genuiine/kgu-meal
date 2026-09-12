@@ -5,8 +5,14 @@
    - 푸드코트 sub 필드: name, days(선택: 방학 로테이션 [[from,to],...]), menus
    - 식당 필드: vacation(방학 단축, 스케줄 있음) / vacUnknown(단축운영 중이나 시간 미확인)
    - 2026-09-07: 개강 반영 - 방학 단축운영/로테이션 전면 해제, 정상 학기 운영시간 복원
+   - 2026-09-13: 급식형 식당 type:'daily' 신설 (감성코어·경기드림타워)
+       · dailyKey: daily.json(cafes.<key>)의 식단 데이터 키 — scripts/fetch_daily.py가 매일 생성
+       · dailyLabel/dailyPrice/dailyTbd: 랜덤추천 풀에 넣을 '오늘의 식단' 항목 라벨·가격
+       · slots: [[openH,closeH],...] 점심/저녁처럼 끊어지는 운영시간 (isOpen이 slots 우선)
+       · sourceUrl: 공식 식단 페이지 링크 (미게시 시 안내)
+       · menus: 식단 외 고정 코너 메뉴 (감성코어 돈까스·라면) — 없으면 []
 ============================================================ */
-const DATA_VERSION = 6;
+const DATA_VERSION = 7;
 
 const DEFAULT_CAFES = [
   {
@@ -274,6 +280,27 @@ const DEFAULT_CAFES = [
       {name:'청귤에이드',              cat:'drink',  price:4000},
     ]
   },
+  {
+    name:'감성코어', type:'daily', dailyKey:'gamsung',
+    location:'제3복지관 1층', hours:'10:30 - 16:00', lastOrder:'한식 11:00-14:30 · 돈까스/라면 10:30-16:00',
+    openH:10.5, closeH:16.0, closedWeekend:true, colorHex:'#10B981',
+    dailyLabel:'한식 식단', dailyPrice:6000, dailyTbd:true, // 백반 6,000원은 2024년 기준 — 실가격 확인 필요
+    sourceUrl:'https://www.kyonggi.ac.kr/www/selectTnRstrntMenuListU.do?key=7138&sc1=30',
+    cornerName:'돈까스·라면 코너', cornerHours:'10:30 - 16:00',
+    menus:[
+      // 2024년 기준 가격(나무위키) — tbd: 실가격 확인 시 갱신
+      {name:'돈까스', cat:'cutlet', price:5500, tbd:true},
+      {name:'라면',   cat:'noodle', price:3500, tbd:true},
+    ]
+  },
+  {
+    name:'경기드림타워', type:'daily', dailyKey:'dorm',
+    location:'경기드림타워(생활관) 식당', hours:'점심 11:40 - 13:00 · 저녁 17:00 - 18:00', lastOrder:'',
+    openH:11.67, closeH:18.0, slots:[[11.67,13.0],[17.0,18.0]], closedWeekend:true, colorHex:'#8B5CF6',
+    dailyLabel:'생활관 식단', dailyPrice:0, dailyTbd:true, // 가격 미확인
+    sourceUrl:'https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list',
+    menus:[]
+  },
 ];
 
 const CAT_MAP = {
@@ -287,4 +314,5 @@ const CAT_MAP = {
   western: {label:'샌드위치',  color:'#84CC16', bg:'rgba(132,204,22,.12)', emoji:'🥪'},
   side:    {label:'사이드',    color:'#0891B2', bg:'rgba(8,145,178,.12)', emoji:'🍟'},
   drink:   {label:'음료·카페', color:'#EC4899', bg:'rgba(236,72,153,.12)', emoji:'🥤'},
+  korean:  {label:'오늘의 식단', color:'#10B981', bg:'rgba(16,185,129,.12)', emoji:'🍱'}, // 급식형(감성코어·드림타워) 당일 식단
 };

@@ -287,6 +287,28 @@
     .info-row .ir-val.vac{color:var(--orange-text);}
     .info-row .ir-val a{color:var(--blue);}
 
+    /* ============ DAILY (급식형 식당 당일 식단: 감성코어·경기드림타워) ============ */
+    .daily-box{margin-top:14px;}
+    .daily-days{margin:2px 0 10px;}
+    .daily-days .chip.nodata{opacity:.55;}
+    .dm-price{font-size:13px;font-weight:500;color:var(--text-secondary);}
+    .daily-link{font-size:13px;font-weight:600;color:var(--blue);margin-left:auto;white-space:nowrap;}
+    .empty-slim .daily-link{margin-left:0;}
+    .daily-meal{background:var(--surface2);border:1px solid var(--divider);border-radius:var(--r-thumb);padding:14px 16px;margin-bottom:10px;}
+    .dm-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+    .dm-label{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+    .dm-time{font-size:13px;font-weight:500;color:var(--text-secondary);}
+    .dm-main{margin-left:auto;font-size:14px;font-weight:600;color:var(--green-text);}
+    .dm-items{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:4px 12px;}
+    @media (max-width:340px){.dm-items{grid-template-columns:1fr;}}
+    .dm-item{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--text-primary);line-height:1.6;min-width:0;}
+    .dm-item .dm-ico{font-size:13px;flex-shrink:0;}
+    .dm-item.is-main{font-weight:700;} /* '.main'은 페이지 컨테이너 클래스라 충돌 — is-main 사용 */
+    .dm-item.kimchi,.dm-item.dessert,.dm-item.rice{color:var(--text-secondary);}
+    .dm-note{font-size:12px;color:var(--text-tertiary);margin-top:4px;}
+    /* 랜덤추천 결과 카드: 식단 구성 나열 */
+    .rf-items{list-style:none;margin:6px 0 2px;padding:8px 12px;background:var(--surface2);border-radius:12px;font-size:13px;color:var(--text-secondary);display:flex;flex-wrap:wrap;justify-content:center;gap:4px 10px;}
+
     /* ============ FIXED BOTTOM CTA ============ */
     .bottom-cta{
       position:fixed;left:0;right:0;bottom:0;z-index:200;
@@ -545,7 +567,7 @@
   </div>
 </div>
 
-<script src="data.js?v=6"></script>
+<script src="data.js?v=7"></script>
 <script>
 /* 메뉴명 → 이모지 매칭 규칙 (위에서부터 먼저 맞는 것 적용, 없으면 CAT_MAP 이모지) */
 const NAME_EMOJI = [
@@ -746,7 +768,9 @@ function isOpen(c){
   // B1: 단축운영은 평시보다 짧아질 뿐 — 평시 시간 밖이면 확정 종료(false), 평시 내에만 미확인(null)
   if(c.vacUnknown){const h=nowH();if(h<c.openH||h>=c.closeH)return false;return null;}
   if(c.vacation&&c.subs&&!c.subs.some(subOpenToday))return false; // 방학 로테이션: 오늘 운영 매장 0곳이면 휴무
-  const h=nowH();return h>=c.openH&&h<c.closeH;
+  const h=nowH();
+  if(c.slots&&c.slots.length)return c.slots.some(([a,b])=>h>=a&&h<b); // 점심/저녁처럼 끊어지는 운영시간 (경기드림타워)
+  return h>=c.openH&&h<c.closeH;
 }
 // 오늘 실제로 문 여는 날인지 (주말 휴무 반영, 시간과 무관) - 랜덤추천 풀 필터용
 function cafeOpenTodayDate(c){
@@ -819,6 +843,101 @@ function bindFade(el){
 window.addEventListener('resize',()=>{
   fadeEls.forEach(el=>{if(el.isConnected)fadeUpd(el);else fadeEls.delete(el);});
 });
+
+/* ============================================================
+   DAILY MENU (급식형 식당: 감성코어·경기드림타워)
+   - daily.json: scripts/fetch_daily.py가 공식 사이트(경기대 주간 PDF / 생활관 식단표)를 파싱해 생성,
+     GitHub Actions가 매일 갱신. 구조: cafes.<dailyKey>.{meals:[{key,label,time}], days:{ISO:{key:[...]}}, weeks}
+============================================================ */
+let DAILY=null;          // daily.json 파싱 결과 (null=로딩 중)
+let dailyErr=false;      // fetch 실패
+const dailySel={};       // dailyKey → 선택 날짜(ISO). 기본 오늘
+const D_KO=['일','월','화','수','목','금','토'];
+function dailyData(c){return c.type==='daily'&&DAILY&&DAILY.cafes?(DAILY.cafes[c.dailyKey]||null):null;}
+function isoAddDays(iso,n){const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function isoLabel(iso){const d=new Date(iso+'T00:00:00');return`${d.getMonth()+1}/${d.getDate()} (${D_KO[d.getDay()]})`;}
+// iso가 속한 주(월~일) 날짜 배열
+function weekDates(iso){const d=new Date(iso+'T00:00:00');const mon=isoAddDays(iso,-((d.getDay()+6)%7));return[0,1,2,3,4,5,6].map(i=>isoAddDays(mon,i));}
+// 식단의 대표 메뉴: 밥·국·김치·후식류를 제외한 첫 항목
+const SIDE_RE=/^(쌀밥|밥|흑미밥|잡곡밥|보리밥|현미밥)$|국$|탕$|찌개$|김치$|깍두기$|요구르트|우유|두유|쥬스|주스|음료|구이김|단무지|밑반찬/;
+function dailyMain(items){return(items||[]).find(x=>!SIDE_RE.test(x))||(items&&items[0])||'';}
+function dailyRole(x,i){
+  if(i===0&&/밥$/.test(x))return'rice';
+  if(/(국|탕|찌개|전골)$/.test(x))return'soup';
+  if(/(김치|깍두기)$/.test(x))return'kimchi';
+  if(/(요구르트|우유|두유|쥬스|주스|빵|에너지바|파이|음료)/.test(x))return'dessert';
+  return'dish';
+}
+const ROLE_ICO={rice:'🍚',soup:'🥣',kimchi:'🥬',dessert:'🍮',dish:'🍽️'};
+// 랜덤추천/카테고리 풀 항목: 오늘 식단의 끼니마다 1개 (cat:'korean')
+function dailyPoolItems(c){
+  const dd=dailyData(c);if(!dd)return[];
+  const day=dd.days&&dd.days[todayStr()];if(!day)return[];
+  return(dd.meals||[]).filter(m=>day[m.key]&&day[m.key].length).map(m=>({
+    name:`${m.label} ${c.dailyLabel||'식단'} · ${dailyMain(day[m.key])}`,
+    cat:'korean',price:c.dailyPrice||0,tbd:!!c.dailyTbd||!c.dailyPrice,
+    items:day[m.key],mealLabel:m.label,mealTime:m.time||'',
+    subName:'',cafeName:c.name,cafeColorHex:c.colorHex,
+  }));
+}
+function dailySourceLink(c,label){return c.sourceUrl?`<a class="daily-link" href="${esc(c.sourceUrl)}" target="_blank" rel="noopener">${label||'공식 식단 페이지'} ↗</a>`:'';}
+/* 식단 섹션: 요일 칩 + 끼니별 카드. full=단독 뷰(원본 링크·모든 요일), 전체보기는 게시된 날짜만 칩 */
+function dailySection(c,full){
+  const dd=dailyData(c);
+  const today=todayStr();
+  if(DAILY===null&&!dailyErr)return`<div class="daily-box"><div class="empty-slim">🍱 오늘 식단 불러오는 중…</div></div>`;
+  if(!dd)return`<div class="daily-box"><div class="empty-slim">식단을 불러오지 못했어요 · ${dailySourceLink(c)}</div></div>`;
+  const days=dd.days||{};
+  // 기본 선택일: 오늘 식단이 있으면 오늘, 없으면(주말·미게시) 가장 가까운 게시일 — 일요일 저녁에 내일 식단 미리보기
+  const upcoming=Object.keys(days).filter(k=>k>=today).sort();
+  const sel=dailySel[c.dailyKey]||(days[today]?today:(upcoming[0]||today));
+  const wk=weekDates(sel).filter(iso=>days[iso]||iso===today||iso===sel);
+  const chips=wk.length>1?`<div class="tool-row daily-days">${wk.map(iso=>`<button class="chip${iso===sel?' active':''}${days[iso]?'':' nodata'}" data-dday="${iso}" data-dkey="${esc(c.dailyKey)}">${iso===today?'오늘 ':''}${isoLabel(iso)}</button>`).join('')}</div>`:'';
+  const day=days[sel];
+  let body='';
+  if(!day){
+    const posted=Object.keys(days).filter(k=>k>=today).sort();
+    const wd=new Date(sel+'T00:00:00').getDay();
+    const why=(wd===0||wd===6)?'주말은 운영하지 않아요':'아직 게시되지 않았거나 휴무일이에요';
+    const next=posted.length&&sel===today&&!days[today]?` · 다음 게시일 ${isoLabel(posted[0])}`:'';
+    body=`<div class="empty-slim">${sel===today?'오늘':isoLabel(sel)} 식단이 없어요 · ${why}${next}<br>${dailySourceLink(c)}</div>`;
+  } else {
+    body=(dd.meals||[]).filter(m=>day[m.key]&&day[m.key].length).map(m=>{
+      const items=day[m.key];const main=dailyMain(items);
+      return`<div class="daily-meal">
+        <div class="dm-head"><span class="dm-label">${esc(m.label)}</span>${m.time?`<span class="dm-time">${esc(m.time)}</span>`:''}<span class="dm-main">${esc(main)}</span></div>
+        <ul class="dm-items">${items.map((x,i)=>{const r=dailyRole(x,i);return`<li class="dm-item ${r}${x===main?' is-main':''}"><span class="dm-ico">${ROLE_ICO[r]}</span>${esc(x)}</li>`;}).join('')}</ul>
+      </div>`;
+    }).join('');
+    const wkInfo=(dd.weeks||[]).find(w=>w.start&&w.end&&sel>=w.start&&sel<=w.end);
+    if(wkInfo&&wkInfo.note)body+=`<div class="dm-note">※ ${esc(wkInfo.note)}</div>`;
+  }
+  const price=c.dailyPrice?`<span class="dm-price">${c.dailyTbd?'약 '+fmt(c.dailyPrice)+' · 확인 중':fmt(c.dailyPrice)}</span>`:'';
+  return`<div class="daily-box">
+    <div class="sub-head"><span class="sub-name">🍱 ${esc(c.dailyLabel||'오늘의 식단')}</span>${price}${full?dailySourceLink(c,'원본'):''}</div>
+    ${chips}${body}
+  </div>`;
+}
+/* 고정 코너(감성코어 돈까스·라면) — 카테고리 도구 적용. 필터 매치 0이면 섹션 생략 */
+function dailyCornerSection(c,withTools){
+  const ms0=c.menus||[];if(!ms0.length)return'';
+  const ms=applyMenuTools(ms0);
+  if(!ms.length&&!withTools)return'';
+  return`<div class="sub-section">
+    <div class="sub-head"><span class="sub-name">${esc(c.cornerName||'고정 메뉴')}</span><span class="sub-count">${ms.length}개</span>${c.cornerHours?`<span class="badge off">${esc(c.cornerHours)}</span>`:''}</div>
+    ${withTools?menuToolRow(ms0):''}
+    ${ms.length?`<div class="menu-grid">${ms.map((m,i)=>menuCard(m,i)).join('')}</div>`:`<div class="empty-slim">해당 카테고리 없음</div>`}
+  </div>`;
+}
+async function loadDaily(){
+  try{
+    const r=await fetch(`daily.json?d=${todayStr()}`,{cache:'no-cache'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    DAILY=await r.json();
+  }catch(e){DAILY={cafes:{}};dailyErr=true;console.warn('[daily] 식단 로드 실패',e);}
+  renderMain();
+  if(document.getElementById('modalOverlay').classList.contains('open'))updatePoolCount(true);
+}
 
 /* ============================================================
    HEADER STATUS (지금 영업 요약 + 식당별 상태 패널)
@@ -978,7 +1097,7 @@ function renderMain(){
     // M5: 전체보기 전역 도구 행 — 오늘 운영 섹션의 메뉴 합집합 기준, 운영 섹션 전체에 적용
     const globalMenus=CAFES.flatMap(c=>c.type==='foodcourt'
       ?c.subs.filter(s=>!c.vacation||subOpenToday(s)).flatMap(s=>s.menus)
-      :(c.menus||[]));
+      :(c.menus||[]).concat(c.type==='daily'?dailyPoolItems(c):[])); // 급식형: 오늘 식단(korean) 칩 노출
     // B3: 영업 종료(false) 매장을 뒤로 — stable 정렬, 원본 ci 보존 (previewOpen/expandedSubs 키·탭 매핑 불변)
     root.innerHTML=menuToolRow(globalMenus)+CAFES.map((c,ci)=>({c,ci,open:isOpen(c)}))
       .sort((a,b)=>(b.open!==false)-(a.open!==false))
@@ -999,6 +1118,11 @@ function renderMain(){
           });
           if(!anyMatch)body=`<div class="empty-slim">해당 카테고리 없음</div>`;
         }
+      } else if(c.type==='daily'){
+        // 급식형: 오늘(또는 선택일) 식단 + 고정 코너. 전역 카테고리 필터: '오늘의 식단'이면 식단만, 그 외는 코너만
+        const showDaily=mainCat==='all'||mainCat==='korean';
+        body=(showDaily?dailySection(c,false):'')+(mainCat==='korean'?'':dailyCornerSection(c,false));
+        if(!body.trim())body=`<div class="empty-slim">해당 카테고리 없음</div>`;
       } else {
         const ms0=c.menus||[];
         const ms=applyMenuTools(ms0); // M5: 전역 도구 적용
@@ -1019,7 +1143,7 @@ function renderMain(){
           <span class="cafe-name">${esc(c.name)}</span>
           ${cafeBadge(open)}
         </div>
-        <div class="cafe-meta">${c.type==='foodcourt'?`푸드코트 · 코너 ${c.subs.length}곳 · `:''}${mapLink(c)} · ${open===null?`평시 ${esc(c.hours)} · 단축운영 시 변동`:esc(c.hours)}</div>
+        <div class="cafe-meta">${c.type==='foodcourt'?`푸드코트 · 코너 ${c.subs.length}곳 · `:(c.type==='daily'?'급식형 · 매일 식단 변경 · ':'')}${mapLink(c)} · ${open===null?`평시 ${esc(c.hours)} · 단축운영 시 변동`:esc(c.hours)}</div>
         ${body}
       </section>`;
     }).join('');
@@ -1067,6 +1191,25 @@ function renderMain(){
         <div class="cafe-card">${fcToolRow}${body}</div>
       </div>`;
 
+    } else if(c.type==='daily'){
+      subFilter.style.display='none';
+      const dd=dailyData(c);
+      const nDays=dd?Object.keys(dd.days||{}).filter(k=>k>=todayStr()).length:0;
+      root.innerHTML=`<div>
+        <div class="single-header">
+          <div class="single-name"><span class="cafe-dot" style="background:${c.colorHex}"></span>${esc(c.name)}</div>
+          <div class="single-meta">급식형 · 매일 식단 변경${nDays?` · ${nDays}일치 게시`:''}</div>
+        </div>
+        <div class="info-card">
+          <div class="info-row"><span class="ir-ico">📍</span>위치<span class="ir-val">${mapLink(c)}</span></div>
+          <div class="info-row"><span class="ir-ico">🕐</span>운영시간<span class="ir-val">${esc(c.hours)}${c.lastOrder?`<br><span style="font-weight:400;font-size:13px;color:var(--text-secondary)">${esc(c.lastOrder)}</span>`:''}</span></div>
+          <div class="info-row"><span class="ir-ico">🍽️</span>영업 상태<span class="ir-val ${open?'on':'off'}">${open?'지금 영업 중':'영업 종료'}</span></div>
+          <div class="info-row"><span class="ir-ico">📅</span>휴무<span class="ir-val off">주말·공휴일 휴무</span></div>
+          ${c.sourceUrl?`<div class="info-row"><span class="ir-ico">📋</span>식단 출처<span class="ir-val"><a href="${esc(c.sourceUrl)}" target="_blank" rel="noopener">공식 식단 페이지 ↗</a></span></div>`:''}
+        </div>
+        <div class="cafe-card">${dailySection(c,true)}${dailyCornerSection(c,true)}</div>
+      </div>`;
+
     } else {
       subFilter.style.display='none';
       const ms=c.menus||[];
@@ -1102,7 +1245,9 @@ function poolMenus(cafe){
     return cafe.subs
       .filter(s=>!cafe.vacation||subOpenToday(s)) // 방학 로테이션: 오늘 운영 매장만
       .flatMap(s=>s.menus.map(m=>({...m,subName:s.name,cafeName:cafe.name,cafeColorHex:cafe.colorHex})));
-  return (cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
+  const fixed=(cafe.menus||[]).map(m=>({...m,subName:'',cafeName:cafe.name,cafeColorHex:cafe.colorHex}));
+  if(cafe.type==='daily')return[...dailyPoolItems(cafe),...fixed]; // 급식형: 오늘 식단(끼니별 1개) + 고정 코너
+  return fixed;
 }
 // '지금 영업 중만' ON이면 영업 종료(false) 식당 제외 — null(vacUnknown)은 배제 근거 없어 유지
 function cafeInPool(c){
@@ -1284,6 +1429,7 @@ function renderResultCard(chosen){
     ${chosen.subName?`<div class="rf-sub">${esc(chosen.subName)}</div>`:''}
     <div class="rf-name">${esc(chosen.name)}</div>
     <div class="rf-price${chosen.tbd?' tbd':''}">${priceLabel(chosen)}</div>
+    ${chosen.items?`<ul class="rf-items">${chosen.items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}
     ${open===false?`<div class="rf-warn">⚠️ 지금은 영업 종료 · ${esc(cafe.hours)} 운영</div>`:''}
     ${open===null?`<div class="rf-warn vac">⚠️ 방학 단축운영 — 평시 ${esc(cafe.hours)} 기준, 방문 전 확인</div>`:''}
     <div class="rf-info">
@@ -1374,6 +1520,9 @@ document.getElementById('tabNav').addEventListener('click',e=>{
 
 /* 콘텐츠 이벤트 위임 (재렌더에도 유지): 휴무 sub 접기/펼치기 · 미리보기 확장 · 메뉴 도구 행 */
 document.getElementById('mainContent').addEventListener('click',e=>{
+  // 급식형 식단 요일 칩
+  const dc=e.target.closest('[data-dday]');
+  if(dc){dailySel[dc.dataset.dkey]=dc.dataset.dday;renderMain();return;}
   // ① 휴무 sub 접기/펼치기 — expandedSubs Set으로 상태 승격 (refreshStatus 재렌더에도 보존)
   const t=e.target.closest('.sub-toggle');
   if(t){
@@ -1486,6 +1635,7 @@ renderVacBanner();
 renderStatus();
 renderTabNav();
 renderMain();
+loadDaily(); // 급식형 식단(daily.json) 비동기 로드 → 완료 시 renderMain
 // 최초 등장 애니메이션이 끝난 뒤 재렌더 애니메이션 억제 (탭 전환 시 깜빡임 방지)
 setTimeout(()=>document.getElementById('mainContent').classList.add('no-anim'),700);
 
