@@ -1,18 +1,66 @@
 {
- "generatedAt": "2026-09-30T16:12:48+09:00",
+ "generatedAt": "2026-10-02T16:24:40+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
    "source": "https://www.kyonggi.ac.kr/www/selectTnRstrntMenuListU.do?key=7138&sc1=30",
-   "meals": [],
-   "days": {},
+   "meals": [
+    {
+     "key": "lunch",
+     "label": "점심",
+     "time": "11:00~14:30"
+    }
+   ],
+   "days": {
+    "2026-10-05": {
+     "lunch": [
+      "대체공휴일"
+     ]
+    },
+    "2026-10-06": {
+     "lunch": [
+      "쌀밥",
+      "해물짬뽕",
+      "중화짜장",
+      "탕수육*소스",
+      "중화면",
+      "배추김치"
+     ]
+    },
+    "2026-10-07": {
+     "lunch": [
+      "쌀밥",
+      "콩나물국",
+      "김치제육볶음",
+      "상추*쌈",
+      "계절나물",
+      "배추김치"
+     ]
+    },
+    "2026-10-08": {
+     "lunch": [
+      "쌀밥",
+      "김치어묵탕",
+      "베이컨마늘쫑",
+      "파스타",
+      "미니돈가스",
+      "밑반찬",
+      "배추김치",
+      "요구르트"
+     ]
+    },
+    "2026-10-09": {
+     "lunch": [
+      "한글날"
+     ]
+    }
+   },
    "weeks": [
     {
-     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20260928/20260928105208107_OXu0.pdf",
+     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261002/20261002011049675_TbNH.pdf",
      "start": "2026-09-28",
      "end": "2026-10-03",
-     "note": "재료소진시다른음식으로대체됩니다",
-     "error": "표 파싱 실패"
+     "note": "재료소진시다른음식으로대체됩니다"
     }
    ]
   },
