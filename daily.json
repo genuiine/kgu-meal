@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-27T15:41:10+09:00",
+ "generatedAt": "2026-10-28T16:14:12+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
@@ -40,8 +40,8 @@
       "쌀밥",
       "양평해장국",
       "미니돈까스",
-      "계절나물",
-      "배추김치"
+      "두부조림",
+      "깍두기"
      ]
     },
     "2026-10-29": {
@@ -69,7 +69,7 @@
    },
    "weeks": [
     {
-     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261023/20261023124323558_UywQ.pdf",
+     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261028/20261028100953540_jBxD.pdf",
      "start": "2026-10-26",
      "end": "2026-10-31",
      "note": "재료소진시다른음식으로대체됩니다"
