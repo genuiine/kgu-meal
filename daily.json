@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-28T16:14:12+09:00",
+ "generatedAt": "2026-11-02T17:04:10+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
@@ -12,66 +12,64 @@
     }
    ],
    "days": {
-    "2026-10-26": {
+    "2026-11-02": {
      "lunch": [
       "쌀밥",
-      "해물순두부",
-      "신림동",
-      "백순대볶음",
-      "옛날소시지",
-      "부침",
+      "잔치국수(대)",
+      "매콤떡볶이",
+      "양념꺳잎지",
+      "배추김치"
+     ]
+    },
+    "2026-11-03": {
+     "lunch": [
+      "쌀밥",
+      "해물짬뽕",
+      "레몬크림",
+      "탕수육",
+      "비빔쫄면",
+      "밑반차",
+      "배추김치"
+     ]
+    },
+    "2026-11-04": {
+     "lunch": [
+      "쌀밥",
+      "김치찌개",
+      "해물볶음면",
+      "치킨너겟",
       "밑반찬",
       "배추김치"
      ]
     },
-    "2026-10-27": {
-     "lunch": [
-      "쌀밥",
-      "두부김치국",
-      "떡돈불고기",
-      "양념깻잎지",
-      "계절나물",
-      "배추김치"
-     ]
-    },
-    "2026-10-28": {
-     "lunch": [
-      "<특식>",
-      "쌀밥",
-      "양평해장국",
-      "미니돈까스",
-      "두부조림",
-      "깍두기"
-     ]
-    },
-    "2026-10-29": {
-     "lunch": [
-      "쌀밥",
-      "나가사키짬뽕",
-      "한식카레",
-      "소세지",
-      "야채볶음",
-      "밑반찬",
-      "배추김치"
-     ]
-    },
-    "2026-10-30": {
+    "2026-11-05": {
      "lunch": [
       "쌀밥",
       "미역국",
-      "지코바st",
-      "양념치킨",
-      "연근조림",
-      "밑반찬",
+      "콩나물",
+      "매콤불고기",
+      "무쌈",
+      "계절나물",
+      "배추김치",
+      "요구르트"
+     ]
+    },
+    "2026-11-06": {
+     "lunch": [
+      "쌀밥",
+      "소고기무국",
+      "고등어무조림",
+      "잡채",
+      "계절나물",
       "배추김치"
      ]
     }
    },
    "weeks": [
     {
-     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261028/20261028100953540_jBxD.pdf",
-     "start": "2026-10-26",
-     "end": "2026-10-31",
+     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261102/20261102012746336_9aio.pdf",
+     "start": "2026-11-02",
+     "end": "2026-11-07",
      "note": "재료소진시다른음식으로대체됩니다"
     }
    ]
@@ -105,9 +103,9 @@
      "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_food"
     },
     {
-     "start": "2026-11-01",
+     "start": "2026-11-08",
      "end": null,
-     "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list&gyear=2026&gmonth=11&gday=01: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall"
+     "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list&gyear=2026&gmonth=11&gday=08: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall"
     }
    ]
   }
