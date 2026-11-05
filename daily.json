@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-02T17:04:10+09:00",
+ "generatedAt": "2026-11-05T17:20:24+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
@@ -58,7 +58,8 @@
      "lunch": [
       "쌀밥",
       "소고기무국",
-      "고등어무조림",
+      "고등어",
+      "김치조림",
       "잡채",
       "계절나물",
       "배추김치"
@@ -67,7 +68,7 @@
    },
    "weeks": [
     {
-     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261102/20261102012746336_9aio.pdf",
+     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261105/20261105125426919_rMfM.pdf",
      "start": "2026-11-02",
      "end": "2026-11-07",
      "note": "재료소진시다른음식으로대체됩니다"
