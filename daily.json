@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-06T17:23:19+09:00",
+ "generatedAt": "2026-11-08T09:49:58+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
@@ -108,9 +108,9 @@
      "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_food"
     },
     {
-     "start": "2026-11-08",
+     "start": "2026-11-15",
      "end": null,
-     "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list&gyear=2026&gmonth=11&gday=08: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall"
+     "error": "GET 실패 https://dorm.kyonggi.ac.kr:446/Khostel/mall_main.php?viewform=B0001_foodboard_list&gyear=2026&gmonth=11&gday=15: 404 Client Error: Not Found for url: https://dorm.kyonggi.ac.kr:446/Khostel/mall"
     }
    ]
   }
