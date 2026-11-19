@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-18T12:00:45+09:00",
+ "generatedAt": "2026-11-19T18:16:24+09:00",
  "cafes": {
   "gamsung": {
    "name": "감성코어",
@@ -66,15 +66,14 @@
       "미역국",
       "마라샹궈",
       "연근조림",
-      "꽃빵튀김",
-      "*연유",
+      "고추지",
       "배추김치"
      ]
     }
    },
    "weeks": [
     {
-     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261113/20261113010100873_AZEM.pdf",
+     "pdf": "https://www.kyonggi.ac.kr/data/WAS_DATA/cmmAtchmnfl/TnRstrntMenu/20261119/20261119125348115_O8Rh.pdf",
      "start": "2026-11-16",
      "end": "2026-11-21",
      "note": "재료소진시다른음식으로대체됩니다"
